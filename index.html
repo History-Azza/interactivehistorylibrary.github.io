@@ -119,7 +119,7 @@ button{
 <li>أين تقع مصر؟</li>
 <li>ما مساحة مصر؟</li>
 <li>ما عاصمة مصر؟</li>
-<li>كم عدد محافظات مصر؟</li>
+<li>ما محافظات مصر وكم عددها؟</li>
 <li>ما حدود مصر؟</li>
 <li>ما أهم البحار التي تطل عليها مصر؟</li>
 <li>حدثني عن نهر النيل.</li>
@@ -202,7 +202,7 @@ function showQuestions(){
 
 
 /* =========================
-   الميكروفون
+   تشغيل الميكروفون
 ========================= */
 
 function startListening(){
@@ -274,7 +274,7 @@ function startListening(){
 
 
 /* =========================
-   تنظيف السؤال
+   تنظيف الكلام
 ========================= */
 
 function cleanQuestion(question){
@@ -288,25 +288,68 @@ function cleanQuestion(question){
 
 
 /* =========================
-   الأسئلة الـ14
+   إزالة الكلمات الزائدة
 ========================= */
 
-function getAnswer(question){
+function normalizeQuestion(question){
 
     question = cleanQuestion(question);
 
+    let extraWords = [
 
-    /* 1 - موقع مصر */
+        "من فضلك",
+        "لو سمحت",
+        "ممكن",
+        "هل يمكنك",
+        "هل ممكن",
+        "عايز اعرف",
+        "اريد ان اعرف",
+        "اريد معرفة",
+        "حدثني",
+        "اخبرني",
+        "قل لي",
+        "قولي",
+        "ممكن تقول لي",
+        "ممكن تحدثني عن",
+        "عايز اعرف عن",
+        "اريد ان اعرف عن"
+
+    ];
+
+    extraWords.forEach(function(word){
+
+        question =
+            question.replace(word,"");
+
+    });
+
+    return question.trim();
+
+}
+
+
+/* =========================
+   قاعدة الإجابات
+========================= */
+
+function getAnswer(originalQuestion){
+
+    let question =
+        normalizeQuestion(originalQuestion);
+
+
+    /* =====================================
+       1 - موقع مصر
+    ===================================== */
 
     if(
-        question.includes("أين تقع مصر") ||
-        question.includes("اين تقع مصر") ||
-        question.includes("أين توجد مصر") ||
-        question.includes("اين توجد مصر") ||
+        question.includes("تقع مصر") ||
+        question.includes("توجد مصر") ||
+        question.includes("مكان مصر") ||
         question.includes("موقع مصر") ||
-        question.includes("مصر تقع فين") ||
-        question.includes("مصر توجد فين") ||
-        question.includes("مصر موجودة فين")
+        question.includes("مصر فين") ||
+        question.includes("مصر في اي") ||
+        question.includes("اين مصر")
     ){
 
         return "تقع جمهورية مصر العربية في الركن الشمالي الشرقي من قارة أفريقيا، وتمتد في قارة آسيا من خلال شبه جزيرة سيناء. ولذلك تعد مصر دولة عابرة للقارات.";
@@ -314,15 +357,16 @@ function getAnswer(question){
     }
 
 
-    /* 2 - مساحة مصر */
+    /* =====================================
+       2 - مساحة مصر
+    ===================================== */
 
     if(
         question.includes("مساحة مصر") ||
         question.includes("مساحه مصر") ||
-        question.includes("كم مساحة مصر") ||
-        question.includes("كم تبلغ مساحة مصر") ||
-        question.includes("ما مساحة مصر") ||
-        question.includes("مساحة جمهورية مصر")
+        question.includes("مساحة جمهورية مصر") ||
+        question.includes("قد ايه مساحة مصر") ||
+        question.includes("كم تبلغ مساحة مصر")
     ){
 
         return "تبلغ مساحة جمهورية مصر العربية أكثر من مليون كيلومتر مربع، إلا أن معظم السكان يتركزون حول نهر النيل وفي دلتا النيل بسبب توافر المياه والأراضي الزراعية.";
@@ -330,15 +374,16 @@ function getAnswer(question){
     }
 
 
-    /* 3 - عاصمة مصر */
+    /* =====================================
+       3 - عاصمة مصر
+    ===================================== */
 
     if(
         question.includes("عاصمة مصر") ||
         question.includes("عاصمه مصر") ||
-        question.includes("ما عاصمة مصر") ||
-        question.includes("ما هي عاصمة مصر") ||
         question.includes("عاصمة جمهورية مصر") ||
-        question.includes("عاصمة الجمهورية")
+        question.includes("عاصمة الجمهورية") ||
+        question.includes("عاصمة البلد")
     ){
 
         return "القاهرة هي عاصمة جمهورية مصر العربية، وهي أكبر المدن المصرية ومركز رئيسي للثقافة والإدارة والحياة السياسية.";
@@ -346,22 +391,22 @@ function getAnswer(question){
     }
 
 
-    /* 4 - المحافظات */
+    /* =====================================
+       4 - المحافظات
+    ===================================== */
 
     if(
-        question.includes("عدد المحافظات") ||
-        question.includes("عدد محافظات مصر") ||
-        question.includes("كم محافظة") ||
-        question.includes("كم عدد محافظات مصر") ||
-        question.includes("كم محافظة في مصر") ||
-        question.includes("كام محافظة") ||
         question.includes("محافظات مصر") ||
-        question.includes("أهم محافظات مصر") ||
-        question.includes("اهم محافظات مصر") ||
-        question.includes("اذكر محافظات مصر") ||
-        question.includes("ما هي محافظات مصر") ||
-        question.includes("المحافظات الموجودة في مصر") ||
-        question === "المحافظات"
+        question.includes("محافظات") ||
+        question.includes("عدد المحافظات") ||
+        question.includes("عدد محافظات") ||
+        question.includes("كم محافظة") ||
+        question.includes("كام محافظة") ||
+        question.includes("أهم محافظات") ||
+        question.includes("اهم محافظات") ||
+        question.includes("اذكر محافظات") ||
+        question.includes("ما المحافظات") ||
+        question.includes("محافظات موجودة")
     ){
 
         return "تنقسم جمهورية مصر العربية إلى سبع وعشرين محافظة. ومن أبرز محافظاتها القاهرة، والإسكندرية، والجيزة، والقليوبية، والشرقية، والدقهلية، والغربية، والمنوفية، والبحيرة، وكفر الشيخ، ودمياط، وبورسعيد، والإسماعيلية، والسويس، وشمال سيناء، وجنوب سيناء، والفيوم، وبني سويف، والمنيا، وأسيوط، وسوهاج، وقنا، والأقصر، وأسوان، والبحر الأحمر، والوادي الجديد، ومطروح.";
@@ -369,15 +414,16 @@ function getAnswer(question){
     }
 
 
-    /* 5 - حدود مصر */
+    /* =====================================
+       5 - حدود مصر
+    ===================================== */
 
     if(
         question.includes("حدود مصر") ||
-        question.includes("ما حدود مصر") ||
-        question.includes("ما هي حدود مصر") ||
         question.includes("حدودها") ||
         question.includes("يحد مصر") ||
-        question.includes("الدول التي تحد مصر")
+        question.includes("الدول التي تحد مصر") ||
+        question.includes("الدول المجاورة لمصر")
     ){
 
         return "يحد مصر من الشمال البحر المتوسط، ومن الشرق البحر الأحمر، ومن الجنوب دولة السودان، ومن الغرب دولة ليبيا، ومن الشمال الشرقي فلسطين وقطاع غزة.";
@@ -385,20 +431,19 @@ function getAnswer(question){
     }
 
 
-    /* 6 - البحار */
+    /* =====================================
+       6 - البحار
+    ===================================== */
 
     if(
-        question.includes("البحار") ||
         question.includes("بحار مصر") ||
+        question.includes("البحار") ||
         question.includes("أهم البحار") ||
         question.includes("اهم البحار") ||
-        question.includes("ما أهم البحار") ||
-        question.includes("ما هي أهم البحار") ||
-        question.includes("تطل مصر") ||
-        question.includes("على أي بحار") ||
-        question.includes("على اي بحار") ||
+        question.includes("تطل مصر على") ||
+        question.includes("مصر تطل على") ||
         question.includes("البحر المتوسط") ||
-        question.includes("البحر الأحمر")
+        question.includes("البحر الاحمر")
     ){
 
         return "تطل مصر على البحر المتوسط من الشمال، وعلى البحر الأحمر من الشرق. ولهذين البحرين أهمية كبيرة في الملاحة والتجارة والسياحة.";
@@ -406,15 +451,15 @@ function getAnswer(question){
     }
 
 
-    /* 7 - نهر النيل */
+    /* =====================================
+       7 - نهر النيل
+    ===================================== */
 
     if(
         question.includes("نهر النيل") ||
         question.includes("النيل") ||
         question.includes("نهر مصر") ||
-        question.includes("حدثني عن النيل") ||
-        question.includes("حدثني عن نهر النيل") ||
-        question.includes("ماذا تعرف عن النيل") ||
+        question.includes("عن النيل") ||
         question.includes("معلومات عن النيل")
     ){
 
@@ -423,15 +468,17 @@ function getAnswer(question){
     }
 
 
-    /* 8 - قناة السويس */
+    /* =====================================
+       8 - قناة السويس
+    ===================================== */
 
     if(
         question.includes("قناة السويس") ||
         question.includes("قناه السويس") ||
-        question.includes("أهمية قناة السويس") ||
-        question.includes("اهمية قناة السويس") ||
-        question.includes("ما أهمية قناة السويس") ||
-        question.includes("لماذا قناة السويس مهمة")
+        question.includes("أهمية قناة") ||
+        question.includes("اهمية قناة") ||
+        question.includes("فائدة قناة السويس") ||
+        question.includes("لماذا قناة السويس")
     ){
 
         return "قناة السويس ممر ملاحي عالمي في مصر، يربط بين البحر المتوسط والبحر الأحمر. وتكمن أهميتها في اختصار الطريق البحري بين الشرق والغرب، ولذلك تعد من أهم طرق التجارة والملاحة الدولية.";
@@ -439,16 +486,16 @@ function getAnswer(question){
     }
 
 
-    /* 9 - عابرة للقارات */
+    /* =====================================
+       9 - عابرة للقارات
+    ===================================== */
 
     if(
         question.includes("عابرة للقارات") ||
-        question.includes("دولة عابرة للقارات") ||
-        question.includes("لماذا تعد مصر دولة عابرة") ||
-        question.includes("لماذا تعتبر مصر دولة عابرة") ||
-        question.includes("مصر في قارتين") ||
-        question.includes("مصر تقع في قارتين") ||
-        question.includes("قارتين")
+        question.includes("دولة عابرة") ||
+        question.includes("قارتين") ||
+        question.includes("قارتا أفريقيا وآسيا") ||
+        question.includes("أفريقيا وآسيا")
     ){
 
         return "تعد مصر دولة عابرة للقارات لأنها تقع أساسًا في قارة أفريقيا، بينما تقع شبه جزيرة سيناء في قارة آسيا، وبذلك تمتد أراضيها في قارتي أفريقيا وآسيا.";
@@ -456,28 +503,31 @@ function getAnswer(question){
     }
 
 
-    /* 10 - المعالم والآثار */
+    /* =====================================
+       10 - المعالم والآثار
+    ===================================== */
 
     if(
-        question.includes("المعالم والآثار") ||
-        question.includes("أهم المعالم والآثار") ||
-        question.includes("اهم المعالم والاثار") ||
+        question.includes("آثار مصر") ||
+        question.includes("اثار مصر") ||
+        question.includes("الآثار المصرية") ||
+        question.includes("الاثار المصرية") ||
+        question.includes("معالم مصر") ||
+        question.includes("المعالم") ||
         question.includes("أهم المعالم") ||
         question.includes("اهم المعالم") ||
         question.includes("أهم الآثار") ||
         question.includes("اهم الاثار") ||
-        question.includes("آثار مصر") ||
-        question.includes("اثار مصر") ||
-        question.includes("الآثار المصرية") ||
-        question.includes("معالم مصر") ||
-        question.includes("أشهر آثار مصر") ||
-        question.includes("اشهر اثار مصر") ||
-        question.includes("أشهر معالم مصر") ||
-        question.includes("اذكر آثار مصر") ||
-        question.includes("اذكر معالم مصر") ||
-        question.includes("حدثني عن آثار مصر") ||
+        question.includes("أشهر آثار") ||
+        question.includes("اشهر اثار") ||
+        question.includes("أشهر معالم") ||
+        question.includes("اذكر آثار") ||
+        question.includes("اذكر معالم") ||
         question.includes("الأهرامات") ||
-        question.includes("أبو الهول")
+        question.includes("اهرامات") ||
+        question.includes("أبو الهول") ||
+        question.includes("ابو الهول") ||
+        question.includes("المعابد")
     ){
 
         return "تشتهر مصر بالعديد من المعالم والآثار العظيمة، ومن أشهرها أهرامات الجيزة وأبو الهول، ومعابد الأقصر والكرنك، ووادي الملوك، ومعابد أبو سمبل. كما تضم مصر معالم إسلامية وقبطية تاريخية، مثل قلعة صلاح الدين والمساجد والكنائس والأديرة القديمة.";
@@ -485,16 +535,18 @@ function getAnswer(question){
     }
 
 
-    /* 11 - السكان */
+    /* =====================================
+       11 - السكان
+    ===================================== */
 
     if(
-        question.includes("أين يعيش معظم سكان مصر") ||
-        question.includes("اين يعيش معظم سكان مصر") ||
         question.includes("معظم سكان مصر") ||
         question.includes("أين يعيش السكان") ||
+        question.includes("اين يعيش السكان") ||
         question.includes("أين يتركز السكان") ||
         question.includes("تركز السكان") ||
-        question.includes("معظم السكان يعيشون")
+        question.includes("السكان يعيشون") ||
+        question.includes("السكان في مصر")
     ){
 
         return "يعيش معظم سكان مصر حول نهر النيل وفي دلتا النيل، حيث تتوافر المياه والأراضي الزراعية، بينما تقل الكثافة السكانية في المناطق الصحراوية.";
@@ -502,16 +554,17 @@ function getAnswer(question){
     }
 
 
-    /* 12 - أهمية الموقع */
+    /* =====================================
+       12 - أهمية موقع مصر
+    ===================================== */
 
     if(
         question.includes("أهمية موقع مصر") ||
         question.includes("اهمية موقع مصر") ||
         question.includes("أهمية الموقع الجغرافي") ||
         question.includes("اهمية الموقع الجغرافي") ||
-        question.includes("ما أهمية موقع مصر") ||
-        question.includes("لماذا موقع مصر مهم") ||
-        question.includes("أهمية الموقع")
+        question.includes("أهمية موقعها") ||
+        question.includes("لماذا موقع مصر مهم")
     ){
 
         return "يتميز موقع مصر بأهمية جغرافية واستراتيجية كبيرة، فهي تربط بين قارتي أفريقيا وآسيا، وتشرف على البحر المتوسط والبحر الأحمر، كما تمر بها قناة السويس التي تربط بين طرق التجارة البحرية العالمية.";
@@ -519,17 +572,18 @@ function getAnswer(question){
     }
 
 
-    /* 13 - أهمية النيل */
+    /* =====================================
+       13 - أهمية نهر النيل
+    ===================================== */
 
     if(
         question.includes("أهمية نهر النيل") ||
         question.includes("اهمية نهر النيل") ||
-        question.includes("ما أهمية نهر النيل") ||
         question.includes("أهمية النيل") ||
         question.includes("اهمية النيل") ||
-        question.includes("ما أهمية النيل") ||
+        question.includes("فائدة النيل") ||
         question.includes("لماذا النيل مهم") ||
-        question.includes("لماذا نهر النيل مهم")
+        question.includes("أهمية نهر")
     ){
 
         return "يمثل نهر النيل أهمية أساسية لمصر، فهو مصدر رئيسي للمياه والزراعة، وقد ارتبطت به حياة المصريين وحضارتهم منذ آلاف السنين، ولذلك يطلق عليه شريان الحياة.";
@@ -537,21 +591,20 @@ function getAnswer(question){
     }
 
 
-    /* 14 - الخريطة */
+    /* =====================================
+       14 - ماذا توضح الخريطة؟
+    ===================================== */
 
     if(
-        question.includes("ماذا توضح خريطة مصر") ||
+        question.includes("خريطة مصر") ||
+        question.includes("الخريطة") ||
         question.includes("ماذا توضح الخريطة") ||
-        question.includes("ماذا توضح خريطة") ||
-        question.includes("ماذا يوجد في خريطة مصر") ||
         question.includes("ماذا يوجد في الخريطة") ||
-        question.includes("ما الموجود في خريطة مصر") ||
-        question.includes("ما الموجود في الخريطة") ||
-        question.includes("محتويات خريطة مصر") ||
+        question.includes("ماذا يوجد في خريطة مصر") ||
+        question.includes("موجود في الخريطة") ||
         question.includes("محتويات الخريطة") ||
-        question.includes("ما الذي يوجد في الخريطة") ||
-        question.includes("اذكر ما هو موجود في خريطة مصر") ||
-        question.includes("موجود في خريطة مصر")
+        question.includes("محتويات خريطة مصر") ||
+        question.includes("ماذا نرى في الخريطة")
     ){
 
         return "توضح خريطة مصر موقع الدولة وحدودها، والبحر المتوسط والبحر الأحمر، ونهر النيل، والمحافظات، والعاصمة القاهرة، وشبه جزيرة سيناء، وأهم الملامح الجغرافية التي تساعد على فهم موقع مصر وأهميته.";
@@ -559,20 +612,9 @@ function getAnswer(question){
     }
 
 
-    /* سؤال عام عن الخريطة */
-
-    if(
-        question.includes("خريطة مصر") ||
-        question.includes("الخريطة المصرية") ||
-        question.includes("معلومات عن خريطة مصر")
-    ){
-
-        return "خريطة مصر توضح موقع جمهورية مصر العربية في شمال شرق أفريقيا، وامتدادها في شبه جزيرة سيناء بآسيا، كما توضح الحدود والبحار ونهر النيل والمحافظات والعاصمة القاهرة وأهم الملامح الجغرافية.";
-
-    }
-
-
-    /* الرد الأخير */
+    /* =====================================
+       إذا لم يتعرف على السؤال
+    ===================================== */
 
     return "يمكنك سؤالي عن خريطة مصر من خلال الأسئلة المتاحة.";
 
@@ -580,7 +622,7 @@ function getAnswer(question){
 
 
 /* =========================
-   الصوت
+   تحويل النص إلى صوت
 ========================= */
 
 function speak(text){
@@ -612,7 +654,9 @@ function speak(text){
             voices.find(function(voice){
 
                 return voice.lang &&
-                voice.lang.toLowerCase().startsWith("ar");
+                voice.lang
+                .toLowerCase()
+                .startsWith("ar");
 
             });
 
@@ -669,4 +713,5 @@ function stopSpeech(){
 </script>
 
 </body>
+
 </html>
