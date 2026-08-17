@@ -1,0 +1,13 @@
+{
+  "background_color": "#ffffff",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "مؤرخ برايل الذكي",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "مؤرخ برايل",
+  "start_url": "/",
+  "theme_color": "#ffffff",
+  "id": "smart-braille-historian",
+  "description": "مؤرخ برايل الذكي ثلاثي الأبعاد هو مكتبة تاريخية تفاعلية تستخدم المجسمات والصوت والتفاعل الذكي لإتاحة تعلم التاريخ للأشخاص ذوي الإعاقة البصرية"
+}
