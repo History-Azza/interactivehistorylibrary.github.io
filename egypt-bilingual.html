@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="ar">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>مؤرخ برايل الذكي - خريطة مصر</title>
+
+<style>
+
+body{
+    direction:rtl;
+    text-align:center;
+    font-family:Tahoma,Arial,sans-serif;
+    background:#f4f4f4;
+    margin:0;
+    padding:30px 15px;
+}
+
+.container{
+    max-width:850px;
+    margin:auto;
+    background:white;
+    padding:30px;
+    border-radius:20px;
+    box-shadow:0 3px 15px rgba(0,0,0,0.12);
+}
+
+h1{
+    margin-bottom:5px;
+}
+
+.subtitle{
+    font-size:20px;
+    line-height:1.8;
+}
+
+.language{
+    margin:20px 0;
+}
+
+.language button{
+    font-size:18px;
+    padding:12px 20px;
+    margin:5px;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+}
+
+button{
+    font-size:20px;
+    padding:14px 22px;
+    margin:7px;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+}
+
+#question{
+    font-size:22px;
+    font-weight:bold;
+    margin-top:25px;
+}
+
+#answer{
+    font-size:21px;
+    line-height:2;
+    text-align:right;
+    background:#f8f8f8;
+    padding:20px;
+    border-radius:15px;
+    margin-top:15px;
+}
+
+#availableQuestions{
+    display:none;
+    text-align:right;
+    font-size:20px;
+    line-height:2;
+    margin-top:20px;
+    background:#fafafa;
+    padding:20px;
+    border-radius:15px;
+}
+
+.status{
+    font-size:18px;
+    color:#555;
+    margin-top:10px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🗺️ مؤرخ برايل الذكي</h1>
+
+<h2 id="title">خريطة جمهورية مصر العربية</h2>
+
+<p class="subtitle" id="subtitle">
+يمكنك الاستماع إلى الجولة التعليمية أو طرح سؤال عن خريطة مصر بصوتك.
+</p>
+
+<div class="language">
+
+<button onclick="setLanguage('ar')">
+🇪🇬 العربية
+</button>
+
+<button onclick="setLanguage('en')">
+🇬🇧 English
+</button>
+
+</div>
+
+<div>
+
+<button id="introButton" onclick="startIntro()">
+▶️ ابدأ الجولة التعليمية
+</button>
+
+<button id="listenButton" onclick="startListening()">
+🎤 اسألني
+</button>
+
+<button id="questionsButton" onclick="showQuestions()">
+❓ الأسئلة المتاحة
+</button>
+
+<button id="stopButton" onclick="stopSpeech()">
+⏹️ إيقاف الصوت
+</button>
+
+</div>
+
+<div id="status" class="status"></div>
+
+<div id="question"></div>
+
+<div id="answer"></div>
+
+<div id="availableQuestions">
+
+<h3 id="questionsTitle">
+❓ يمكنك أن تسألني عن:
+</h3>
+
+<ol id="questionsList">
+
+</ol>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   اللغة الحالية
+===================================================== */
+
+let currentLanguage = "ar";
+
+
+/* =====================================================
+   الأسئلة والإجابات العربية والإنجليزية
+===================================================== */
+
+const data = {
+
+ar: {
+
+title: "خريطة جمهورية مصر العربية",
+
+subtitle:
+"يمكنك الاستماع إلى الجولة التعليمية أو طرح سؤال عن خريطة مصر بصوتك.",
+
+introButton: "▶️ ابدأ الجولة التعليمية",
+
+listenButton: "🎤 اسألني",
+
+questionsButton: "❓ الأسئلة المتاحة",
+
+stopButton: "⏹️ إيقاف الصوت",
+
+questionsTitle: "❓ يمكنك أن تسألني عن:",
+
+listening:
+"🎤 استمع إليك الآن... تحدث.",
+
+error:
+"حدثت مشكلة في الاستماع. حاول مرة أخرى.",
+
+unsupported:
+"المتصفح لا يدعم التعرف على الصوت. استخدم Google Chrome.",
+
+unknown:
+"يمكنك سؤالي عن خريطة مصر من خلال الأسئلة المتاحة.",
+
+questions: [
+
+"أين تقع مصر؟",
+
+"ما مساحة مصر؟",
+
+"ما عاصمة مصر؟",
+
+"ما محافظات مصر وكم عددها؟",
+
+"ما حدود مصر؟",
+
+"ما أهم البحار التي تطل عليها مصر؟",
+
+"حدثني عن نهر النيل.",
+
+"ما أهمية قناة السويس؟",
+
+"لماذا تعد مصر دولة عابرة للقارات؟",
+
+"ما أهم المعالم والآثار في مصر؟",
+
+"أين يعيش معظم سكان مصر؟",
+
+"ما أهمية موقع مصر الجغرافي؟",
+
+"ما أهمية نهر النيل لمصر؟",
+
+"ماذا توضح خريطة مصر؟"
+
+],
+
+answers: [
+
+"تقع جمهورية مصر العربية في الركن الشمالي الشرقي من قارة أفريقيا، وتمتد في قارة آسيا من خلال شبه جزيرة سيناء. ولذلك تعد مصر دولة عابرة للقارات.",
+
+"تبلغ مساحة جمهورية مصر العربية أكثر من مليون كيلومتر مربع، إلا أن معظم السكان يتركزون حول نهر النيل وفي دلتا النيل بسبب توافر المياه والأراضي الزراعية.",
+
+"القاهرة هي عاصمة جمهورية مصر العربية، وهي أكبر المدن المصرية ومركز رئيسي للثقافة والإدارة والحياة السياسية.",
+
+"تنقسم جمهورية مصر العربية إلى سبع وعشرين محافظة. ومن أبرز محافظاتها القاهرة، والإسكندرية، والجيزة، والقليوبية، والشرقية، والدقهلية، والغربية، والمنوفية، والبحيرة، وكفر الشيخ، ودمياط، وبورسعيد، والإسماعيلية، والسويس، وشمال سيناء، وجنوب سيناء، والفيوم، وبني سويف، والمنيا، وأسيوط، وسوهاج، وقنا، والأقصر، وأسوان، والبحر الأحمر، والوادي الجديد، ومطروح.",
+
+"يحد مصر من الشمال البحر المتوسط، ومن الشرق البحر الأحمر، ومن الجنوب دولة السودان، ومن الغرب دولة ليبيا، ومن الشمال الشرقي إسرائيل وقطاع غزة.",
+
+"تطل مصر على البحر المتوسط من الشمال، وعلى البحر الأحمر من الشرق. ولهذين البحرين أهمية كبيرة في الملاحة والتجارة والسياحة.",
+
+"يمر نهر النيل في قلب مصر من الجنوب إلى الشمال، ويعد شريان الحياة للمصريين منذ آلاف السنين. وقد قامت على ضفافه الحضارة المصرية القديمة، وما زال مصدرًا مهمًا للمياه والزراعة.",
+
+"قناة السويس ممر ملاحي عالمي في مصر، يربط بين البحر المتوسط والبحر الأحمر. وتكمن أهميتها في اختصار الطريق البحري بين الشرق والغرب، ولذلك تعد من أهم طرق التجارة والملاحة الدولية.",
+
+"تعد مصر دولة عابرة للقارات لأنها تقع أساسًا في قارة أفريقيا، بينما تقع شبه جزيرة سيناء في قارة آسيا، وبذلك تمتد أراضيها في قارتي أفريقيا وآسيا.",
+
+"تشتهر مصر بالعديد من المعالم والآثار العظيمة، ومن أشهرها أهرامات الجيزة وأبو الهول، ومعابد الأقصر والكرنك، ووادي الملوك، ومعابد أبو سمبل. كما تضم مصر معالم إسلامية وقبطية تاريخية.",
+
+"يعيش معظم سكان مصر حول نهر النيل وفي دلتا النيل، حيث تتوافر المياه والأراضي الزراعية، بينما تقل الكثافة السكانية في المناطق الصحراوية.",
+
+"يتميز موقع مصر بأهمية جغرافية واستراتيجية كبيرة، فهي تربط بين قارتي أفريقيا وآسيا، وتشرف على البحر المتوسط والبحر الأحمر، كما تمر بها قناة السويس التي تربط بين طرق التجارة البحرية العالمية.",
+
+"يمثل نهر النيل أهمية أساسية لمصر، فهو مصدر رئيسي للمياه والزراعة، وقد ارتبطت به حياة المصريين وحضارتهم منذ آلاف السنين، ولذلك يطلق عليه شريان الحياة.",
+
+"توضح خريطة مصر موقع الدولة وحدودها، والبحر المتوسط والبحر الأحمر، ونهر النيل، والمحافظات، والعاصمة القاهرة، وشبه جزيرة سيناء، وأهم الملامح الجغرافية التي تساعد على فهم موقع مصر وأهميته."
+
+],
+
+intro: `
+مرحبًا بك. أنت الآن تستكشف مجسم خريطة جمهورية مصر العربية.
+استمع إلى المعلومات التالية لتتعرف على وطنك العزيز. هيا نبدأ.
+
+تُعد مصر من أقدم دول العالم، وتقع في الركن الشمالي الشرقي من قارة أفريقيا، وتمتد بجزء صغير منها في قارة آسيا، وهو شبه جزيرة سيناء، لذلك تُعد مصر دولة عابرة للقارات.
+
+تبلغ مساحة مصر أكثر من مليون كيلومتر مربع، إلا أن معظم السكان يعيشون حول نهر النيل وفي دلتا النيل، حيث تتوافر المياه والأراضي الزراعية.
+
+يحد مصر من الشمال البحر المتوسط، ومن الشرق البحر الأحمر، ومن الجنوب دولة السودان، ومن الغرب دولة ليبيا، ومن الشمال الشرقي إسرائيل وقطاع غزة.
+
+تنقسم مصر إداريًا إلى سبع وعشرين محافظة، وتُعد مدينة القاهرة عاصمة الجمهورية، وهي أكبر المدن المصرية ومركز رئيسي للثقافة والإدارة.
+
+يمر نهر النيل في قلب مصر من الجنوب إلى الشمال، ويُعد شريان الحياة للمصريين منذ آلاف السنين، إذ قامت على ضفافه الحضارة المصرية القديمة، وما زال مصدرًا مهمًا للمياه والزراعة.
+
+تتميز مصر بموقع جغرافي فريد يربط بين قارات العالم، وتضم قناة السويس، وهي من أهم الممرات الملاحية في العالم، حيث تعبرها السفن بين البحرين المتوسط والأحمر.
+
+وتشتهر مصر بحضارتها العريقة وآثارها العظيمة، مثل الأهرامات وأبو الهول والمعابد التاريخية، كما تضم العديد من المعالم الإسلامية والقبطية التي تعكس تنوعها الحضاري.
+
+وفي نهاية جولتنا، تذكر أن خريطة مصر ليست مجرد حدود على الورق، بل هي وطن عريق صنع الحضارة ودافع عنه أبناؤه عبر التاريخ.
+
+شكرًا لاستماعك، ونلتقي في مجسم تاريخي جديد.
+`
+
+},
+
+en: {
+
+title: "Map of the Arab Republic of Egypt",
+
+subtitle:
+"You can listen to the educational tour or ask a question about the map of Egypt using your voice.",
+
+introButton: "▶️ Start Educational Tour",
+
+listenButton: "🎤 Ask Me",
+
+questionsButton: "❓ Available Questions",
+
+stopButton: "⏹️ Stop Audio",
+
+questionsTitle: "❓ You can ask me about:",
+
+listening:
+"🎤 Listening... Please speak.",
+
+error:
+"Something went wrong while listening. Please try again.",
+
+unsupported:
+"Speech recognition is not supported. Please use Google Chrome.",
+
+unknown:
+"You can ask me about the map of Egypt using the available questions.",
+
+questions: [
+
+"Where is Egypt located?",
+
+"What is the area of Egypt?",
+
+"What is the capital of Egypt?",
+
+"What are the governorates of Egypt, and how many are there?",
+
+"What are the borders of Egypt?",
+
+"What are the main seas that Egypt overlooks?",
+
+"Tell me about the Nile River.",
+
+"What is the importance of the Suez Canal?",
+
+"Why is Egypt considered a transcontinental country?",
+
+"What are the most important landmarks and archaeological sites in Egypt?",
+
+"Where does most of Egypt's population live?",
+
+"What is the importance of Egypt's geographical location?",
+
+"What is the importance of the Nile River to Egypt?",
+
+"What does the map of Egypt show?"
+
+],
+
+answers: [
+
+"Egypt is located in northeastern Africa. The Sinai Peninsula is located in Asia, connecting Africa with Asia.",
+
+"The area of Egypt is more than one million square kilometers. Most of the population lives around the Nile Valley and the Nile Delta.",
+
+"The capital of Egypt is Cairo, one of the largest cities in Africa and an important center of culture, administration, and political life.",
+
+"Egypt is divided into twenty-seven governorates, including Cairo, Alexandria, Giza, Qalyubia, Sharqia, Dakahlia, Gharbia, Beheira, Kafr El Sheikh, Damietta, Port Said, Ismailia, Suez, North Sinai, South Sinai, Fayoum, Beni Suef, Minya, Assiut, Sohag, Qena, Luxor, Aswan, Red Sea, New Valley, and Matrouh.",
+
+"Egypt is bordered by the Mediterranean Sea to the north, the Red Sea to the east, Sudan to the south, Libya to the west, and Israel and the Gaza Strip to the northeast.",
+
+"Egypt overlooks the Mediterranean Sea to the north and the Red Sea to the east. Both seas are important for navigation, trade, and tourism.",
+
+"The Nile River flows through the heart of Egypt from south to north. It has been the lifeline of the Egyptian people for thousands of years and played a central role in the development of ancient Egyptian civilization.",
+
+"The Suez Canal is a major international waterway in Egypt connecting the Mediterranean Sea with the Red Sea. It shortens the maritime route between Europe and Asia and is extremely important for international trade.",
+
+"Egypt is considered a transcontinental country because most of its territory is in Africa, while the Sinai Peninsula is located in Asia. Therefore, Egypt extends across both Africa and Asia.",
+
+"Egypt is famous for its great historical landmarks and archaeological sites, including the Pyramids of Giza, the Great Sphinx, the temples of Luxor and Karnak, the Valley of the Kings, and the temples of Abu Simbel. Egypt also has important Islamic and Coptic monuments.",
+
+"Most of Egypt's population lives along the Nile Valley and the Nile Delta, where water and fertile agricultural land are available. Population density is much lower in the desert areas.",
+
+"Egypt has a strategically important geographical location connecting Africa and Asia. It overlooks the Mediterranean and Red Seas, and the Suez Canal connects major international maritime trade routes.",
+
+"The Nile River is essential to Egypt. It provides an important source of water and supports agriculture, and it has been closely connected with Egyptian life and civilization for thousands of years.",
+
+"The map of Egypt shows the country's location and borders, the Mediterranean Sea, the Red Sea, the Nile River, the governorates, Cairo, the Sinai Peninsula, and other important geographical features."
+
+],
+
+intro: `
+Welcome. You are now exploring the 3D map of the Arab Republic of Egypt.
+Listen carefully to learn more about Egypt. Let's begin.
+
+Egypt is one of the world's oldest countries. It is located in northeastern Africa, while the Sinai Peninsula extends into Asia. Therefore, Egypt is considered a transcontinental country.
+
+Egypt has an area of more than one million square kilometers. Most of the population lives around the Nile Valley and the Nile Delta, where water and fertile agricultural land are available.
+
+Egypt is bordered by the Mediterranean Sea to the north, the Red Sea to the east, Sudan to the south, Libya to the west, and Israel and the Gaza Strip to the northeast.
+
+Egypt is divided administratively into twenty-seven governorates. Cairo is the capital of the country and one of its most important cultural and administrative centers.
+
+The Nile River flows through Egypt from south to north. It has been the lifeline of the Egyptian people for thousands of years and played a central role in the development of ancient Egyptian civilization.
+
+Egypt has a unique geographical location connecting Africa and Asia. The Suez Canal is one of the world's most important waterways because it connects the Mediterranean Sea with the Red Sea and provides a major route for international trade.
+
+Egypt is famous for its ancient civilization and remarkable monuments, including the Pyramids of Giza, the Great Sphinx, and historic temples. It also has many Islamic and Coptic monuments that reflect its diverse cultural heritage.
+
+Remember that the map of Egypt is not simply a set of borders. It represents a country with a rich history and one of the world's oldest civilizations.
+
+Thank you for listening. See you in another historical model.
+`
+
+}
+
+};
+
+
+/* =====================================================
+   تغيير اللغة
+===================================================== */
+
+function setLanguage(language){
+
+    stopSpeech();
+
+    currentLanguage = language;
+
+    document.documentElement.lang = language;
+
+    document.body.style.direction =
+        language === "ar" ? "rtl" : "ltr";
+
+    document.getElementById("title").innerText =
+        data[language].title;
+
+    document.getElementById("subtitle").innerText =
+        data[language].subtitle;
+
+    document.getElementById("introButton").innerText =
+        data[language].introButton;
+
+    document.getElementById("listenButton").innerText =
+        data[language].listenButton;
+
+    document.getElementById("questionsButton").innerText =
+        data[language].questionsButton;
+
+    document.getElementById("stopButton").innerText =
+        data[language].stopButton;
+
+    document.getElementById("questionsTitle").innerText =
+        data[language].questionsTitle;
+
+    document.getElementById("question").innerText = "";
+
+    document.getElementById("answer").innerText = "";
+
+    document.getElementById("status").innerText = "";
+
+    updateQuestions();
+
+}
+
+
+/* =====================================================
+   تحديث قائمة الأسئلة
+===================================================== */
+
+function updateQuestions(){
+
+    const list =
+        document.getElementById("questionsList");
+
+    list.innerHTML = "";
+
+    data[currentLanguage].questions.forEach(function(question){
+
+        const li =
+            document.createElement("li");
+
+        li.innerText = question;
+
+        list.appendChild(li);
+
+    });
+
+}
+
+
+/* =====================================================
+   عرض الأسئلة
+===================================================== */
+
+function showQuestions(){
+
+    const box =
+        document.getElementById("availableQuestions");
+
+    if(box.style.display === "none" ||
+       box.style.display === ""){
+
+        box.style.display = "block";
+
+    }else{
+
+        box.style.display = "none";
+
+    }
+
+}
+
+
+/* =====================================================
+   الجولة التعليمية
+===================================================== */
+
+function startIntro(){
+
+    stopSpeech();
+
+    const intro =
+        data[currentLanguage].intro;
+
+    document.getElementById("answer").innerText =
+        intro;
+
+    speak(intro);
+
+}
+
+
+/* =====================================================
+   التعرف على الصوت
+===================================================== */
+
+function startListening(){
+
+    stopSpeech();
+
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+    if(!SpeechRecognition){
+
+        alert(data[currentLanguage].unsupported);
+
+        return;
+    }
+
+    const recognition =
+        new SpeechRecognition();
+
+    recognition.lang =
+        currentLanguage === "ar"
+        ? "ar-EG"
+        : "en-US";
+
+    recognition.interimResults = false;
+
+    recognition.maxAlternatives = 3;
+
+    recognition.start();
+
+
+    document.getElementById("question").innerText =
+        data[currentLanguage].listening;
+
+
+    recognition.onresult = function(event){
+
+        const question =
+            event.results[0][0].transcript
+            .toLowerCase()
+            .trim();
+
+
+        document.getElementById("question").innerText =
+            "❓ " + question;
+
+
+        const answer =
+            getAnswer(question);
+
+
+        document.getElementById("answer").innerText =
+            "🤖 " + answer;
+
+
+        speak(answer);
+
+    };
+
+
+    recognition.onerror = function(){
+
+        document.getElementById("status").innerText =
+            data[currentLanguage].error;
+
+    };
+
+}
+
+
+/* =====================================================
+   تنظيف السؤال
+===================================================== */
+
+function cleanQuestion(question){
+
+    return question
+        .replace(/[؟?!.,،]/g,"")
+        .replace(/\s+/g," ")
+        .trim();
+
+}
+
+
+/* =====================================================
+   الحصول على الإجابة
+===================================================== */
+
+function getAnswer(question){
+
+    question =
+        cleanQuestion(question);
+
+
+    if(currentLanguage === "en"){
+
+        return getEnglishAnswer(question);
+
+    }
+
+    return getArabicAnswer(question);
+
+}
+
+
+/* =====================================================
+   الإجابات العربية
+===================================================== */
+
+function getArabicAnswer(question){
+
+    if(
+        question.includes("تقع مصر") ||
+        question.includes("توجد مصر") ||
+        question.includes("مكان مصر") ||
+        question.includes("موقع مصر") ||
+        question.includes("مصر فين") ||
+        question.includes("اين مصر")
+    ){
+
+        return data.ar.answers[0];
+
+    }
+
+
+    if(
+        question.includes("مساحة مصر") ||
+        question.includes("مساحه مصر") ||
+        question.includes("كم تبلغ مساحة مصر")
+    ){
+
+        return data.ar.answers[1];
+
+    }
+
+
+    if(
+        question.includes("عاصمة مصر") ||
+        question.includes("عاصمه مصر") ||
+        question.includes("عاصمة الجمهورية")
+    ){
+
+        return data.ar.answers[2];
+
+    }
+
+
+    if(
+        question.includes("محافظات مصر") ||
+        question.includes("عدد المحافظات") ||
+        question.includes("كم محافظة") ||
+        question.includes("كام محافظة") ||
+        question.includes("اذكر محافظات")
+    ){
+
+        return data.ar.answers[3];
+
+    }
+
+
+    if(
+        question.includes("حدود مصر") ||
+        question.includes("يحد مصر") ||
+        question.includes("الدول التي تحد مصر")
+    ){
+
+        return data.ar.answers[4];
+
+    }
+
+
+    if(
+        question.includes("بحار مصر") ||
+        question.includes("أهم البحار") ||
+        question.includes("تطل مصر على") ||
+        question.includes("البحر المتوسط") ||
+        question.includes("البحر الاحمر")
+    ){
+
+        return data.ar.answers[5];
+
+    }
+
+
+    if(
+        question.includes("نهر النيل") ||
+        question.includes("النيل") ||
+        question.includes("عن النيل")
+    ){
+
+        return data.ar.answers[6];
+
+    }
+
+
+    if(
+        question.includes("قناة السويس") ||
+        question.includes("قناه السويس") ||
+        question.includes("أهمية قناة") ||
+        question.includes("اهمية قناة")
+    ){
+
+        return data.ar.answers[7];
+
+    }
+
+
+    if(
+        question.includes("عابرة للقارات") ||
+        question.includes("دولة عابرة") ||
+        question.includes("قارتين") ||
+        question.includes("أفريقيا وآسيا")
+    ){
+
+        return data.ar.answers[8];
+
+    }
+
+
+    if(
+        question.includes("آثار مصر") ||
+        question.includes("اثار مصر") ||
+        question.includes("معالم مصر") ||
+        question.includes("أهم المعالم") ||
+        question.includes("أهم الآثار") ||
+        question.includes("الأهرامات") ||
+        question.includes("ابو الهول")
+    ){
+
+        return data.ar.answers[9];
+
+    }
+
+
+    if(
+        question.includes("معظم سكان مصر") ||
+        question.includes("أين يعيش السكان") ||
+        question.includes("أين يتركز السكان") ||
+        question.includes("السكان يعيشون")
+    ){
+
+        return data.ar.answers[10];
+
+    }
+
+
+    if(
+        question.includes("أهمية موقع مصر") ||
+        question.includes("اهمية موقع مصر") ||
+        question.includes("أهمية الموقع الجغرافي") ||
+        question.includes("لماذا موقع مصر مهم")
+    ){
+
+        return data.ar.answers[11];
+
+    }
+
+
+    if(
+        question.includes("أهمية نهر النيل") ||
+        question.includes("اهمية نهر النيل") ||
+        question.includes("أهمية النيل") ||
+        question.includes("فائدة النيل")
+    ){
+
+        return data.ar.answers[12];
+
+    }
+
+
+    if(
+        question.includes("خريطة مصر") ||
+        question.includes("الخريطة") ||
+        question.includes("ماذا توضح الخريطة") ||
+        question.includes("محتويات الخريطة")
+    ){
+
+        return data.ar.answers[13];
+
+    }
+
+
+    return data.ar.unknown;
+
+}
+
+
+/* =====================================================
+   الإجابات الإنجليزية
+===================================================== */
+
+function getEnglishAnswer(question){
+
+    if(
+        question.includes("where is egypt") ||
+        question.includes("where egypt") ||
+        question.includes("location of egypt")
+    ){
+
+        return data.en.answers[0];
+
+    }
+
+
+    if(
+        question.includes("area of egypt") ||
+        question.includes("how large is egypt") ||
+        question.includes("size of egypt")
+    ){
+
+        return data.en.answers[1];
+
+    }
+
+
+    if(
+        question.includes("capital of egypt") ||
+        question.includes("what is the capital")
+    ){
+
+        return data.en.answers[2];
+
+    }
+
+
+    if(
+        question.includes("governorates") ||
+        question.includes("how many governorates") ||
+        question.includes("how many provinces")
+    ){
+
+        return data.en.answers[3];
+
+    }
+
+
+    if(
+        question.includes("borders of egypt") ||
+        question.includes("border egypt") ||
+        question.includes("countries bordering egypt")
+    ){
+
+        return data.en.answers[4];
+
+    }
+
+
+    if(
+        question.includes("seas") ||
+        question.includes("seas does egypt") ||
+        question.includes("mediterranean") ||
+        question.includes("red sea")
+    ){
+
+        return data.en.answers[5];
+
+    }
+
+
+    if(
+        question.includes("nile river") ||
+        question.includes("tell me about the nile") ||
+        question.includes("about the nile")
+    ){
+
+        return data.en.answers[6];
+
+    }
+
+
+    if(
+        question.includes("suez canal") ||
+        question.includes("importance of the suez") ||
+        question.includes("why is the suez")
+    ){
+
+        return data.en.answers[7];
+
+    }
+
+
+    if(
+        question.includes("transcontinental") ||
+        question.includes("two continents") ||
+        question.includes("africa and asia")
+    ){
+
+        return data.en.answers[8];
+
+    }
+
+
+    if(
+        question.includes("landmarks") ||
+        question.includes("archaeological") ||
+        question.includes("pyramids") ||
+        question.includes("sphinx") ||
+        question.includes("monuments")
+    ){
+
+        return data.en.answers[9];
+
+    }
+
+
+    if(
+        question.includes("population") ||
+        question.includes("where does most") ||
+        question.includes("where do most egyptians")
+    ){
+
+        return data.en.answers[10];
+
+    }
+
+
+    if(
+        question.includes("geographical location") ||
+        question.includes("importance of egypt's location") ||
+        question.includes("strategic location")
+    ){
+
+        return data.en.answers[11];
+
+    }
+
+
+    if(
+        question.includes("importance of the nile") ||
+        question.includes("why is the nile important") ||
+        question.includes("nile important")
+    ){
+
+        return data.en.answers[12];
+
+    }
+
+
+    if(
+        question.includes("map of egypt") ||
+        question.includes("what does the map") ||
+        question.includes("what does the map of egypt show")
+    ){
+
+        return data.en.answers[13];
+
+    }
+
+
+    return data.en.unknown;
+
+}
+
+
+/* =====================================================
+   تحويل النص إلى صوت
+===================================================== */
+
+function speak(text){
+
+    if(!("speechSynthesis" in window)){
+        return;
+    }
+
+    speechSynthesis.cancel();
+
+
+    const speech =
+        new SpeechSynthesisUtterance(text);
+
+
+    speech.lang =
+        currentLanguage === "ar"
+        ? "ar-EG"
+        : "en-US";
+
+
+    speech.rate = 0.9;
+
+    speech.pitch = 1;
+
+    speech.volume = 1;
+
+
+    function speakNow(){
+
+        const voices =
+            speechSynthesis.getVoices();
+
+
+        let preferredVoice;
+
+
+        if(currentLanguage === "ar"){
+
+            preferredVoice =
+                voices.find(function(voice){
+
+                    return voice.lang &&
+                    voice.lang
+                    .toLowerCase()
+                    .startsWith("ar");
+
+                });
+
+        }else{
+
+            preferredVoice =
+                voices.find(function(voice){
+
+                    return voice.lang &&
+                    voice.lang
+                    .toLowerCase()
+                    .startsWith("en");
+
+                });
+
+        }
+
+
+        if(preferredVoice){
+
+            speech.voice =
+                preferredVoice;
+
+        }
+
+
+        speechSynthesis.speak(speech);
+
+    }
+
+
+    const voices =
+        speechSynthesis.getVoices();
+
+
+    if(voices.length === 0){
+
+        speechSynthesis.onvoiceschanged =
+            function(){
+
+                speechSynthesis.onvoiceschanged = null;
+
+                speakNow();
+
+            };
+
+    }else{
+
+        speakNow();
+
+    }
+
+}
+
+
+/* =====================================================
+   إيقاف الصوت
+===================================================== */
+
+function stopSpeech(){
+
+    if("speechSynthesis" in window){
+
+        speechSynthesis.cancel();
+
+    }
+
+}
+
+
+/* =====================================================
+   تشغيل العربية عند فتح الصفحة
+===================================================== */
+
+setLanguage("ar");
+
+</script>
+
+</body>
+
+</html>
