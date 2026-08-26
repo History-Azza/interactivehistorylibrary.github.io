@@ -4,6 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>مؤرخ برايل الذكي | Smart Braille Historian</title>
+
+<link rel="manifest" href="manifest.json">
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("./sw.js")
+      .then(function () {
+        console.log("Service Worker registered successfully.");
+      })
+      .catch(function (error) {
+        console.log("Service Worker registration failed:", error);
+      });
+  });
+}
+</script>
+
 <style>
   :root{
     --bg:#061a35; --panel:#0c2a4f; --panel2:#102f56; --gold:#e9b85f;
@@ -54,38 +71,72 @@
   @media(max-width:700px){.grid,.model-grid,.library-grid{grid-template-columns:1fr}.hero h2{font-size:27px}.card{min-height:155px}}
 </style>
 </head>
+
 <body>
 <div class="app">
+
 <header>
   <div class="brand">
     <div class="logo">⠿</div>
-    <div><h1 id="brandAr">مؤرخ برايل الذكي</h1><div class="sub" id="brandEn">Smart Braille Historian</div></div>
+    <div>
+      <h1 id="brandAr">مؤرخ برايل الذكي</h1>
+      <div class="sub" id="brandEn">Smart Braille Historian</div>
+    </div>
   </div>
   <button class="topbtn" onclick="toggleLang()" id="langBtn">العربية | English</button>
 </header>
 
 <main>
+
 <section id="home" class="screen active">
   <div class="hero">
     <h2 id="heroTitle">اكتشف التاريخ... اسمعه، اسأله، وتعلم منه</h2>
     <p id="heroText">نموذج أولي تعليمي مصمم للمكفوفين وضعاف البصر</p>
   </div>
+
   <div class="grid">
-    <div class="card blue" onclick="show('ask')"><div class="icon">🎤</div><h3 id="c1">اسأل المؤرخ</h3><p id="p1">اسأل عن موضوع تاريخي واستمع إلى الإجابة.</p></div>
-    <div class="card green" onclick="show('models')"><div class="icon">🏛️</div><h3 id="c2">النماذج التاريخية</h3><p id="p2">استكشف النماذج واستمع إلى شرحها.</p></div>
-    <div class="card purple" onclick="show('library')"><div class="icon">🎧</div><h3 id="c3">المكتبة الصوتية</h3><p id="p3">دروس وقصص ومحاضرات تاريخية.</p></div>
-    <div class="card brown" onclick="show('quiz')"><div class="icon">🧠</div><h3 id="c4">الاختبارات</h3><p id="p4">اختبر معلوماتك بطريقة تفاعلية.</p></div>
+    <div class="card blue" onclick="show('ask')">
+      <div class="icon">🎤</div>
+      <h3 id="c1">اسأل المؤرخ</h3>
+      <p id="p1">اسأل عن موضوع تاريخي واستمع إلى الإجابة.</p>
+    </div>
+
+    <div class="card green" onclick="show('models')">
+      <div class="icon">🏛️</div>
+      <h3 id="c2">النماذج التاريخية</h3>
+      <p id="p2">استكشف النماذج واستمع إلى شرحها.</p>
+    </div>
+
+    <div class="card purple" onclick="show('library')">
+      <div class="icon">🎧</div>
+      <h3 id="c3">المكتبة الصوتية</h3>
+      <p id="p3">دروس وقصص ومحاضرات تاريخية.</p>
+    </div>
+
+    <div class="card brown" onclick="show('quiz')">
+      <div class="icon">🧠</div>
+      <h3 id="c4">الاختبارات</h3>
+      <p id="p4">اختبر معلوماتك بطريقة تفاعلية.</p>
+    </div>
   </div>
-  <div class="access">♿ <strong id="accessTitle">تصميم شامل للجميع</strong> — <span id="accessText">أوامر صوتية، قراءة صوتية، تكبير الخط ودعم برايل في مراحل التطوير.</span></div>
+
+  <div class="access">
+    ♿ <strong id="accessTitle">تصميم شامل للجميع</strong> —
+    <span id="accessText">أوامر صوتية، قراءة صوتية، تكبير الخط ودعم برايل في مراحل التطوير.</span>
+  </div>
 </section>
 
 <section id="ask" class="screen">
   <button class="back" onclick="show('home')">← <span id="back1">الرئيسية</span></button>
   <h2 class="section-title" id="askTitle">🎤 اسأل المؤرخ</h2>
+
   <div class="askbox">
     <div class="messages" id="messages">
-      <div class="msg bot" id="welcomeMsg">مرحبًا! أنا مؤرخ برايل الذكي. اسألني عن موضوع تاريخي.</div>
+      <div class="msg bot" id="welcomeMsg">
+        مرحبًا! أنا مؤرخ برايل الذكي. اسألني عن موضوع تاريخي.
+      </div>
     </div>
+
     <div class="askrow">
       <input id="question" placeholder="اكتب سؤالك هنا..." aria-label="سؤال تاريخي">
       <button class="primary" onclick="askQuestion()">إرسال</button>
@@ -97,38 +148,87 @@
 <section id="models" class="screen">
   <button class="back" onclick="show('home')">← <span>الرئيسية</span></button>
   <h2 class="section-title">🏛️ النماذج التاريخية</h2>
+
   <div class="model-grid">
-    <div class="model" onclick="modelInfo('المسجد الأقصى','استمع إلى وصف النموذج ومعلوماته التاريخية.')"><div style="font-size:58px;text-align:center">🕌</div><h3>المسجد الأقصى</h3><div class="small">شرح صوتي • أسئلة</div></div>
-    <div class="model" onclick="modelInfo('مسجد النبي ﷺ','نموذج تعليمي ثلاثي الأبعاد مع شرح صوتي.')"><div style="font-size:58px;text-align:center">🕌</div><h3>المسجد النبوي</h3><div class="small">شرح صوتي • أسئلة</div></div>
-    <div class="model" onclick="modelInfo('خريطة مصر','استكشف خريطة مصر بطريقة تعليمية لمسية وصوتية.')"><div style="font-size:58px;text-align:center">🗺️</div><h3>خريطة مصر</h3><div class="small">وصف صوتي • تعليم</div></div>
-    <div class="model" onclick="modelInfo('حرب أكتوبر 1973','محتوى تاريخي صوتي وأسئلة مرتبطة بالنموذج.')"><div style="font-size:58px;text-align:center">⚔️</div><h3>حرب أكتوبر 1973</h3><div class="small">شرح صوتي • اختبار</div></div>
+
+    <div class="model" onclick="modelInfo('المسجد الأقصى','استمع إلى وصف النموذج ومعلوماته التاريخية.')">
+      <div style="font-size:58px;text-align:center">🕌</div>
+      <h3>المسجد الأقصى</h3>
+      <div class="small">شرح صوتي • أسئلة</div>
+    </div>
+
+    <div class="model" onclick="modelInfo('مسجد النبي ﷺ','نموذج تعليمي ثلاثي الأبعاد مع شرح صوتي.')">
+      <div style="font-size:58px;text-align:center">🕌</div>
+      <h3>المسجد النبوي</h3>
+      <div class="small">شرح صوتي • أسئلة</div>
+    </div>
+
+    <div class="model" onclick="modelInfo('خريطة مصر','استكشف خريطة مصر بطريقة تعليمية لمسية وصوتية.')">
+      <div style="font-size:58px;text-align:center">🗺️</div>
+      <h3>خريطة مصر</h3>
+      <div class="small">وصف صوتي • تعليم</div>
+    </div>
+
+    <div class="model" onclick="modelInfo('حرب أكتوبر 1973','محتوى تاريخي صوتي وأسئلة مرتبطة بالنموذج.')">
+      <div style="font-size:58px;text-align:center">⚔️</div>
+      <h3>حرب أكتوبر 1973</h3>
+      <div class="small">شرح صوتي • اختبار</div>
+    </div>
+
   </div>
 </section>
 
 <section id="library" class="screen">
   <button class="back" onclick="show('home')">← <span>الرئيسية</span></button>
   <h2 class="section-title">🎧 المكتبة الصوتية</h2>
+
   <div class="library-grid">
-    <div class="lesson" onclick="playLesson('حضارة مصر القديمة')"><h3>حضارة مصر القديمة</h3><div class="small">تشغيل الشرح الصوتي ▶</div></div>
-    <div class="lesson" onclick="playLesson('التاريخ الإسلامي')"><h3>التاريخ الإسلامي</h3><div class="small">تشغيل الشرح الصوتي ▶</div></div>
-    <div class="lesson" onclick="playLesson('حرب أكتوبر')"><h3>حرب أكتوبر</h3><div class="small">تشغيل الشرح الصوتي ▶</div></div>
-    <div class="lesson" onclick="playLesson('حكايات من التاريخ')"><h3>حكايات من التاريخ</h3><div class="small">تشغيل الشرح الصوتي ▶</div></div>
+
+    <div class="lesson" onclick="playLesson('حضارة مصر القديمة')">
+      <h3>حضارة مصر القديمة</h3>
+      <div class="small">تشغيل الشرح الصوتي ▶</div>
+    </div>
+
+    <div class="lesson" onclick="playLesson('التاريخ الإسلامي')">
+      <h3>التاريخ الإسلامي</h3>
+      <div class="small">تشغيل الشرح الصوتي ▶</div>
+    </div>
+
+    <div class="lesson" onclick="playLesson('حرب أكتوبر')">
+      <h3>حرب أكتوبر</h3>
+      <div class="small">تشغيل الشرح الصوتي ▶</div>
+    </div>
+
+    <div class="lesson" onclick="playLesson('حكايات من التاريخ')">
+      <h3>حكايات من التاريخ</h3>
+      <div class="small">تشغيل الشرح الصوتي ▶</div>
+    </div>
+
   </div>
-  <div class="player" style="margin-top:16px"><h3 id="now">اختر درسًا للاستماع</h3><button class="play" onclick="speakNow()">▶</button><p class="small">هذا نموذج أولي؛ سنربط تسجيلاتك الصوتية الفعلية لاحقًا.</p></div>
+
+  <div class="player" style="margin-top:16px">
+    <h3 id="now">اختر درسًا للاستماع</h3>
+    <button class="play" onclick="speakNow()">▶</button>
+    <p class="small">هذا نموذج أولي؛ سنربط تسجيلاتك الصوتية الفعلية لاحقًا.</p>
+  </div>
 </section>
 
 <section id="quiz" class="screen">
   <button class="back" onclick="show('home')">← <span>الرئيسية</span></button>
   <h2 class="section-title">🧠 الاختبارات</h2>
+
   <div class="quiz">
     <h3>متى بدأت حرب أكتوبر؟</h3>
+
     <button class="option" onclick="answer(false)">1956</button>
     <button class="option" onclick="answer(false)">1967</button>
     <button class="option" onclick="answer(true)">1973</button>
     <button class="option" onclick="answer(false)">1982</button>
+
     <p id="result" class="small"></p>
   </div>
 </section>
+
 </main>
 
 <nav class="nav">
@@ -137,7 +237,9 @@
   <button onclick="show('library')">🎧 المكتبة</button>
   <button onclick="show('quiz')">🧠 الاختبارات</button>
 </nav>
+
 <footer>Smart Braille Historian — Prototype</footer>
+
 </div>
 
 <script>
@@ -157,62 +259,156 @@ function show(id){
   document.getElementById(id).classList.add('active');
   window.scrollTo({top:0,behavior:'smooth'});
 }
+
 function speak(text, lang='ar-SA'){
-  if(!('speechSynthesis' in window)){alert('المتصفح لا يدعم القراءة الصوتية.');return}
+  if(!('speechSynthesis' in window)){
+    alert('المتصفح لا يدعم القراءة الصوتية.');
+    return;
+  }
+
   speechSynthesis.cancel();
-  const u=new SpeechSynthesisUtterance(text); u.lang=lang; u.rate=0.9; speechSynthesis.speak(u);
+
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = lang;
+  u.rate = 0.9;
+
+  speechSynthesis.speak(u);
 }
+
 function askQuestion(){
-  const input=document.getElementById('question');
-  const q=input.value.trim(); if(!q)return;
-  const box=document.getElementById('messages');
-  const user=document.createElement('div'); user.className='msg user'; user.textContent=q; box.appendChild(user);
-  let a="سؤالك ممتاز. في النسخة النهائية سنربط هذا القسم بقاعدة معرفية تاريخية وذكاء اصطناعي متخصص في المشروع.";
-  const key=Object.keys(answers).find(k=>q.replace(/[؟?]/g,'').includes(k));
-  if(key)a=answers[key];
-  const bot=document.createElement('div'); bot.className='msg bot'; bot.textContent=a; box.appendChild(bot);
+  const input = document.getElementById('question');
+  const q = input.value.trim();
+
+  if(!q) return;
+
+  const box = document.getElementById('messages');
+
+  const user = document.createElement('div');
+  user.className = 'msg user';
+  user.textContent = q;
+  box.appendChild(user);
+
+  let a = "سؤالك ممتاز. في النسخة النهائية سنربط هذا القسم بقاعدة معرفية تاريخية وذكاء اصطناعي متخصص في المشروع.";
+
+  const key = Object.keys(answers).find(
+    k => q.replace(/[؟?]/g,'').includes(k)
+  );
+
+  if(key) a = answers[key];
+
+  const bot = document.createElement('div');
+  bot.className = 'msg bot';
+  bot.textContent = a;
+  box.appendChild(bot);
+
   speak(a);
-  input.value='';
+
+  input.value = '';
 }
+
 function speakQuestion(){
-  const q=document.getElementById('question').value.trim();
-  if(!q){speak('تحدث الآن، وسأستمع إلى سؤالك.');return}
+  const q = document.getElementById('question').value.trim();
+
+  if(!q){
+    speak('تحدث الآن، وسأستمع إلى سؤالك.');
+    return;
+  }
+
   speak(q);
 }
+
 function modelInfo(title,text){
-  alert(title+'\\n\\n'+text+'\\n\\nفي النسخة التالية سنضيف الصورة/النموذج ثلاثي الأبعاد والتسجيل الصوتي الخاص بك.');
+  alert(
+    title +
+    '\n\n' +
+    text +
+    '\n\nفي النسخة التالية سنضيف الصورة/النموذج ثلاثي الأبعاد والتسجيل الصوتي الخاص بك.'
+  );
 }
+
 function playLesson(name){
-  currentLesson=name;
-  document.getElementById('now').textContent='▶ '+name;
-  speak('تم اختيار درس '+name+'. في النسخة النهائية سيتم تشغيل التسجيل الصوتي الخاص بالمشروع.');
+  currentLesson = name;
+
+  document.getElementById('now').textContent = '▶ ' + name;
+
+  speak(
+    'تم اختيار درس ' +
+    name +
+    '. في النسخة النهائية سيتم تشغيل التسجيل الصوتي الخاص بالمشروع.'
+  );
 }
+
 function speakNow(){
-  if(!currentLesson){speak('اختر درسًا أولًا.');return}
-  speak('الدرس الحالي هو '+currentLesson+'. هذا نموذج أولي للمكتبة الصوتية.');
+  if(!currentLesson){
+    speak('اختر درسًا أولًا.');
+    return;
+  }
+
+  speak(
+    'الدرس الحالي هو ' +
+    currentLesson +
+    '. هذا نموذج أولي للمكتبة الصوتية.'
+  );
 }
+
 function answer(correct){
-  const r=document.getElementById('result');
-  if(correct){r.textContent='✅ أحسنت! إجابة صحيحة.';speak('أحسنت! إجابة صحيحة.');}
-  else{r.textContent='❌ ليست الإجابة الصحيحة. الإجابة هي 1973.';speak('الإجابة الصحيحة هي 1973.');}
+  const r = document.getElementById('result');
+
+  if(correct){
+    r.textContent = '✅ أحسنت! إجابة صحيحة.';
+    speak('أحسنت! إجابة صحيحة.');
+  }else{
+    r.textContent = '❌ ليست الإجابة الصحيحة. الإجابة هي 1973.';
+    speak('الإجابة الصحيحة هي 1973.');
+  }
 }
+
 function toggleLang(){
-  english=!english;
+  english = !english;
+
   if(english){
-    document.documentElement.dir='ltr'; document.documentElement.lang='en';
-    document.getElementById('brandAr').textContent='Smart Braille Historian';
-    document.getElementById('brandEn').textContent='مؤرخ برايل الذكي';
-    document.getElementById('langBtn').textContent='English | العربية';
-    document.getElementById('heroTitle').textContent='Discover history... hear it, ask it, learn from it';
-    document.getElementById('heroText').textContent='An educational prototype designed for blind and low-vision users';
-    document.getElementById('c1').textContent='Ask the Historian'; document.getElementById('p1').textContent='Ask a history question and hear the answer.';
-    document.getElementById('c2').textContent='Historical Models'; document.getElementById('p2').textContent='Explore models and listen to their descriptions.';
-    document.getElementById('c3').textContent='Audio Library'; document.getElementById('p3').textContent='Historical lessons, stories, and lectures.';
-    document.getElementById('c4').textContent='Quizzes'; document.getElementById('p4').textContent='Test your knowledge interactively.';
-    document.getElementById('accessTitle').textContent='Inclusive design for everyone';
-    document.getElementById('accessText').textContent='Voice commands, screen reading, text scaling, and future Braille support.';
-  }else{ location.reload(); }
+
+    document.documentElement.dir = 'ltr';
+    document.documentElement.lang = 'en';
+
+    document.getElementById('brandAr').textContent = 'Smart Braille Historian';
+    document.getElementById('brandEn').textContent = 'مؤرخ برايل الذكي';
+
+    document.getElementById('langBtn').textContent = 'English | العربية';
+
+    document.getElementById('heroTitle').textContent =
+      'Discover history... hear it, ask it, learn from it';
+
+    document.getElementById('heroText').textContent =
+      'An educational prototype designed for blind and low-vision users';
+
+    document.getElementById('c1').textContent = 'Ask the Historian';
+    document.getElementById('p1').textContent =
+      'Ask a history question and hear the answer.';
+
+    document.getElementById('c2').textContent = 'Historical Models';
+    document.getElementById('p2').textContent =
+      'Explore models and listen to their descriptions.';
+
+    document.getElementById('c3').textContent = 'Audio Library';
+    document.getElementById('p3').textContent =
+      'Historical lessons, stories, and lectures.';
+
+    document.getElementById('c4').textContent = 'Quizzes';
+    document.getElementById('p4').textContent =
+      'Test your knowledge interactively.';
+
+    document.getElementById('accessTitle').textContent =
+      'Inclusive design for everyone';
+
+    document.getElementById('accessText').textContent =
+      'Voice commands, screen reading, text scaling, and future Braille support.';
+
+  }else{
+    location.reload();
+  }
 }
 </script>
+
 </body>
 </html>
