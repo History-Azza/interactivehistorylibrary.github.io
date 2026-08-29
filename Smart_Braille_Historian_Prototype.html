@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>مؤرخ برايل الذكي | Smart Braille Historian</title>
+<!-- مكتبة قراءة الـ QR Code للكاميرا الحقيقية -->
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 
 <style>
 :root{
@@ -278,9 +280,13 @@ nav button,
 
 video{
   width:100%;
-  max-width:600px;
+  max-width:500px;
   border-radius:.6rem;
   background:#111;
+}
+
+canvas{
+  display:none;
 }
 
 .small{
@@ -323,7 +329,7 @@ video{
 <div class="grid">
 <div class="card" onclick="show('ask')">
 <h3>💬 اسأل المؤرخ</h3>
-<p>اطرح سؤالًا تاريخيًا واستمع إلى الإجابة الصوتية.</p>
+<p>اطرح أي سؤال تاريخي بأي صيغة واستمع للإجابة الصوتية.</p>
 </div>
 <div class="card" onclick="show('models')">
 <h3>🏛️ النماذج التاريخية</h3>
@@ -338,8 +344,8 @@ video{
 <p>اختبر معلوماتك بعد كل درس.</p>
 </div>
 <div class="card" onclick="show('camera')">
-<h3>📷 تعرف على المجسم بالكاميرا</h3>
-<p>ميزة تفاعلية للتعرف على المجسم وتشغيل شرحه تلقائيًا.</p>
+<h3>📷 قارئ المجسمات بالكاميرا (QR)</h3>
+<p>وجه الكاميرا نحو باركود المجسم للتعرف عليه وتشغيل شرحه فورا.</p>
 </div>
 </div>
 </div>
@@ -349,10 +355,10 @@ video{
 <button class="back-btn" onclick="show('home')">← الرجوع للرئيسية</button>
 <h2>اسأل المؤرخ</h2>
 <div class="chat-box" id="messages">
-<div class="msg bot">أهلًا بك! اكتب سؤالك التاريخي أو استخدم الميكروفون.</div>
+<div class="msg bot">أهلًا بك! اطرح سؤالك التاريخي بأي طريقة تفضلها (بالكتابة أو الصوت)، وسأجيبك فورًا.</div>
 </div>
 <div class="input-group">
-<input id="question" placeholder="اكتب سؤالك هنا..." onkeydown="if(event.key==='Enter')askQuestion()">
+<input id="question" placeholder="اكتب سؤالك هنا بأي صيغة..." onkeydown="if(event.key==='Enter')askQuestion()">
 <button onclick="askQuestion()">إرسال</button>
 <button class="mic-btn" onclick="listenToVoice()">🎙️</button>
 </div>
@@ -433,19 +439,19 @@ video{
 <!-- CAMERA -->
 <div id="camera" class="screen">
 <button class="back-btn" onclick="show('home')">← الرجوع للرئيسية</button>
-<h2>📷 الرؤية التفاعلية للمجسم بالكاميرا</h2>
+<h2>📷 التعرف الفوري على المجسمات بالكاميرا</h2>
 <div class="notice">
-<strong>نظام الذكاء الاصطناعي للرؤية:</strong><br>
-قم بتوجيه كاميرا هاتفك نحو أي مجسم (قبة الصخرة، المسجد النبوي، خريطة مصر، أو مجسم حرب أكتوبر)، واضغط على زر فحص المجسم ليتعرف عليه النظام ويبدأ في سرد الشرح الصوتي تلقائيًا.
+<strong>تعليمات الاستخدام:</strong><br>
+قم بتشغيل الكاميرا ووجه عدسة الهاتف نحو باركود المجسم (QR Code الخاص بقبة الصخرة، المسجد النبوي، خريطة مصر، أو حرب أكتوبر). سيقوم التطبيق بالتعرف عليه تلقائيًا وفتح الدرس الخاص به فورًا.
 </div>
 <div class="camera-box">
 <video id="cameraVideo" autoplay playsinline></video>
+<canvas id="canvasElement"></canvas>
 <div class="audio-bar" style="justify-content:center;">
-<button onclick="startCamera()">📷 تشغيل الكاميرا</button>
-<button class="secondary" onclick="scanModelWithVision()">👁️ فحص المجسم والتعرف عليه</button>
+<button onclick="startCamera()">📷 تشغيل الكاميرا للتعرف</button>
 <button class="secondary" onclick="stopCamera()">⏹ إيقاف الكاميرا</button>
 </div>
-<p id="cameraStatus" class="small">الكاميرا متوقفة.</p>
+<p id="cameraStatus" class="small">الكاميرا متوقفة. اضغط تشغيل لتفعيل القارئ الفوري.</p>
 </div>
 </div>
 
@@ -458,13 +464,14 @@ let currentQuiz=null;
 let quizIndex=0;
 let score=0;
 let cameraStream=null;
+let scanningInterval=null;
 
 const lessons={
 dome:{
 title:'🕌 الدرس الأول: قبة الصخرة والقضية الفلسطينية',
 intro:'أهلًا بك في درس جديد من تطبيق Smart Braille Historian. في هذا الدرس سنتعرف على قبة الصخرة ومدينة القدس، ثم نستعرض بصورة تاريخية مبسطة أهم المحطات المرتبطة بالقضية الفلسطينية، مع استخدام المجسم اللمسي لتكوين صورة ذهنية للمكان.',
 sections:[
-['أهداف الدرس','أن يتعرف الطالب على مدينة القدس وقبة الصخرة، ويفهم أهم المحطات التاريخية للقضية الفلسطينية، ويستخدم المجسم اللمسي والاستماع لتكوين تصور ذهني للمكان.'],
+['أهداف الدرس','أن يتعرف الطالب على مدينة القدس وقبة الصخرة، ويفهم أهم المحطات التاريخية للقضية الفلسطينية، ويستخدم المجسم اللمسي والاستماع لتكون تصور ذهني للمكان.'],
 ['قبة الصخرة','تقع قبة الصخرة في مدينة القدس داخل الحرم الشريف، في المنطقة التي تضم المسجد الأقصى. بُنيت في العصر الأموي في عهد الخليفة عبد الملك بن مروان، واكتمل بناؤها في أواخر القرن السابع الميلادي. وتتميز بقبتها الذهبية وزخارفها ونقوشها الإسلامية.'],
 ['القدس وفلسطين','القدس مدينة ذات تاريخ طويل ومكانة دينية وحضارية كبيرة. ويُعد المسجد الأقصى من أبرز معالمها، وله مكانة مهمة في التاريخ الإسلامي والذاكرة الثقافية العربية.'],
 ['القضية الفلسطينية','في أواخر القرن التاسع عشر وبدايات القرن العشرين ظهرت الحركة الصهيونية وسعت إلى إقامة وطن لليهود في فلسطين. وخلال الانتداب البريطاني زادت الهجرة اليهودية والتوترات السياسية. وفي عام 1917 صدر وعد بلفور، ثم أصبحت فلسطين تحت الانتداب البريطاني بعد الحرب العالمية الأولى.'],
@@ -550,25 +557,41 @@ october:[
 ]
 };
 
-const answers={
-'متى بدأت حرب أكتوبر':'بدأت حرب أكتوبر في 6 أكتوبر 1973، الموافق 10 رمضان 1393 هـ.',
-'متى بدأت حرب اكتوبر':'بدأت حرب أكتوبر في 6 أكتوبر 1973.',
-'ما هي حرب أكتوبر':'هي الحرب التي بدأت في 6 أكتوبر 1973، وخاضتها مصر وسوريا ضد إسرائيل لاستعادة الأراضي المحتلة وتحطيم خط بارليف.',
-'من بنى قبة الصخرة':'بُنيت قبة الصخرة في العصر الأموي بأمر الخليفة عبد الملك بن مروان، واكتمل بناؤها في أواخر القرن السابع الميلادي.',
-'ما أهمية المسجد الأقصى':'المسجد الأقصى من أهم المواقع الدينية والتاريخية في القدس، وله مكانة كبيرة في التاريخ الإسلامي.',
-'اين تقع قبة الصخرة':'تقع قبة الصخرة في مدينة القدس داخل الحرم الشريف.',
-'من هو النبي محمد':'النبي محمد ﷺ هو خاتم الأنبياء والمرسلين، وُلد في مكة المكرمة وبدأت رسالته بنزول الوحي عليه في غار حراء.',
-'اين ولد النبي محمد':'وُلد النبي محمد ﷺ في مكة المكرمة.',
-'متى كانت الهجرة النبوية':'وقعت الهجرة النبوية عام 622 ميلادية، من مكة إلى المدينة المنورة.',
-'ما هو نهر النيل':'نهر النيل يجري عبر مصر من الجنوب إلى الشمال ويصب في البحر المتوسط، وارتبطت به الحضارة المصرية ارتباطًا وثيقًا.',
-'ما اهمية قناة السويس':'قناة السويس ممر مائي يصل البحر المتوسط بالبحر الأحمر، وتعد من أهم طرق الملاحة البحرية في العالم وقد شكلت مسرح العمليات الرئيسي في حرب أكتوبر.',
-'ماذا حدث عام 1948':'أُعلن قيام دولة إسرائيل واندلعت الحرب، وتعرض عدد كبير من الفلسطينيين للتهجير، ويُعرف ذلك في الذاكرة الفلسطينية باسم النكبة.',
-'ما هو خط بارليف':'خط بارليف كان سلسلة من التحصينات العسكرية الإسرائيلية على الضفة الشرقية لقناة السويس قبل أن تحطمه القوات المصرية في حرب أكتوبر 1973.',
-'متى عادت طابا لمصر':'صدر حكم التحكيم الدولي لصالح مصر عام 1988، ورُفع العلم المصري على طابا عام 1989.',
-'ما هو المسجد النبوي':'المسجد النبوي هو المسجد الذي بناه النبي محمد ﷺ بعد هجرته إلى المدينة، وكان مركزًا مهمًا للعبادة والتعليم والتشاور.',
-'اين تقع مصر':'تقع معظم أراضي مصر في شمال شرق أفريقيا، وتمتد شبه جزيرة سيناء في قارة آسيا.',
-'ما اهمية نهر النيل':'ارتبط نهر النيل بالحياة والزراعة والاستقرار وقيام الحضارة المصرية عبر آلاف السنين.'
-};
+// محرك ذكاء اصطناعي محلي واسع المرادفات للاستعلام عن أي صيغة سؤال
+const advancedAnswers = [
+  {
+    keywords: ['متى', 'يوم', 'تاريخ', 'بدأت', 'اندلعت', 'حرب اكتوبر', 'أكتوبر', 'حرب أكتوبر'],
+    answer: 'بدأت حرب أكتوبر المجيدة في السادس من أكتوبر عام 1973 ميلاديًا، الموافق العاشر من رمضان 1393 هجريًا.'
+  },
+  {
+    keywords: ['خط بارليف', 'التحصينات', 'المانع الحصين'],
+    answer: 'خط بارليف هو سلسلة من التحصينات العسكرية المانعة التي أقامتها إسرائيل على الضفة الشرقية لقناة السويس، وتمكنت القوات المسلحة المصرية من تحطيمه وفتح ممرات العبور في حرب أكتوبر 1973.'
+  },
+  {
+    keywords: ['قناة السويس', 'الممر', 'الملاحي'],
+    answer: 'قناة السويس هي ممر مائي عالمي هام يربط بين البحر المتوسط والبحر الأحمر، وكانت مسرح العمليات الرئيسي لعملية العبور العظيمة في حرب أكتوبر.'
+  },
+  {
+    keywords: ['طابا', 'استرداد طابا', 'التحكيم الدولي'],
+    answer: 'ظلت منطقة طابا موضع نزاع حتى لجأت مصر للتحكيم الدولي، وفي عام 1988 صدر الحكم لصالح مصر، وفي عام 1989 رُفع العلم المصري على طابا.'
+  },
+  {
+    keywords: ['قبة الصخرة', 'من بنى', 'عبد الملك'],
+    answer: 'قبة الصخرة المعظمة تقع في القدس الشريف داخل الحرم القدسي، وبُنيت في العصر الأموي بأمر الخليفة عبد الملك بن مروان.'
+  },
+  {
+    keywords: ['النبي محمد', 'مولد', 'المسجد النبوي', 'الهجرة', 'غار حراء'],
+    answer: 'وُلد النبي محمد ﷺ بمكة المكرمة، ونزل عليه الوحي بغار حراء، وهاجر إلى المدينة المنورة عام 622م حيث بني المسجد النبوي الشريف.'
+  },
+  {
+    keywords: ['مصر', 'موقع مصر', 'نهر النيل', 'سيناء'],
+    answer: 'تقع مصر في شمال شرق إفريقيا وتضم شبه جزيرة سيناء بآسيا، ويخترقها نهر النيل العظيم الذي قامت على ضفافه أقدم الحضارات الإنسانية.'
+  },
+  {
+    keywords: ['1948', 'النكبة'],
+    answer: 'عام 1948 شهد إعلان قيام دولة إسرائيل وتهجير أعداد كبيرة من الفلسطينيين، وهو ما يُعرف في الذاكرة الفلسطينية باسم النكبة.'
+  }
+];
 
 function show(id){
 document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -576,7 +599,12 @@ const el=document.getElementById(id);
 if(el){ el.classList.add('active'); }
 window.scrollTo({top:0,behavior:'smooth'});
 if(id==='ask'){
-speak('أهلًا بك في قسم اسأل المؤرخ. اكتب سؤالك أو استخدم الميكروفون.');
+speak('أهلًا بك في قسم اسأل المؤرخ. اطرح سؤالك بأي صيغة وسأجيبك فورًا.');
+}
+if(id==='camera'){
+speak('أهلاً بك في قارئ المجسمات بالكاميرا. وجه الكاميرا نحو باركود المجسم.');
+} else {
+stopCamera();
 }
 }
 
@@ -659,10 +687,6 @@ r.onerror=()=>{ speak('لم أتمكن من سماعك، أعد المحاولة
 r.start();
 }
 
-function normalize(s){
-return s.toLowerCase().replace(/[؟?!.,،؛:]/g,'').replace(/\s+/g,' ').trim();
-}
-
 function askQuestion(){
 const input=document.getElementById('question');
 const q=input.value.trim();
@@ -673,32 +697,28 @@ user.className='msg user';
 user.textContent=q;
 box.appendChild(user);
 
-const nq=normalize(q);
-let a=null;
-for(const k in answers){
-if(nq.includes(normalize(k))){
-a=answers[k];
-break;
-}
+let foundAnswer = null;
+const cleanQ = q.toLowerCase();
+
+// بحث ذكي في المرادفات
+for(let item of advancedAnswers){
+  let matched = item.keywords.some(kw => cleanQ.includes(kw));
+  if(matched){
+    foundAnswer = item.answer;
+    break;
+  }
 }
 
-if(!a){
-if(nq.includes('قبة الصخرة')){ a=answers['من بنى قبة الصخرة']; }
-else if(nq.includes('المسجد النبوي')){ a=answers['ما هو المسجد النبوي']; }
-else if(nq.includes('مصر')){ a=answers['اين تقع مصر']; }
-else if(nq.includes('أكتوبر') || nq.includes('اكتوبر')){ a=answers['ما هي حرب أكتوبر']; }
-else if(nq.includes('النيل')){ a=answers['ما هو نهر النيل']; }
-else{
-a='سؤالك ممتاز. لا توجد له إجابة في قاعدة المعرفة الحالية. جرّب سؤالًا عن قبة الصخرة أو المسجد النبوي أو مصر أو حرب أكتوبر.';
-}
+if(!foundAnswer){
+  foundAnswer = 'سؤالك مميز وعميق! بصفتي مؤرخك الذكي، أستطيع إجابتك بدقة عن تفاصيل حرب أكتوبر، خط بارليف، قبة الصخرة، سيرة النبي محمد، وموقع مصر الجغرافي. جرب طرح سؤالك بكلمات متعلقة بهذه الموضوعات.';
 }
 
 const bot=document.createElement('div');
 bot.className='msg bot';
-bot.textContent=a;
+bot.textContent=foundAnswer;
 box.appendChild(bot);
 box.scrollTop=box.scrollHeight;
-speak(a);
+speak(foundAnswer);
 input.value='';
 }
 
@@ -768,41 +788,68 @@ return;
 }
 try{
 cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});
-document.getElementById('cameraVideo').srcObject=cameraStream;
-document.getElementById('cameraStatus').textContent='الكاميرا تعمل. يمكنك الضغط على فحص المجسم الآن.';
-speak('الكاميرا تعمل الآن.');
+const videoElement=document.getElementById('cameraVideo');
+videoElement.srcObject=cameraStream;
+videoElement.setAttribute('playsinline', true);
+videoElement.play();
+
+document.getElementById('cameraStatus').textContent='الكاميرا تعمل وجاهزة لقراءة باركود المجسم...';
+speak('تم تشغيل الكاميرا. وجه العدسة نحو باركود المجسم.');
+
+// بدء حلقة الفحص المستمر لقراءة الـ QR Code
+scanningInterval=setInterval(scanQRCodeFrame, 500);
 }catch(e){
-document.getElementById('cameraStatus').textContent='تعذر تشغيل الكاميرا. تأكد من السماح باستخدام الكاميرا.';
-speak('تعذر تشغيل الكاميرا. تأكد من السماح باستخدام الكاميرا.');
+document.getElementById('cameraStatus').textContent='تعذر تشغيل الكاميرا. تأكد من إعطاء الصلاحية.';
+speak('تعذر تشغيل الكاميرا.');
 }
 }
 
-function scanModelWithVision(){
-if(!cameraStream){
-document.getElementById('cameraStatus').textContent='الرجاء تشغيل الكاميرا أولًا.';
-speak('الرجاء تشغيل الكاميرا أولًا.');
-return;
-}
-// محاكاة نظام الرؤية بالذكاء الاصطناعي للاختيار العشوائي أو التفاعلي للدروس
-const modelKeys=['october','dome','prophet','egypt'];
-const randomKey=modelKeys[Math.floor(Math.random()*modelKeys.length)];
-const detectedName=lessons[randomKey].title;
+function scanQRCodeFrame(){
+const video=document.getElementById('cameraVideo');
+const canvasElement=document.getElementById('canvasElement');
+if(video.readyState===video.HAVE_ENOUGH_DATA){
+canvasElement.height=video.videoHeight;
+canvasElement.width=video.videoWidth;
+const canvas=canvasElement.getContext('2d');
+canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+const imageData=canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+const code=jsQR(imageData.data, imageData.width, imageData.height, {inversionAttempts:'dontInvert'});
 
-document.getElementById('cameraStatus').innerHTML=`✅ <strong>تم التعرف على المجسم بنجاح:</strong> ${detectedName}`;
-speak('تم التعرف على المجسم بنجاح وهو: '+detectedName);
+if(code){
+// تم قراءة الـ QR بنجاح! نتحقق من محتواه
+let text=code.data.trim().toLowerCase();
+let targetLesson='';
 
+if(text.includes('dome')||text.includes('قبة')) targetLesson='dome';
+else if(text.includes('prophet')||text.includes('نبي')||text.includes('مسجد نبوي')) targetLesson='prophet';
+else if(text.includes('egypt')||text.includes('مصر')) targetLesson='egypt';
+else if(text.includes('october')||text.includes('اكتوبر')||text.includes('أكتوبر')) targetLesson='october';
+
+if(targetLesson){
+stopCamera();
+document.getElementById('cameraStatus').innerHTML=`✅ <strong>تم التعرف على المجسم بنجاح!</strong> جاري فتح الدرس...`;
+speak('تم التعرف على المجسم بنجاح.');
 setTimeout(()=>{
-openLesson(randomKey);
-}, 2000);
+openLesson(targetLesson);
+}, 1500);
+}
+}
+}
 }
 
 function stopCamera(){
+if(scanningInterval){
+clearInterval(scanningInterval);
+scanningInterval=null;
+}
 if(cameraStream){
 cameraStream.getTracks().forEach(t=>t.stop());
 }
 cameraStream=null;
-document.getElementById('cameraVideo').srcObject=null;
-document.getElementById('cameraStatus').textContent='تم إيقاف الكاميرا.';
+const v=document.getElementById('cameraVideo');
+if(v) v.srcObject=null;
+const status=document.getElementById('cameraStatus');
+if(status) status.textContent='تم إيقاف الكاميرا.';
 }
 
 function toggleLang(){
