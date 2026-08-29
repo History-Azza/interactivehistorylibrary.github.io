@@ -1,13 +1,1 @@
-{
-  "name": "مؤرخ برايل الذكي | Smart Braille Historian",
-  "short_name": "مؤرخ برايل",
-  "description": "تطبيق تعليمي تفاعلي لتقديم التاريخ بطريقة برايل والنماذج ثلاثية الأبعاد",
-  "start_url": "./Smart_Braille_Historian_Prototype.html",
-  "scope": "./",
-  "display": "standalone",
-  "orientation": "portrait",
-  "lang": "ar",
-  "dir": "rtl",
-  "background_color": "#ffffff",
-  "theme_color": "#1a237e"
-}
+
