@@ -1,0 +1,12 @@
+{
+  "background_color": "#ffffff",
+  "dir": "auto",
+  "display": "standalone",
+  "name": "history-azza.github",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "history-azza.github",
+  "start_url": "Smart_Braille_Historian_Prototype.html",
+  "theme_color": "#ffffff",
+  "lang": "ar"
+}
