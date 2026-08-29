@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -28,47 +29,211 @@ if ("serviceWorker" in navigator) {
     --purple:#6542a0; --border:#4775a8;
   }
   *{box-sizing:border-box}
-  body{margin:0;font-family:Arial,"Tahoma",sans-serif;background:linear-gradient(135deg,#041329,#0b294d);color:var(--text);min-height:100vh}
+  body{
+    margin:0;
+    font-family:Arial,"Tahoma",sans-serif;
+    background:linear-gradient(135deg,#041329,#0b294d);
+    color:var(--text);
+    min-height:100vh
+  }
   button{font:inherit}
   .app{max-width:1050px;margin:auto;padding:18px}
-  header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+  header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:18px
+  }
   .brand{display:flex;align-items:center;gap:12px}
-  .logo{width:58px;height:58px;border:2px solid var(--gold);border-radius:50%;display:grid;place-items:center;font-size:28px}
-  h1{font-size:25px;margin:0;color:var(--gold)} .sub{color:var(--muted);margin-top:4px}
-  .topbtn{background:transparent;color:#fff;border:1px solid #7895b8;border-radius:24px;padding:10px 15px;cursor:pointer}
+  .logo{
+    width:58px;
+    height:58px;
+    border:2px solid var(--gold);
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    font-size:28px
+  }
+  h1{font-size:25px;margin:0;color:var(--gold)}
+  .sub{color:var(--muted);margin-top:4px}
+  .topbtn{
+    background:transparent;
+    color:#fff;
+    border:1px solid #7895b8;
+    border-radius:24px;
+    padding:10px 15px;
+    cursor:pointer
+  }
   main{min-height:650px}
   .hero{text-align:center;padding:18px 10px}
   .hero h2{font-size:32px;margin:8px 0;color:var(--gold)}
   .hero p{font-size:18px;color:var(--muted)}
-  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:22px}
-  .card{border:1px solid var(--border);border-radius:24px;padding:22px;min-height:185px;color:#fff;cursor:pointer;box-shadow:0 10px 30px #0004;transition:.2s}
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:16px;
+    margin-top:22px
+  }
+  .card{
+    border:1px solid var(--border);
+    border-radius:24px;
+    padding:22px;
+    min-height:185px;
+    color:#fff;
+    cursor:pointer;
+    box-shadow:0 10px 30px #0004;
+    transition:.2s
+  }
   .card:hover{transform:translateY(-2px)}
-  .blue{background:linear-gradient(145deg,#0c3970,#0b2448)} .green{background:linear-gradient(145deg,#0b6658,#092f3b)}
-  .purple{background:linear-gradient(145deg,#513582,#1f214b)} .brown{background:linear-gradient(145deg,#72501f,#3b2b16)}
-  .icon{font-size:48px}.card h3{font-size:24px;margin:8px 0}.card p{color:#dbe7f4;line-height:1.6}
-  .access{margin-top:16px;padding:14px;border:1px solid var(--border);border-radius:18px;background:#0a2343;text-align:center}
-  .screen{display:none}.screen.active{display:block}
-  .back{background:transparent;border:1px solid #7895b8;color:#fff;border-radius:18px;padding:8px 14px;cursor:pointer;margin-bottom:14px}
+  .blue{background:linear-gradient(145deg,#0c3970,#0b2448)}
+  .green{background:linear-gradient(145deg,#0b6658,#092f3b)}
+  .purple{background:linear-gradient(145deg,#513582,#1f214b)}
+  .brown{background:linear-gradient(145deg,#72501f,#3b2b16)}
+  .icon{font-size:48px}
+  .card h3{font-size:24px;margin:8px 0}
+  .card p{color:#dbe7f4;line-height:1.6}
+  .access{
+    margin-top:16px;
+    padding:14px;
+    border:1px solid var(--border);
+    border-radius:18px;
+    background:#0a2343;
+    text-align:center
+  }
+  .screen{display:none}
+  .screen.active{display:block}
+  .back{
+    background:transparent;
+    border:1px solid #7895b8;
+    color:#fff;
+    border-radius:18px;
+    padding:8px 14px;
+    cursor:pointer;
+    margin-bottom:14px
+  }
   .section-title{color:var(--gold);font-size:27px;margin:10px 0 18px}
-  .model-grid,.library-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-  .model,.lesson{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:14px;cursor:pointer}
-  .model img{width:100%;height:145px;object-fit:cover;border-radius:14px;background:#173d64}
-  .model h3,.lesson h3{margin:10px 0 5px}.small{color:var(--muted)}
-  .player{background:var(--panel);border-radius:20px;padding:22px;border:1px solid var(--border);text-align:center}
-  .play{width:82px;height:82px;border-radius:50%;border:0;background:#176cc3;color:white;font-size:35px;cursor:pointer}
-  .askbox{background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:18px}
-  .messages{min-height:250px;display:flex;flex-direction:column;gap:10px;margin-bottom:15px}
-  .msg{padding:12px 15px;border-radius:16px;max-width:85%;line-height:1.6}
-  .bot{background:#edf0f3;color:#10233d;align-self:flex-start}.user{background:#165c9f;align-self:flex-end}
-  .askrow{display:flex;gap:8px}.askrow input{flex:1;padding:13px;border-radius:15px;border:1px solid #7895b8;background:#071c35;color:#fff}
-  .primary{background:#176cc3;color:#fff;border:0;border-radius:15px;padding:12px 17px;cursor:pointer}
-  .quiz{background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:20px}
-  .option{display:block;width:100%;margin:9px 0;padding:13px;border:1px solid #7895b8;background:#0a2343;color:#fff;border-radius:13px;text-align:right;cursor:pointer}
-  .nav{position:sticky;bottom:0;margin-top:22px;background:#071e3b;border:1px solid var(--border);border-radius:22px;padding:10px;display:flex;justify-content:space-around;gap:8px}
-  .nav button{background:transparent;border:0;color:#fff;cursor:pointer;padding:9px}
+  .model-grid,.library-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:14px
+  }
+  .model,.lesson{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:14px;
+    cursor:pointer
+  }
+  .model img{
+    width:100%;
+    height:145px;
+    object-fit:cover;
+    border-radius:14px;
+    background:#173d64
+  }
+  .model h3,.lesson h3{margin:10px 0 5px}
+  .small{color:var(--muted)}
+  .player{
+    background:var(--panel);
+    border-radius:20px;
+    padding:22px;
+    border:1px solid var(--border);
+    text-align:center
+  }
+  .play{
+    width:82px;
+    height:82px;
+    border-radius:50%;
+    border:0;
+    background:#176cc3;
+    color:white;
+    font-size:35px;
+    cursor:pointer
+  }
+  .askbox{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:18px
+  }
+  .messages{
+    min-height:250px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-bottom:15px
+  }
+  .msg{
+    padding:12px 15px;
+    border-radius:16px;
+    max-width:85%;
+    line-height:1.6
+  }
+  .bot{background:#edf0f3;color:#10233d;align-self:flex-start}
+  .user{background:#165c9f;color:#fff;align-self:flex-end}
+  .askrow{display:flex;gap:8px}
+  .askrow input{
+    flex:1;
+    padding:13px;
+    border-radius:15px;
+    border:1px solid #7895b8;
+    background:#071c35;
+    color:#fff
+  }
+  .primary{
+    background:#176cc3;
+    color:#fff;
+    border:0;
+    border-radius:15px;
+    padding:12px 17px;
+    cursor:pointer
+  }
+  .quiz{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:20px
+  }
+  .option{
+    display:block;
+    width:100%;
+    margin:9px 0;
+    padding:13px;
+    border:1px solid #7895b8;
+    background:#0a2343;
+    color:#fff;
+    border-radius:13px;
+    text-align:right;
+    cursor:pointer
+  }
+  .nav{
+    position:sticky;
+    bottom:0;
+    margin-top:22px;
+    background:#071e3b;
+    border:1px solid var(--border);
+    border-radius:22px;
+    padding:10px;
+    display:flex;
+    justify-content:space-around;
+    gap:8px
+  }
+  .nav button{
+    background:transparent;
+    border:0;
+    color:#fff;
+    cursor:pointer;
+    padding:9px
+  }
   .nav .active{color:var(--gold)}
   footer{text-align:center;color:#9fb4ce;padding:18px}
-  @media(max-width:700px){.grid,.model-grid,.library-grid{grid-template-columns:1fr}.hero h2{font-size:27px}.card{min-height:155px}}
+
+  @media(max-width:700px){
+    .grid,.model-grid,.library-grid{grid-template-columns:1fr}
+    .hero h2{font-size:27px}
+    .card{min-height:155px}
+  }
 </style>
 </head>
 
@@ -83,18 +248,23 @@ if ("serviceWorker" in navigator) {
       <div class="sub" id="brandEn">Smart Braille Historian</div>
     </div>
   </div>
-  <button class="topbtn" onclick="toggleLang()" id="langBtn">العربية | English</button>
+
+  <button class="topbtn" onclick="toggleLang()" id="langBtn">
+    العربية | English
+  </button>
 </header>
 
 <main>
 
 <section id="home" class="screen active">
+
   <div class="hero">
     <h2 id="heroTitle">اكتشف التاريخ... اسمعه، اسأله، وتعلم منه</h2>
     <p id="heroText">نموذج أولي تعليمي مصمم للمكفوفين وضعاف البصر</p>
   </div>
 
   <div class="grid">
+
     <div class="card blue" onclick="show('ask')">
       <div class="icon">🎤</div>
       <h3 id="c1">اسأل المؤرخ</h3>
@@ -118,88 +288,162 @@ if ("serviceWorker" in navigator) {
       <h3 id="c4">الاختبارات</h3>
       <p id="p4">اختبر معلوماتك بطريقة تفاعلية.</p>
     </div>
+
   </div>
 
   <div class="access">
     ♿ <strong id="accessTitle">تصميم شامل للجميع</strong> —
-    <span id="accessText">أوامر صوتية، قراءة صوتية، تكبير الخط ودعم برايل في مراحل التطوير.</span>
+    <span id="accessText">
+      أوامر صوتية، قراءة صوتية، تكبير الخط ودعم برايل في مراحل التطوير.
+    </span>
   </div>
+
 </section>
 
 <section id="ask" class="screen">
-  <button class="back" onclick="show('home')">← <span id="back1">الرئيسية</span></button>
+
+  <button class="back" onclick="show('home')">
+    ← <span id="back1">الرئيسية</span>
+  </button>
+
   <h2 class="section-title" id="askTitle">🎤 اسأل المؤرخ</h2>
 
   <div class="askbox">
+
     <div class="messages" id="messages">
+
       <div class="msg bot" id="welcomeMsg">
         مرحبًا! أنا مؤرخ برايل الذكي. اسألني عن موضوع تاريخي.
       </div>
+
     </div>
 
     <div class="askrow">
-      <input id="question" placeholder="اكتب سؤالك هنا..." aria-label="سؤال تاريخي">
-      <button class="primary" onclick="askQuestion()">إرسال</button>
-      <button class="primary" onclick="speakQuestion()" title="التحدث">🎙️</button>
+
+      <input
+        id="question"
+        placeholder="اكتب سؤالك هنا..."
+        aria-label="سؤال تاريخي"
+      >
+
+      <button class="primary" onclick="askQuestion()">
+        إرسال
+      </button>
+
+      <button
+        class="primary"
+        onclick="speakQuestion()"
+        title="التحدث"
+      >
+        🎙️
+      </button>
+
     </div>
+
   </div>
+
 </section>
 
 <section id="models" class="screen">
-  <button class="back" onclick="show('home')">← <span>الرئيسية</span></button>
+
+  <button class="back" onclick="show('home')">
+    ← <span>الرئيسية</span>
+  </button>
+
   <h2 class="section-title">🏛️ النماذج التاريخية</h2>
 
   <div class="model-grid">
 
-    <div class="model" onclick="modelInfo('المسجد الأقصى','استمع إلى وصف النموذج ومعلوماته التاريخية.')">
+    <div
+      class="model"
+      onclick="modelInfo(
+        'المسجد الأقصى',
+        'استمع إلى وصف النموذج ومعلوماته التاريخية.'
+      )"
+    >
       <div style="font-size:58px;text-align:center">🕌</div>
       <h3>المسجد الأقصى</h3>
       <div class="small">شرح صوتي • أسئلة</div>
     </div>
 
-    <div class="model" onclick="modelInfo('مسجد النبي ﷺ','نموذج تعليمي ثلاثي الأبعاد مع شرح صوتي.')">
+    <div
+      class="model"
+      onclick="modelInfo(
+        'مسجد النبي ﷺ',
+        'نموذج تعليمي ثلاثي الأبعاد مع شرح صوتي.'
+      )"
+    >
       <div style="font-size:58px;text-align:center">🕌</div>
       <h3>المسجد النبوي</h3>
       <div class="small">شرح صوتي • أسئلة</div>
     </div>
 
-    <div class="model" onclick="modelInfo('خريطة مصر','استكشف خريطة مصر بطريقة تعليمية لمسية وصوتية.')">
+    <div
+      class="model"
+      onclick="modelInfo(
+        'خريطة مصر',
+        'استكشف خريطة مصر بطريقة تعليمية لمسية وصوتية.'
+      )"
+    >
       <div style="font-size:58px;text-align:center">🗺️</div>
       <h3>خريطة مصر</h3>
       <div class="small">وصف صوتي • تعليم</div>
     </div>
 
-    <div class="model" onclick="modelInfo('حرب أكتوبر 1973','محتوى تاريخي صوتي وأسئلة مرتبطة بالنموذج.')">
+    <div
+      class="model"
+      onclick="modelInfo(
+        'حرب أكتوبر 1973',
+        'محتوى تاريخي صوتي وأسئلة مرتبطة بالنموذج.'
+      )"
+    >
       <div style="font-size:58px;text-align:center">⚔️</div>
       <h3>حرب أكتوبر 1973</h3>
       <div class="small">شرح صوتي • اختبار</div>
     </div>
 
   </div>
+
 </section>
 
 <section id="library" class="screen">
-  <button class="back" onclick="show('home')">← <span>الرئيسية</span></button>
+
+  <button class="back" onclick="show('home')">
+    ← <span>الرئيسية</span>
+  </button>
+
   <h2 class="section-title">🎧 المكتبة الصوتية</h2>
 
   <div class="library-grid">
 
-    <div class="lesson" onclick="playLesson('حضارة مصر القديمة')">
+    <div
+      class="lesson"
+      onclick="playLesson('حضارة مصر القديمة')"
+    >
       <h3>حضارة مصر القديمة</h3>
       <div class="small">تشغيل الشرح الصوتي ▶</div>
     </div>
 
-    <div class="lesson" onclick="playLesson('التاريخ الإسلامي')">
+    <div
+      class="lesson"
+      onclick="playLesson('التاريخ الإسلامي')"
+    >
       <h3>التاريخ الإسلامي</h3>
       <div class="small">تشغيل الشرح الصوتي ▶</div>
     </div>
 
-    <div class="lesson" onclick="playLesson('حرب أكتوبر')">
+    <div
+      class="lesson"
+      onclick="playLesson('حرب أكتوبر')"
+    >
       <h3>حرب أكتوبر</h3>
       <div class="small">تشغيل الشرح الصوتي ▶</div>
     </div>
 
-    <div class="lesson" onclick="playLesson('حكايات من التاريخ')">
+    <div
+      class="lesson"
+      onclick="playLesson('حكايات من التاريخ')"
+    >
       <h3>حكايات من التاريخ</h3>
       <div class="small">تشغيل الشرح الصوتي ▶</div>
     </div>
@@ -207,76 +451,198 @@ if ("serviceWorker" in navigator) {
   </div>
 
   <div class="player" style="margin-top:16px">
+
     <h3 id="now">اختر درسًا للاستماع</h3>
-    <button class="play" onclick="speakNow()">▶</button>
-    <p class="small">هذا نموذج أولي؛ سنربط تسجيلاتك الصوتية الفعلية لاحقًا.</p>
+
+    <button class="play" onclick="speakNow()">
+      ▶
+    </button>
+
+    <p class="small">
+      هذا نموذج أولي؛ سنربط تسجيلاتك الصوتية الفعلية لاحقًا.
+    </p>
+
   </div>
+
 </section>
 
 <section id="quiz" class="screen">
-  <button class="back" onclick="show('home')">← <span>الرئيسية</span></button>
+
+  <button class="back" onclick="show('home')">
+    ← <span>الرئيسية</span>
+  </button>
+
   <h2 class="section-title">🧠 الاختبارات</h2>
 
   <div class="quiz">
+
     <h3>متى بدأت حرب أكتوبر؟</h3>
 
-    <button class="option" onclick="answer(false)">1956</button>
-    <button class="option" onclick="answer(false)">1967</button>
-    <button class="option" onclick="answer(true)">1973</button>
-    <button class="option" onclick="answer(false)">1982</button>
+    <button class="option" onclick="answer(false)">
+      1956
+    </button>
+
+    <button class="option" onclick="answer(false)">
+      1967
+    </button>
+
+    <button class="option" onclick="answer(true)">
+      1973
+    </button>
+
+    <button class="option" onclick="answer(false)">
+      1982
+    </button>
 
     <p id="result" class="small"></p>
+
   </div>
+
 </section>
 
 </main>
 
 <nav class="nav">
-  <button class="active" onclick="show('home')">🏠 الرئيسية</button>
-  <button onclick="show('ask')">🎤 المؤرخ</button>
-  <button onclick="show('library')">🎧 المكتبة</button>
-  <button onclick="show('quiz')">🧠 الاختبارات</button>
+
+  <button class="active" onclick="show('home')">
+    🏠 الرئيسية
+  </button>
+
+  <button onclick="show('ask')">
+    🎤 المؤرخ
+  </button>
+
+  <button onclick="show('library')">
+    🎧 المكتبة
+  </button>
+
+  <button onclick="show('quiz')">
+    🧠 الاختبارات
+  </button>
+
 </nav>
 
-<footer>Smart Braille Historian — Prototype</footer>
+<footer>
+  Smart Braille Historian — Prototype
+</footer>
 
 </div>
 
 <script>
+
 let currentLesson = '';
 let english = false;
 
 const answers = {
-  "متى بدأت حرب أكتوبر": "بدأت حرب أكتوبر في 6 أكتوبر 1973، الموافق 10 رمضان 1393 هـ.",
-  "متى بدأت حرب اكتوبر": "بدأت حرب أكتوبر في 6 أكتوبر 1973.",
-  "ما هي حرب أكتوبر": "هي الحرب التي بدأت في 6 أكتوبر 1973، وخاضتها مصر وسوريا ضد إسرائيل.",
-  "من بنى قبة الصخرة": "بُنيت قبة الصخرة في العصر الأموي بأمر الخليفة عبد الملك بن مروان، واكتمل بناؤها سنة 691 ميلادية تقريبًا.",
-  "ما أهمية المسجد الأقصى": "المسجد الأقصى من أهم المواقع الدينية والتاريخية في القدس، وله مكانة كبيرة في التاريخ الإسلامي."
+
+  "متى بدأت حرب أكتوبر":
+    "بدأت حرب أكتوبر في 6 أكتوبر 1973، الموافق 10 رمضان 1393 هـ.",
+
+  "متى بدأت حرب اكتوبر":
+    "بدأت حرب أكتوبر في 6 أكتوبر 1973.",
+
+  "ما هي حرب أكتوبر":
+    "هي الحرب التي بدأت في 6 أكتوبر 1973، وخاضتها مصر وسوريا ضد إسرائيل.",
+
+  "من بنى قبة الصخرة":
+    "بُنيت قبة الصخرة في العصر الأموي بأمر الخليفة عبد الملك بن مروان، واكتمل بناؤها سنة 691 ميلادية تقريبًا.",
+
+  "ما أهمية المسجد الأقصى":
+    "المسجد الأقصى من أهم المواقع الدينية والتاريخية في القدس، وله مكانة كبيرة في التاريخ الإسلامي."
+
 };
 
 function show(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  window.scrollTo({top:0,behavior:'smooth'});
+
+  document.querySelectorAll('.screen')
+    .forEach(s => s.classList.remove('active'));
+
+  document.getElementById(id)
+    .classList.add('active');
+
+  window.scrollTo({
+    top:0,
+    behavior:'smooth'
+  });
+
 }
 
-function speak(text, lang='ar-SA'){
+
+/* =========================
+   نظام الصوت المحسن للهاتف
+   ========================= */
+
+function speak(text, lang = 'ar-SA'){
+
+  if(!text) return;
+
   if(!('speechSynthesis' in window)){
-    alert('المتصفح لا يدعم القراءة الصوتية.');
+
+    alert('القراءة الصوتية غير مدعومة على هذا الجهاز.');
+
     return;
   }
 
-  speechSynthesis.cancel();
+  const synth = window.speechSynthesis;
 
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = lang;
-  u.rate = 0.9;
+  synth.cancel();
 
-  speechSynthesis.speak(u);
+  const speakNow = () => {
+
+    const voices = synth.getVoices();
+
+    const voice =
+      voices.find(v => v.lang === 'ar-SA') ||
+      voices.find(v => v.lang.startsWith('ar')) ||
+      voices.find(v => v.lang === lang);
+
+    const u = new SpeechSynthesisUtterance(text);
+
+    u.lang = voice ? voice.lang : lang;
+    u.voice = voice || null;
+
+    u.rate = 0.85;
+    u.pitch = 1;
+    u.volume = 1;
+
+    synth.speak(u);
+
+    setTimeout(() => {
+
+      if(synth.paused){
+        synth.resume();
+      }
+
+    }, 300);
+
+  };
+
+
+  if(synth.getVoices().length === 0){
+
+    synth.onvoiceschanged = () => {
+
+      synth.onvoiceschanged = null;
+
+      speakNow();
+
+    };
+
+    setTimeout(speakNow, 500);
+
+  }else{
+
+    speakNow();
+
+  }
+
 }
 
+
 function askQuestion(){
+
   const input = document.getElementById('question');
+
   const q = input.value.trim();
 
   if(!q) return;
@@ -284,131 +650,212 @@ function askQuestion(){
   const box = document.getElementById('messages');
 
   const user = document.createElement('div');
+
   user.className = 'msg user';
+
   user.textContent = q;
+
   box.appendChild(user);
 
-  let a = "سؤالك ممتاز. في النسخة النهائية سنربط هذا القسم بقاعدة معرفية تاريخية وذكاء اصطناعي متخصص في المشروع.";
+
+  let a =
+    "سؤالك ممتاز. في النسخة النهائية سنربط هذا القسم بقاعدة معرفية تاريخية وذكاء اصطناعي متخصص في المشروع.";
+
 
   const key = Object.keys(answers).find(
+
     k => q.replace(/[؟?]/g,'').includes(k)
+
   );
+
 
   if(key) a = answers[key];
 
+
   const bot = document.createElement('div');
+
   bot.className = 'msg bot';
+
   bot.textContent = a;
+
   box.appendChild(bot);
+
 
   speak(a);
 
   input.value = '';
+
 }
 
+
 function speakQuestion(){
-  const q = document.getElementById('question').value.trim();
+
+  const q =
+    document.getElementById('question').value.trim();
 
   if(!q){
+
     speak('تحدث الآن، وسأستمع إلى سؤالك.');
+
     return;
   }
 
   speak(q);
+
 }
 
+
 function modelInfo(title,text){
+
   alert(
+
     title +
     '\n\n' +
     text +
     '\n\nفي النسخة التالية سنضيف الصورة/النموذج ثلاثي الأبعاد والتسجيل الصوتي الخاص بك.'
+
   );
+
 }
 
+
 function playLesson(name){
+
   currentLesson = name;
 
-  document.getElementById('now').textContent = '▶ ' + name;
+  document.getElementById('now').textContent =
+    '▶ ' + name;
 
   speak(
+
     'تم اختيار درس ' +
     name +
     '. في النسخة النهائية سيتم تشغيل التسجيل الصوتي الخاص بالمشروع.'
+
   );
+
 }
 
+
 function speakNow(){
+
   if(!currentLesson){
+
     speak('اختر درسًا أولًا.');
+
     return;
   }
 
   speak(
+
     'الدرس الحالي هو ' +
     currentLesson +
     '. هذا نموذج أولي للمكتبة الصوتية.'
+
   );
+
 }
+
 
 function answer(correct){
-  const r = document.getElementById('result');
+
+  const r =
+    document.getElementById('result');
 
   if(correct){
-    r.textContent = '✅ أحسنت! إجابة صحيحة.';
+
+    r.textContent =
+      '✅ أحسنت! إجابة صحيحة.';
+
     speak('أحسنت! إجابة صحيحة.');
+
   }else{
-    r.textContent = '❌ ليست الإجابة الصحيحة. الإجابة هي 1973.';
+
+    r.textContent =
+      '❌ ليست الإجابة الصحيحة. الإجابة هي 1973.';
+
     speak('الإجابة الصحيحة هي 1973.');
+
   }
+
 }
 
+
 function toggleLang(){
+
   english = !english;
 
   if(english){
 
     document.documentElement.dir = 'ltr';
+
     document.documentElement.lang = 'en';
 
-    document.getElementById('brandAr').textContent = 'Smart Braille Historian';
-    document.getElementById('brandEn').textContent = 'مؤرخ برايل الذكي';
 
-    document.getElementById('langBtn').textContent = 'English | العربية';
+    document.getElementById('brandAr').textContent =
+      'Smart Braille Historian';
+
+    document.getElementById('brandEn').textContent =
+      'مؤرخ برايل الذكي';
+
+
+    document.getElementById('langBtn').textContent =
+      'English | العربية';
+
 
     document.getElementById('heroTitle').textContent =
       'Discover history... hear it, ask it, learn from it';
 
+
     document.getElementById('heroText').textContent =
       'An educational prototype designed for blind and low-vision users';
 
-    document.getElementById('c1').textContent = 'Ask the Historian';
+
+    document.getElementById('c1').textContent =
+      'Ask the Historian';
+
     document.getElementById('p1').textContent =
       'Ask a history question and hear the answer.';
 
-    document.getElementById('c2').textContent = 'Historical Models';
+
+    document.getElementById('c2').textContent =
+      'Historical Models';
+
     document.getElementById('p2').textContent =
       'Explore models and listen to their descriptions.';
 
-    document.getElementById('c3').textContent = 'Audio Library';
+
+    document.getElementById('c3').textContent =
+      'Audio Library';
+
     document.getElementById('p3').textContent =
       'Historical lessons, stories, and lectures.';
 
-    document.getElementById('c4').textContent = 'Quizzes';
+
+    document.getElementById('c4').textContent =
+      'Quizzes';
+
     document.getElementById('p4').textContent =
       'Test your knowledge interactively.';
 
+
     document.getElementById('accessTitle').textContent =
       'Inclusive design for everyone';
+
 
     document.getElementById('accessText').textContent =
       'Voice commands, screen reading, text scaling, and future Braille support.';
 
   }else{
+
     location.reload();
+
   }
+
 }
+
 </script>
 
 </body>
 </html>
+```
