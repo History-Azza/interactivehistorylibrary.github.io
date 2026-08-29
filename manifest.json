@@ -1,1 +1,12 @@
-
+{
+  "background_color": "#ffffff",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "مؤرخ برايل الذكي",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "مؤرخ برايل الذكي",
+  "start_url": "/",
+  "theme_color": "#ffffff",
+  "description": "{\n  \"name\": \"مؤرخ برايل الذكي\",\n  \"short_name\": \"المؤرخ الذكي\",\n  \"description\": \"نموذج تعليمي تفاعلي مصمم لدعم المكفوفين وضعاف البصر في دراسة التاريخ\",\n  \"start_url\": \"./Smart_Braille_Historian_Prototype.html\",\n  \"display\": \"standalone\",\n  \"background_color\": \"#ffffff\",\n  \"theme_color\": \"#2c3e50\",\n  \"icons\": []\n}"
+}
