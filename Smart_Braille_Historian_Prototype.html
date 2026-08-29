@@ -1,706 +1,410 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>مؤرخ برايل الذكي | Smart Braille Historian</title>
-
-<link rel="manifest" href="manifest.json">
-
-<script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", function () {
-    navigator.serviceWorker.register("./sw.js")
-      .then(function () {
-        console.log("Service Worker registered successfully.");
-      })
-      .catch(function (error) {
-        console.log("Service Worker registration failed:", error);
-      });
-  });
-}
-</script>
-
-<style>
-  :root{
-    --bg:#061a35; --panel:#0c2a4f; --panel2:#102f56; --gold:#e9b85f;
-    --text:#fff; --muted:#c7d4e5; --blue:#1e6fc8; --green:#147d68;
-    --purple:#6542a0; --border:#4775a8;
-  }
-  *{box-sizing:border-box}
-  body{
-    margin:0;
-    font-family:Arial,"Tahoma",sans-serif;
-    background:linear-gradient(135deg,#041329,#0b294d);
-    color:var(--text);
-    min-height:100vh
-  }
-  button{font:inherit}
-  .app{max-width:1050px;margin:auto;padding:18px}
-  header{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
-    margin-bottom:18px
-  }
-  .brand{display:flex;align-items:center;gap:12px}
-  .logo{
-    width:58px;
-    height:58px;
-    border:2px solid var(--gold);
-    border-radius:50%;
-    display:grid;
-    place-items:center;
-    font-size:28px
-  }
-  h1{font-size:25px;margin:0;color:var(--gold)}
-  .sub{color:var(--muted);margin-top:4px}
-  .topbtn{
-    background:transparent;
-    color:#fff;
-    border:1px solid #7895b8;
-    border-radius:24px;
-    padding:10px 15px;
-    cursor:pointer
-  }
-  main{min-height:650px}
-  .hero{text-align:center;padding:18px 10px}
-  .hero h2{font-size:32px;margin:8px 0;color:var(--gold)}
-  .hero p{font-size:18px;color:var(--muted)}
-  .grid{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:16px;
-    margin-top:22px
-  }
-  .card{
-    border:1px solid var(--border);
-    border-radius:24px;
-    padding:22px;
-    min-height:185px;
-    color:#fff;
-    cursor:pointer;
-    box-shadow:0 10px 30px #0004;
-    transition:.2s
-  }
-  .card:hover{transform:translateY(-2px)}
-  .blue{background:linear-gradient(145deg,#0c3970,#0b2448)}
-  .green{background:linear-gradient(145deg,#0b6658,#092f3b)}
-  .purple{background:linear-gradient(145deg,#513582,#1f214b)}
-  .brown{background:linear-gradient(145deg,#72501f,#3b2b16)}
-  .icon{font-size:48px}
-  .card h3{font-size:24px;margin:8px 0}
-  .card p{color:#dbe7f4;line-height:1.6}
-  .access{
-    margin-top:16px;
-    padding:14px;
-    border:1px solid var(--border);
-    border-radius:18px;
-    background:#0a2343;
-    text-align:center
-  }
-  .screen{display:none}
-  .screen.active{display:block}
-  .back{
-    background:transparent;
-    border:1px solid #7895b8;
-    color:#fff;
-    border-radius:18px;
-    padding:8px 14px;
-    cursor:pointer;
-    margin-bottom:14px
-  }
-  .section-title{color:var(--gold);font-size:27px;margin:10px 0 18px}
-  .model-grid,.library-grid{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:14px
-  }
-  .model,.lesson{
-    background:var(--panel);
-    border:1px solid var(--border);
-    border-radius:18px;
-    padding:14px;
-    cursor:pointer
-  }
-  .model h3,.lesson h3{margin:10px 0 5px}
-  .small{color:var(--muted)}
-  .player{
-    background:var(--panel);
-    border-radius:20px;
-    padding:22px;
-    border:1px solid var(--border);
-    text-align:center
-  }
-  .play{
-    width:82px;
-    height:82px;
-    border-radius:50%;
-    border:0;
-    background:#176cc3;
-    color:white;
-    font-size:35px;
-    cursor:pointer
-  }
-  .askbox{
-    background:var(--panel);
-    border:1px solid var(--border);
-    border-radius:20px;
-    padding:18px
-  }
-  .messages{
-    min-height:250px;
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    margin-bottom:15px
-  }
-  .msg{
-    padding:12px 15px;
-    border-radius:16px;
-    max-width:85%;
-    line-height:1.6
-  }
-  .bot{background:#edf0f3;color:#10233d;align-self:flex-start}
-  .user{background:#165c9f;color:#fff;align-self:flex-end}
-  .askrow{display:flex;gap:8px}
-  .askrow input{
-    flex:1;
-    padding:13px;
-    border-radius:15px;
-    border:1px solid #7895b8;
-    background:#071c35;
-    color:#fff
-  }
-  .primary{
-    background:#176cc3;
-    color:#fff;
-    border:0;
-    border-radius:15px;
-    padding:12px 17px;
-    cursor:pointer
-  }
-  .quiz{
-    background:var(--panel);
-    border:1px solid var(--border);
-    border-radius:20px;
-    padding:20px
-  }
-  .option{
-    display:block;
-    width:100%;
-    margin:9px 0;
-    padding:13px;
-    border:1px solid #7895b8;
-    background:#0a2343;
-    color:#fff;
-    border-radius:13px;
-    text-align:right;
-    cursor:pointer
-  }
-  .nav{
-    position:sticky;
-    bottom:0;
-    margin-top:22px;
-    background:#071e3b;
-    border:1px solid var(--border);
-    border-radius:22px;
-    padding:10px;
-    display:flex;
-    justify-content:space-around;
-    gap:8px
-  }
-  .nav button{
-    background:transparent;
-    border:0;
-    color:#fff;
-    cursor:pointer;
-    padding:9px
-  }
-  .nav .active{color:var(--gold)}
-  footer{text-align:center;color:#9fb4ce;padding:18px}
-
-  @media(max-width:700px){
-    .grid,.model-grid,.library-grid{grid-template-columns:1fr}
-    .hero h2{font-size:27px}
-    .card{min-height:155px}
-  }
-</style>
-</head>
-
-<body>
-<div class="app">
-
-<header>
-  <div class="brand">
-    <div class="logo">⠿</div>
-    <div>
-      <h1 id="brandAr">مؤرخ برايل الذكي</h1>
-      <div class="sub" id="brandEn">Smart Braille Historian</div>
-    </div>
-  </div>
-
-  <button class="topbtn" onclick="toggleLang()" id="langBtn">
-    العربية | English
-  </button>
-</header>
-
-<main>
-
-<section id="home" class="screen active">
-
-  <div class="hero">
-    <h2 id="heroTitle">اكتشف التاريخ... اسمعه، اسأله، وتعلم منه</h2>
-    <p id="heroText">نموذج أولي تعليمي مصمم للمكفوفين وضعاف البصر</p>
-  </div>
-
-  <div class="grid">
-
-    <div class="card blue" onclick="show('ask')">
-      <div class="icon">🎤</div>
-      <h3 id="c1">اسأل المؤرخ</h3>
-      <p id="p1">اسأل عن موضوع تاريخي واستمع إلى الإجابة.</p>
-    </div>
-
-    <div class="card green" onclick="show('models')">
-      <div class="icon">🏛️</div>
-      <h3 id="c2">النماذج التاريخية</h3>
-      <p id="p2">استكشف النماذج واستمع إلى شرحها.</p>
-    </div>
-
-    <div class="card purple" onclick="show('library')">
-      <div class="icon">🎧</div>
-      <h3 id="c3">المكتبة الصوتية</h3>
-      <p id="p3">دروس وقصص ومحاضرات تاريخية.</p>
-    </div>
-
-    <div class="card brown" onclick="show('quiz')">
-      <div class="icon">🧠</div>
-      <h3 id="c4">الاختبارات</h3>
-      <p id="p4">اختبر معلوماتك بطريقة تفاعلية.</p>
-    </div>
-
-  </div>
-
-  <div class="access">
-    ♿ <strong id="accessTitle">تصصميم شامل للجميع</strong> —
-    <span id="accessText">
-      أوامر صوتية، قراءة صوتية، تكبير الخط ودعم برايل في مراحل التطوير.
-    </span>
-  </div>
-
-</section>
-
-<section id="ask" class="screen">
-
-  <button class="back" onclick="show('home')">
-    ← <span id="back1">الرئيسية</span>
-  </button>
-
-  <h2 class="section-title" id="askTitle">🎤 اسأل المؤرخ</h2>
-
-  <div class="askbox">
-
-    <div class="messages" id="messages">
-
-      <div class="msg bot" id="welcomeMsg">
-        مرحبًا! أنا مؤرخ برايل الذكي. اسألني عن موضوع تاريخي.
-      </div>
-
-    </div>
-
-    <div class="askrow">
-
-      <input
-        id="question"
-        placeholder="اكتب سؤالك هنا..."
-        aria-label="سؤال تاريخي"
-      >
-
-      <button class="primary" onclick="askQuestion()">
-        إرسال
-      </button>
-
-      <button
-        class="primary"
-        onclick="listenToVoice()"
-        title="التحدث والتسجيل الصوتي"
-      >
-        🎙️
-      </button>
-
-    </div>
-
-  </div>
-
-</section>
-
-<section id="models" class="screen">
-
-  <button class="back" onclick="show('home')">
-    ← <span>الرئيسية</span>
-  </button>
-
-  <h2 class="section-title">🏛️ النماذج التاريخية</h2>
-
-  <div class="model-grid">
-
-    <div
-      class="model"
-      onclick="modelInfo(
-        'قبة الصخرة والمسجد الأقصى',
-        'استمع إلى وصف قبة الصخرة. مبنى ثماني الشكل ذو قبة ذهبية حفرت تفاصيله بالخشب المقوى، بني في العصر الأموي بأمر الخليفة عبد الملك بن مروان.'
-      )"
-    >
-      <div style="font-size:58px;text-align:center">🕌</div>
-      <h3>قبة الصخرة</h3>
-      <div class="small">شرح صوتي • تفاصيل لمسية</div>
-    </div>
-
-    <div
-      class="model"
-      onclick="modelInfo(
-        'المسجد النبوي الشريف',
-        'نموذج تعليمي ثلاثي الأبعاد للمسجد النبوي الشريف، يحتوي على الأقواس والأعمدة والمئذنة والقباب الملموسة.'
-      )"
-    >
-      <div style="font-size:58px;text-align:center">🕌</div>
-      <h3>المسجد النبوي</h3>
-      <div class="small">شرح صوتي • أسئلة</div>
-    </div>
-
-    <div
-      class="model"
-      onclick="modelInfo(
-        'خريطة مصر التضاريسية',
-        'خريطة لمسية مجسمة توضح نهر النيل والمنخفضات والهضاب مع نصوص بارزة بطريقة برايل لتعلم الجغرافيا.'
-      )"
-    >
-      <div style="font-size:58px;text-align:center">🗺️</div>
-      <h3>خريطة مصر</h3>
-      <div class="small">وصف صوتي • تضاريس لمسية</div>
-    </div>
-
-    <div
-      class="model"
-      onclick="modelInfo(
-        'معبد أبو سمبل',
-        'نموذج لمسي متكامل لمعبد أبو سمبل يظهر التماثيل الأربعة الضخمة في الواجهة والنص البارز بلغة برايل.'
-      )"
-    >
-      <div style="font-size:58px;text-align:center">🏛️</div>
-      <h3>معبد أبو سمبل</h3>
-      <div class="small">شرح صوتي • تاريخ قديم</div>
-    </div>
-
-  </div>
-
-</section>
-
-<section id="library" class="screen">
-
-  <button class="back" onclick="show('home')">
-    ← <span>الرئيسية</span>
-  </button>
-
-  <h2 class="section-title">🎧 المكتبة الصوتية</h2>
-
-  <div class="library-grid">
-
-    <div
-      class="lesson"
-      onclick="playLesson('حضارة مصر القديمة')"
-    >
-      <h3>حضارة مصر القديمة</h3>
-      <div class="small">تشغيل الشرح الصوتي ▶</div>
-    </div>
-
-    <div
-      class="lesson"
-      onclick="playLesson('التاريخ الإسلامي')"
-    >
-      <h3>التاريخ الإسلامي</h3>
-      <div class="small">تشغيل الشرح الصوتي ▶</div>
-    </div>
-
-    <div
-      class="lesson"
-      onclick="playLesson('حرب أكتوبر')"
-    >
-      <h3>حرب أكتوبر</h3>
-      <div class="small">تشغيل الشرح الصوتي ▶</div>
-    </div>
-
-    <div
-      class="lesson"
-      onclick="playLesson('حكايات من التاريخ')"
-    >
-      <h3>حكايات من التاريخ</h3>
-      <div class="small">تشغيل الشرح الصوتي ▶</div>
-    </div>
-
-  </div>
-
-  <div class="player" style="margin-top:16px">
-
-    <h3 id="now">اختر درسًا للاستماع</h3>
-
-    <button class="play" onclick="speakNow()">
-      ▶
-    </button>
-
-    <p class="small">
-      هذا نموذج أولي؛ سنربط تسجيلاتك الصوتية الفعلية لاحقًا.
-    </p>
-
-  </div>
-
-</section>
-
-<section id="quiz" class="screen">
-
-  <button class="back" onclick="show('home')">
-    ← <span>الرئيسية</span>
-  </button>
-
-  <h2 class="section-title">🧠 الاختبارات</h2>
-
-  <div class="quiz">
-
-    <h3>متى بدأت حرب أكتوبر؟</h3>
-
-    <button class="option" onclick="answer(false)">
-      1956
-    </button>
-
-    <button class="option" onclick="answer(false)">
-      1967
-    </button>
-
-    <button class="option" onclick="answer(true)">
-      1973
-    </button>
-
-    <button class="option" onclick="answer(false)">
-      1982
-    </button>
-
-    <p id="result" class="small"></p>
-
-  </div>
-
-</section>
-
-</main>
-
-<nav class="nav">
-
-  <button class="active" onclick="show('home')">
-    🏠 الرئيسية
-  </button>
-
-  <button onclick="show('ask')">
-    🎤 المؤرخ
-  </button>
-
-  <button onclick="show('library')">
-    🎧 المكتبة
-  </button>
-
-  <button onclick="show('quiz')">
-    🧠 الاختبارات
-  </button>
-
-</nav>
-
-<footer>
-  Smart Braille Historian — Prototype
-</footer>
-
-</div>
-
-<script>
-
-let currentLesson = '';
-let english = false;
-let audioUnlocked = false;
-
-// فك حظر محرك الصوت في متصفحات الموبايل مع أول لمسة
-document.addEventListener('click', function() {
-  if (!audioUnlocked && 'speechSynthesis' in window) {
-    const u = new SpeechSynthesisUtterance('');
-    window.speechSynthesis.speak(u);
-    audioUnlocked = true;
-  }
-}, { once: true });
-
-const answers = {
-  "متى بدأت حرب أكتوبر": "بدأت حرب أكتوبر في 6 أكتوبر 1973، الموافق 10 رمضان 1393 هـ.",
-  "متى بدأت حرب اكتوبر": "بدأت حرب أكتوبر في 6 أكتوبر 1973.",
-  "ما هي حرب أكتوبر": "هي الحرب التي بدأت في 6 أكتوبر 1973، وخاضتها مصر وسوريا ضد إسرائيل.",
-  "من بنى قبة الصخرة": "بُنيت قبة الصخرة في العصر الأموي بأمر الخليفة عبد الملك بن مروان، واكتمل بناؤها سنة 691 ميلادية تقريبًا.",
-  "ما أهمية المسجد الأقصى": "المسجد الأقصى من أهم المواقع الدينية والتاريخية في القدس، وله مكانة كبيرة في التاريخ الإسلامي."
-};
-
-function show(id){
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  window.scrollTo({ top:0, behavior:'smooth' });
-
-  if (id === 'ask') speak('أهلاً بك في قسم اسأل المؤرخ. يمكنك كتابة سؤالك أو الضغط على الميكروفون للتحدث.');
-}
-
-/* =========================
-   نظام القراءة الصوتية القوي والمعدل
-   ========================= */
-
-function speak(text) {
-  if (!text) return;
-
-  if (!('speechSynthesis' in window)) {
-    alert('القراءة الصوتية غير مدعومة على هذا الجهاز.');
-    return;
-  }
-
-  const synth = window.speechSynthesis;
-  synth.cancel(); // إيقاف أي صوت سابق فوراً
-
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = english ? 'en-US' : 'ar-SA';
-  u.rate = 0.88;
-  u.pitch = 1;
-  u.volume = 1;
-
-  // البحث عن أصوات اللغة العربية الممتازة
-  const voices = synth.getVoices();
-  const arabicVoice = voices.find(v => v.lang.includes('ar'));
-  if (arabicVoice) {
-    u.voice = arabicVoice;
-  }
-
-  synth.speak(u);
-
-  // حلقة معالجة تعليق الصوت في متصفح كروم على الموبايل
-  let resumeInterval = setInterval(() => {
-    if (!synth.speaking) {
-      clearInterval(resumeInterval);
-    } else {
-      synth.resume();
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مؤرخ برايل الذكي | Smart Braille Historian</title>
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --secondary: #d97706;
+      --bg: #f8fafc;
+      --text: #1e293b;
+      --card-bg: #ffffff;
     }
-  }, 1000);
-}
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+      direction: rtl;
+    }
+    header {
+      background: var(--primary);
+      color: white;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .brand {
+      display: flex;
+      flex-direction: column;
+    }
+    .brand h1 {
+      font-size: 1.2rem;
+      margin: 0;
+    }
+    .brand span {
+      font-size: 0.8rem;
+      color: #cbd5e1;
+    }
+    nav button {
+      background: var(--secondary);
+      border: none;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .container {
+      padding: 1.5rem;
+      max-width: 800px;
+      margin: auto;
+    }
+    .screen {
+      display: none;
+    }
+    .screen.active {
+      display: block;
+    }
+    .hero {
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+    .hero h2 {
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    .card {
+      background: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+      cursor: pointer;
+      transition: transform 0.2s;
+      border: 1px solid #e2e8f0;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+    }
+    .card h3 {
+      margin-top: 0;
+      color: var(--primary);
+    }
+    .chat-box {
+      background: white;
+      border: 1px solid #cbd5e1;
+      border-radius: 0.5rem;
+      height: 300px;
+      overflow-y: auto;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .msg {
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      max-width: 80%;
+      line-height: 1.5;
+    }
+    .msg.user {
+      background: #e0f2fe;
+      align-self: flex-start;
+    }
+    .msg.bot {
+      background: #f1f5f9;
+      align-self: flex-end;
+      border: 1px solid #e2e8f0;
+    }
+    .input-group {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .input-group input {
+      flex: 1;
+      padding: 0.75rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 0.375rem;
+      font-size: 1rem;
+    }
+    .input-group button {
+      padding: 0.75rem 1.25rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .mic-btn {
+      background: var(--secondary) !important;
+    }
+    .back-btn {
+      background: #64748b;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
 
-// تحويل الكلام الشفهي لنص (ميكروفون)
-function listenToVoice() {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  
-  if (!SpeechRecognition) {
-    speak('خاصية الاستماع الصوتي غير مدعومة في متصفحك.');
-    return;
-  }
+  <header>
+    <div class="brand">
+      <h1 id="brandAr">مؤرخ برايل الذكي</h1>
+      <span id="brandEn">Smart Braille Historian</span>
+    </div>
+    <nav>
+      <button id="langBtn" onclick="toggleLang()">English | العربية</button>
+    </nav>
+  </header>
 
-  const recognition = new SpeechRecognition();
-  recognition.lang = english ? 'en-US' : 'ar-EG';
-  recognition.start();
+  <div class="container">
+    <!-- الشاشة الرئيسية -->
+    <div id="home" class="screen active">
+      <div class="hero">
+        <h2 id="heroTitle">اكتشف التاريخ... اسمعه، اسأله، وتعلم منه</h2>
+        <p id="heroText">نموذج تعليمي تفاعلي مصمم لدعم المكفوفين وضعاف البصر في دراسة التاريخ</p>
+      </div>
+      <div class="grid">
+        <div class="card" onclick="show('ask')">
+          <h3 id="c1">💬 اسأل المؤرخ</h3>
+          <p id="p1">اطرح سؤالاً تاريخياً واستمع إلى الإجابة الصوتية.</p>
+        </div>
+        <div class="card" onclick="show('models')">
+          <h3 id="c2">🏛️ النماذج التاريخية</h3>
+          <p id="p2">تصفح المجسمات واستمع لوصفها التفصيلي.</p>
+        </div>
+        <div class="card" onclick="show('library')">
+          <h3 id="c3">🎧 المكتبة الصوتية</h3>
+          <p id="p3">دروس تاريخية وقصص ومحاضرات مسموعة.</p>
+        </div>
+        <div class="card" onclick="show('quiz')">
+          <h3 id="c4">❓ اختبارات تفاعلية</h3>
+          <p id="p4">اختبر معلوماتك بطريقة ممتعة.</p>
+        </div>
+      </div>
+    </div>
 
-  speak('تحدث الآن، أنا أستمع إليك');
+    <!-- شاشة اسأل المؤرخ -->
+    <div id="ask" class="screen">
+      <button class="back-btn" onclick="show('home')">← الرجوع للرئيسية</button>
+      <h2>اسأل المؤرخ</h2>
+      <div class="chat-box" id="messages">
+        <div class="msg bot">أهلاً بك! يمكنك كتابة سؤالك التاريخي أو الضغط على الميكروفون والتحدث مباشرة.</div>
+      </div>
+      <div class="input-group">
+        <input type="text" id="question" placeholder="اكتب سؤالك هنا..." onkeydown="if(event.key==='Enter') askQuestion()">
+        <button onclick="askQuestion()">إرسال</button>
+        <button class="mic-btn" onclick="listenToVoice()" title="تحدث بالميكروفون">🎙️</button>
+      </div>
+    </div>
 
-  recognition.onresult = function(event) {
-    const transcript = event.results[0][0].transcript;
-    document.getElementById('question').value = transcript;
-    askQuestion();
-  };
+    <!-- شاشة النماذج التاريخية -->
+    <div id="models" class="screen">
+      <button class="back-btn" onclick="show('home')">← الرجوع للرئيسية</button>
+      <h2>النماذج التاريخية اللمسية</h2>
+      <div class="grid">
+        <div class="card" onclick="modelInfo('قبة الصخرة', 'بُنيت في العصر الأموي بأمر الخليفة عبد الملك بن مروان، وتعتبر من أهم المعالم المعمارية الإسلامية في القدس.')">
+          <h3>قبة الصخرة</h3>
+          <p>اضغط للاستماع لشرح المجسم الملموس.</p>
+        </div>
+        <div class="card" onclick="modelInfo('خريطة مصر التضاريسية', 'خريطة بارزة توضح نهر النيل، الدلتا، الصحراء الشرقية والغربية، وشبه جزيرة سيناء.')">
+          <h3>خريطة مصر التضاريسية</h3>
+          <p>اضغط للاستماع لشرح تفاصيل الخريطة.</p>
+        </div>
+        <div class="card" onclick="modelInfo('حجر رشيد', 'حجر أثري مفصلي تم اكتشافه سنة 1799، وساعد في فك رموز الكتابة المصرية القديمة الهيروغليفية.')">
+          <h3>حجر رشيد</h3>
+          <p>اضغط للاستماع للقصة التاريخية.</p>
+        </div>
+      </div>
+    </div>
 
-  recognition.onerror = function() {
-    speak('لم أتمكن من سماعك بوضوح، أعد المحاولة من فضلك.');
-  };
-}
+    <!-- شاشة المكتبة الصوتية -->
+    <div id="library" class="screen">
+      <button class="back-btn" onclick="show('home')">← الرجوع للرئيسية</button>
+      <h2>المكتبة الصوتية التاريخية</h2>
+      <p id="now" style="font-weight: bold; color: var(--secondary);">لم يتم اختيار درس بعد</p>
+      <div class="grid">
+        <div class="card" onclick="playLesson('ثورة 1919 والمستشارون البريطانيون')">
+          <h3>ثورة 1919</h3>
+          <p>دور المستشارين البريطانيين وتصريح 28 فبراير.</p>
+        </div>
+        <div class="card" onclick="playLesson('حرب أكتوبر المجيدة')">
+          <h3>حرب أكتوبر 1973</h3>
+          <p>أسباب اندلاع الحرب ونتائجها الاستراتيجية.</p>
+        </div>
+      </div>
+      <div style="margin-top: 1.5rem;">
+        <button onclick="speakNow()" style="background: var(--primary); color:white; border:none; padding: 0.75rem 1.5rem; border-radius: 0.375rem; cursor:pointer;">تشغيل الدرس الحالي صوتياً</button>
+      </div>
+    </div>
 
-function askQuestion(){
-  const input = document.getElementById('question');
-  const q = input.value.trim();
-  if(!q) return;
+    <!-- شاشة الاختبارات -->
+    <div id="quiz" class="screen">
+      <button class="back-btn" onclick="show('home')">← الرجوع للرئيسية</button>
+      <h2>اختبارات سريعة</h2>
+      <div class="card">
+        <p><strong>سؤال:</strong> في أي عام قامت حرب أكتوبر المجيدة؟</p>
+        <button onclick="answer(true)" style="background: #16a34a; color:white; border:none; padding:0.5rem 1rem; border-radius:0.375rem; cursor:pointer; margin-left:0.5rem;">1973</button>
+        <button onclick="answer(false)" style="background: #dc2626; color:white; border:none; padding:0.5rem 1rem; border-radius:0.375rem; cursor:pointer;">1967</button>
+        <p id="result" style="margin-top: 1rem; font-weight: bold;"></p>
+      </div>
+    </div>
+  </div>
 
-  const box = document.getElementById('messages');
-  const user = document.createElement('div');
-  user.className = 'msg user';
-  user.textContent = q;
-  box.appendChild(user);
+  <script>
+    let currentLesson = '';
+    let english = false;
 
-  let a = "سؤالك ممتاز. في النسخة النهائية سنربط هذا القسم بقاعدة معرفية تاريخية وذكاء اصطناعي متخصص في المشروع.";
+    const answers = {
+      "متى بدأت حرب أكتوبر": "بدأت حرب أكتوبر في 6 أكتوبر 1973، الموافق 10 رمضان 1393 هـ.",
+      "متى بدأت حرب اكتوبر": "بدأت حرب أكتوبر في 6 أكتوبر 1973.",
+      "ما هي حرب أكتوبر": "هي الحرب التي بدأت في 6 أكتوبر 1973، وخاضتها مصر وسوريا ضد إسرائيل.",
+      "من بنى قبة الصخرة": "بُنيت قبة الصخرة في العصر الأموي بأمر الخليفة عبد الملك بن مروان، واكتمل بناؤها سنة 691 ميلادية تقريبًا.",
+      "ما أهمية المسجد الأقصى": "المسجد الأقصى من أهم المواقع الدينية والتاريخية في القدس، وله مكانة كبيرة في التاريخ الإسلامي."
+    };
 
-  const key = Object.keys(answers).find(
-    k => q.replace(/[؟?]/g,'').includes(k)
-  );
+    function show(id){
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      window.scrollTo({ top:0, behavior:'smooth' });
 
-  if(key) a = answers[key];
+      if (id === 'ask') {
+        speak('أهلاً بك في قسم اسأل المؤرخ. اكتب سؤالك أو استخدم الميكروفون.');
+      }
+    }
 
-  const bot = document.createElement('div');
-  bot.className = 'msg bot';
-  bot.textContent = a;
-  box.appendChild(bot);
+    function speak(text) {
+      if (!text) return;
 
-  speak(a);
-  input.value = '';
-}
+      if (!('speechSynthesis' in window)) {
+        console.warn('Speech Synthesis is not supported in this browser.');
+        return;
+      }
 
-function modelInfo(title, text){
-  const fullDescription = title + '. ' + text;
-  speak(fullDescription);
-}
+      window.speechSynthesis.cancel();
 
-function playLesson(name){
-  currentLesson = name;
-  document.getElementById('now').textContent = '▶ ' + name;
-  speak('تم اختيار درس ' + name + '. جاري تجهيز الشرح الصوتي.');
-}
+      setTimeout(() => {
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = english ? 'en-US' : 'ar-SA';
+        u.rate = 0.9;
+        u.pitch = 1;
+        window.speechSynthesis.speak(u);
+      }, 50);
+    }
 
-function speakNow(){
-  if(!currentLesson){
-    speak('اختر درسًا أولًا من المكتبة الصوتية.');
-    return;
-  }
-  speak('الدرس الحالي هو ' + currentLesson);
-}
+    function listenToVoice() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      
+      if (!SpeechRecognition) {
+        speak('خاصية التعرف على الصوت غير مدعومة في متصفح الموبايل، يمكنك كتابة السؤال.');
+        return;
+      }
 
-function answer(correct){
-  const r = document.getElementById('result');
-  if(correct){
-    r.textContent = '✅ أحسنت! إجابة صحيحة.';
-    speak('أحسنت! إجابة صحيحة.');
-  }else{
-    r.textContent = '❌ ليست الإجابة الصحيحة. الإجابة هي 1973.';
-    speak('ليست الإجابة الصحيحة. الإجابة هي 1973.');
-  }
-}
+      const recognition = new SpeechRecognition();
+      recognition.lang = english ? 'en-US' : 'ar-EG';
+      
+      recognition.onstart = function() {
+        speak('أنا أستمع إليك الآن');
+      };
 
-function toggleLang(){
-  english = !english;
-  if(english){
-    document.documentElement.dir = 'ltr';
-    document.documentElement.lang = 'en';
-    document.getElementById('brandAr').textContent = 'Smart Braille Historian';
-    document.getElementById('brandEn').textContent = 'مؤرخ برايل الذكي';
-    document.getElementById('langBtn').textContent = 'English | العربية';
-    document.getElementById('heroTitle').textContent = 'Discover history... hear it, ask it, learn from it';
-    document.getElementById('heroText').textContent = 'An educational prototype designed for blind and low-vision users';
-    document.getElementById('c1').textContent = 'Ask the Historian';
-    document.getElementById('p1').textContent = 'Ask a history question and hear the answer.';
-    document.getElementById('c2').textContent = 'Historical Models';
-    document.getElementById('p2').textContent = 'Explore models and listen to their descriptions.';
-    document.getElementById('c3').textContent = 'Audio Library';
-    document.getElementById('p3').textContent = 'Historical lessons, stories, and lectures.';
-    document.getElementById('c4').textContent = 'Quizzes';
-    document.getElementById('p4').textContent = 'Test your knowledge interactively.';
-    document.getElementById('accessTitle').textContent = 'Inclusive design for everyone';
-    document.getElementById('accessText').textContent = 'Voice commands, screen reading, text scaling, and future Braille support.';
-  }else{
-    location.reload();
-  }
-}
+      recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript;
+        document.getElementById('question').value = transcript;
+        askQuestion();
+      };
 
-</script>
+      recognition.onerror = function() {
+        speak('لم أتمكن من سماعك، اعد المحاولة.');
+      };
 
+      recognition.start();
+    }
+
+    function askQuestion(){
+      const input = document.getElementById('question');
+      const q = input.value.trim();
+      if(!q) return;
+
+      const box = document.getElementById('messages');
+      const user = document.createElement('div');
+      user.className = 'msg user';
+      user.textContent = q;
+      box.appendChild(user);
+
+      let a = "سؤالك ممتاز. في النسخة النهائية سنربط هذا القسم بقاعدة معرفية تاريخية وذكاء اصطناعي متخصص.";
+
+      const key = Object.keys(answers).find(
+        k => q.replace(/[؟?]/g,'').includes(k)
+      );
+
+      if(key) a = answers[key];
+
+      const bot = document.createElement('div');
+      bot.className = 'msg bot';
+      bot.textContent = a;
+      box.appendChild(bot);
+
+      speak(a);
+      input.value = '';
+    }
+
+    function modelInfo(title, text){
+      speak(title + '. ' + text);
+    }
+
+    function playLesson(name){
+      currentLesson = name;
+      document.getElementById('now').textContent = '▶ ' + name;
+      speak('تم اختيار درس ' + name);
+    }
+
+    function speakNow(){
+      if(!currentLesson){
+        speak('اختر درسًا أولًا.');
+        return;
+      }
+      speak('الدرس الحالي هو ' + currentLesson);
+    }
+
+    function answer(correct){
+      const r = document.getElementById('result');
+      if(correct){
+        r.textContent = '✅ أحسنت! إجابة صحيحة.';
+        speak('أحسنت! إجابة صحيحة.');
+      }else{
+        r.textContent = '❌ ليست الإجابة الصحيحة. الإجابة هي 1973.';
+        speak('إجابة خاطئة، الإجابة الصحيحة هي 1973.');
+      }
+    }
+
+    function toggleLang(){
+      english = !english;
+      if(english){
+        document.documentElement.dir = 'ltr';
+        document.documentElement.lang = 'en';
+        document.getElementById('brandAr').textContent = 'Smart Braille Historian';
+        document.getElementById('brandEn').textContent = 'مؤرخ برايل الذكي';
+        document.getElementById('langBtn').textContent = 'English | العربية';
+        document.getElementById('heroTitle').textContent = 'Discover history... hear it, ask it, learn from it';
+        document.getElementById('heroText').textContent = 'An educational prototype designed for blind and low-vision users';
+        document.getElementById('c1').textContent = 'Ask the Historian';
+        document.getElementById('p1').textContent = 'Ask a history question and hear the answer.';
+        document.getElementById('c2').textContent = 'Historical Models';
+        document.getElementById('p2').textContent = 'Explore models and listen to their descriptions.';
+        document.getElementById('c3').textContent = 'Audio Library';
+        document.getElementById('p3').textContent = 'Historical lessons, stories, and lectures.';
+        document.getElementById('c4').textContent = 'Quizzes';
+        document.getElementById('p4').textContent = 'Test your knowledge interactively.';
+      }else{
+        location.reload();
+      }
+    }
+  </script>
 </body>
 </html>
