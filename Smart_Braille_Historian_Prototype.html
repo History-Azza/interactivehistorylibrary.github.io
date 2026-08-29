@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" id="htmlRoot">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>مؤرخ برايل الذكي | Smart Braille Historian</title>
-<!-- مكتبة قراءة الـ QR Code للكاميرا الحقيقية -->
+<!-- مكتبة قراءة الـ QR Code -->
 <script src="https://cdn.jsdelivr.net/npm/jsQR@1.4.0/dist/jsQR.js"></script>
 
 <style>
@@ -84,6 +84,34 @@ nav button,
 
 .hero h2{
   color:var(--primary);
+}
+
+.lang-selector-box{
+  display:flex;
+  justify-content:center;
+  gap:1.5rem;
+  margin-top:2rem;
+}
+
+.lang-card{
+  background:white;
+  border:2px solid var(--primary);
+  padding:2rem;
+  border-radius:1rem;
+  cursor:pointer;
+  text-align:center;
+  transition:.2s;
+  width:220px;
+}
+
+.lang-card:hover{
+  transform:translateY(-5px);
+  background:#eff6ff;
+}
+
+.lang-card h3{
+  color:var(--primary);
+  margin-top:0;
 }
 
 .grid{
@@ -330,114 +358,132 @@ body.ltr .braille{
 
 <header>
 <div class="brand">
-<h1 id="brandTitle">مؤرخ برايل الذكي | Smart Braille Historian</h1>
-<span id="brandSub">اختر لغة العرض والدروس</span>
+<h1 id="appTitle">مؤرخ برايل الذكي</h1>
+<span id="appSub">Smart Braille Historian</span>
 </div>
 <nav>
-<button id="langToggleBtn" onclick="toggleGlobalLang()">Switch to English</button>
+<button onclick="goHome()">🏠 <span id="navHomeText">الرئيسية</span></button>
 </nav>
 </header>
 
 <div class="container">
 
-<!-- HOME -->
-<div id="home" class="screen active">
+<!-- LANGUAGE SELECTION HOME -->
+<div id="langSelectScreen" class="screen active">
 <div class="hero">
-<h2 id="heroTitle">اكتشف التاريخ... اسمعه، اسأله، وتعلم منه</h2>
-<p id="heroText">نموذج تعليمي تفاعلي مصمم لدعم المكفوفين وضعاف البصر في دراسة التاريخ باللغتين العربية والإنجليزية</p>
+<h2>اختر لغة التطبيق / Choose Application Language</h2>
+<p>يرجى اختيار النسخة المفضلة لديك للبدء في استكشاف الدروس والتشغيل الصوتي</p>
+<div class="lang-selector-box">
+<div class="lang-card" onclick="setLanguage('ar')">
+<h3>🇪🇬 النسخة العربية</h3>
+<p>دروس، تفاعل، وصوت باللغة العربية الكاملة</p>
+</div>
+<div class="lang-card" onclick="setLanguage('en')">
+<h3>🇬🇧 English Version</h3>
+<p>Full lessons, interactive quiz & audio in English</p>
+</div>
+</div>
+</div>
+</div>
+
+<!-- MAIN DASHBOARD -->
+<div id="dashboard" class="screen">
+<div class="hero">
+<h2 id="dashTitle">اكتشف التاريخ... اسمعه، اسأله، وتعلم منه</h2>
+<p id="dashDesc">نموذج تعليمي تفاعلي مصمم لدعم المكفوفين وضعاف البصر</p>
 </div>
 
 <div class="grid">
-<div class="card" onclick="openSection('ask')">
-<h3 id="cardAskTitle">💬 اسأل المؤرخ</h3>
-<p id="cardAskDesc">اطرح أي سؤال تاريخي بأي صيغة واستمع للإجابة الصوتية.</p>
+<div class="card" onclick="show('ask')">
+<h3 id="cAskTitle">💬 اسأل المؤرخ</h3>
+<p id="cAskDesc">اطرح أي سؤال تاريخي بأي صيغة واستمع للإجابة الصوتية.</p>
 </div>
-<div class="card" onclick="openSection('models')">
-<h3 id="cardModelsTitle">🏛️ النماذج التاريخية</h3>
-<p id="cardModelsDesc">استكشف المجسمات والدروس المرتبطة بها.</p>
+<div class="card" onclick="show('models')">
+<h3 id="cModelsTitle">🏛️ النماذج التاريخية</h3>
+<p id="cModelsDesc">استكشف المجسمات والدروس المرتبطة بها.</p>
 </div>
-<div class="card" onclick="openSection('library')">
-<h3 id="cardLibraryTitle">🎧 المكتبة الصوتية</h3>
-<p id="cardLibraryDesc">دروس تاريخية وقصص ومحاضرات مسموعة.</p>
+<div class="card" onclick="show('library')">
+<h3 id="cLibraryTitle">🎧 المكتبة الصوتية</h3>
+<p id="cLibraryDesc">دروس تاريخية وقصص ومحاضرات مسموعة.</p>
 </div>
-<div class="card" onclick="openSection('quiz')">
-<h3 id="cardQuizTitle">❓ اختبارات تفاعلية</h3>
-<p id="cardQuizDesc">اختبر معلوماتك بعد كل درس.</p>
+<div class="card" onclick="show('quiz')">
+<h3 id="cQuizTitle">❓ اختبارات تفاعلية</h3>
+<p id="cQuizDesc">اختبر معلوماتك بعد كل درس.</p>
 </div>
-<div class="card" onclick="openSection('camera')">
-<h3 id="cardCameraTitle">📷 قارئ المجسمات بالكاميرا (QR)</h3>
-<p id="cardCameraDesc">وجه الكاميرا نحو باركود المجسم للتعرف عليه وتشغيل شرحه فورا.</p>
+<div class="card" onclick="show('camera')">
+<h3 id="cCameraTitle">📷 قارئ المجسمات بالكاميرا (QR)</h3>
+<p id="cCameraDesc">وجه الكاميرا نحو باركود المجسم للتعرف عليه وتشغيل شرحه فورا.</p>
 </div>
 </div>
 </div>
 
 <!-- ASK -->
 <div id="ask" class="screen">
-<button class="back-btn" onclick="show('home')" id="backHomeAsk">← الرجوع للرئيسية</button>
-<h2 id="askHeaderTitle">اسأل المؤرخ</h2>
+<button class="back-btn" onclick="show('dashboard')">← <span id="backDash1">الرجوع للقائمة</span></button>
+<h2 id="askH2">اسأل المؤرخ</h2>
 <div class="chat-box" id="messages">
-<div class="msg bot" id="welcomeChatMsg">أهلًا بك! اطرح سؤالك التاريخي بأي طريقة تفضلها (بالكتابة أو الصوت)، وسأجيبك فورًا.</div>
+<div class="msg bot" id="chatWelcome">أهلًا بك! اطرح سؤالك التاريخي بأي طريقة تفضلها، وسأجيبك فورًا.</div>
 </div>
 <div class="input-group">
-<input id="question" placeholder="اكتب سؤالك هنا بأي صيغة..." onkeydown="if(event.key==='Enter')askQuestion()">
-<button onclick="askQuestion()" id="sendBtnText">إرسال</button>
+<input id="question" placeholder="اكتب سؤالك هنا...">
+<button onclick="askQuestion()" id="sendBtn">إرسال</button>
 <button class="mic-btn" onclick="listenToVoice()">🎙️</button>
 </div>
 </div>
 
 <!-- MODELS -->
 <div id="models" class="screen">
-<button class="back-btn" onclick="show('home')" id="backHomeModels">← الرجوع للرئيسية</button>
-<h2 id="modelsHeaderTitle">النماذج التاريخية اللمسية</h2>
+<button class="back-btn" onclick="show('dashboard')">← <span id="backDash2">الرجوع للقائمة</span></button>
+<h2 id="modelsH2">النماذج التاريخية اللمسية</h2>
 <div class="grid">
 <div class="card" onclick="openLesson('dome')">
-<h3 id="mDomeTitle">🕌 قبة الصخرة</h3>
-<p id="mDomeDesc">الدرس الأول: قبة الصخرة والقدس والقضية الفلسطينية.</p>
+<h3 id="mod1Title">🕌 قبة الصخرة</h3>
+<p id="mod1Desc">الدرس الأول: قبة الصخرة والقدس والقضية الفلسطينية.</p>
 </div>
 <div class="card" onclick="openLesson('prophet')">
-<h3 id="mProphetTitle">🌙 المسجد النبوي</h3>
-<p id="mProphetDesc">الدرس الثاني: حياة النبي محمد ﷺ والمسجد النبوي.</p>
+<h3 id="mod2Title">🌙 المسجد النبوي</h3>
+<p id="mod2Desc">الدرس الثاني: حياة النبي محمد ﷺ والمسجد النبوي.</p>
 </div>
 <div class="card" onclick="openLesson('egypt')">
-<h3 id="mEgyptTitle">🇪🇬 خريطة مصر</h3>
-<p id="mEgyptDesc">الدرس الثالث: مصر والموقع والجغرافيا.</p>
+<h3 id="mod3Title">🇪🇬 خريطة مصر</h3>
+<p id="mod3Desc">الدرس الثالث: مصر والموقع والجغرافيا.</p>
 </div>
 <div class="card" onclick="openLesson('october')">
-<h3 id="mOctoberTitle">🇪🇬 حرب أكتوبر 1973</h3>
-<p id="mOctoberDesc">الدرس الرابع: العبور واسترداد الأرض.</p>
+<h3 id="mod4Title">🇪🇬 حرب أكتوبر 1973</h3>
+<p id="mod4Desc">الدرس الرابع: العبور واسترداد الأرض.</p>
 </div>
 </div>
 </div>
 
 <!-- LESSON -->
 <div id="lesson" class="screen">
-<button class="back-btn" onclick="show('models')" id="backModelsBtn">← العودة للنماذج</button>
+<button class="back-btn" onclick="show('models')">← <span id="backModText">العودة للنماذج</span></button>
 <div id="lessonContent"></div>
 </div>
 
 <!-- LIBRARY -->
 <div id="library" class="screen">
-<button class="back-btn" onclick="show('home')" id="backHomeLib">← الرجوع للرئيسية</button>
-<h2 id="libHeaderTitle">🎧 المكتبة الصوتية التاريخية</h2>
+<button class="back-btn" onclick="show('dashboard')">← <span id="backDash3">الرجوع للقائمة</span></button>
+<h2 id="libH2">🎧 المكتبة الصوتية التاريخية</h2>
 <div class="grid">
 <div class="card" onclick="playFullLesson('dome')">
-<h3 id="lDomeTitle">قبة الصخرة والقضية الفلسطينية</h3>
-<p id="lDomeDesc">تشغيل الدرس صوتيًا.</p>
+<h3 id="lib1Title">قبة الصخرة والقضية الفلسطينية</h3>
+<p id="lib1Desc">تشغيل الدرس صوتيًا.</p>
 </div>
 <div class="card" onclick="playFullLesson('prophet')">
-<h3 id="lProphetTitle">حياة النبي ﷺ والمسجد النبوي</h3>
-<p id="lProphetDesc">تشغيل الدرس صوتيًا.</p>
+<h3 id="lib2Title">حياة النبي ﷺ والمسجد النبوي</h3>
+<p id="lib2Desc">تشغيل الدرس صوتيًا.</p>
 </div>
 <div class="card" onclick="playFullLesson('egypt')">
-<h3 id="lEgyptTitle">خريطة مصر</h3>
-<p id="lEgyptDesc">تشغيل الدرس صوتيًا.</p>
+<h3 id="lib3Title">خريطة مصر</h3>
+<p id="lib3Desc">تشغيل الدرس صوتيًا.</p>
 </div>
 <div class="card" onclick="playFullLesson('october')">
-<h3 id="lOctoberTitle">حرب أكتوبر 1973</h3>
-<p id="lOctoberDesc">تشغيل الدرس صوتيًا.</p>
+<h3 id="lib4Title">حرب أكتوبر 1973</h3>
+<p id="lib4Desc">تشغيل الدرس صوتيًا.</p>
 </div>
 </div>
-<p id="now" class="pill" style="margin-top:1rem;">لم يتم اختيار درس بعد</p>
+<p id="nowPlaying" class="pill" style="margin-top:1rem;">لم يتم اختيار درس بعد</p>
 <div class="audio-bar">
 <button onclick="stopSpeech()" id="stopAudioBtn">⏹ إيقاف الصوت</button>
 </div>
@@ -445,25 +491,25 @@ body.ltr .braille{
 
 <!-- QUIZ -->
 <div id="quiz" class="screen">
-<button class="back-btn" onclick="show('home')" id="backHomeQuiz">← الرجوع للرئيسية</button>
-<h2 id="quizHeaderTitle">❓ اختبارات الدروس</h2>
-<p id="quizSubText">اختر الدرس ثم أجب عن الأسئلة.</p>
+<button class="back-btn" onclick="show('dashboard')">← <span id="backDash4">الرجوع للقائمة</span></button>
+<h2 id="quizH2">❓ اختبارات الدروس</h2>
+<p id="quizSub">اختر الدرس ثم أجب عن الأسئلة.</p>
 <div class="grid">
-<div class="card" onclick="startQuiz('dome')"><h3 id="qDomeTitle">🕌 قبة الصخرة</h3></div>
-<div class="card" onclick="startQuiz('prophet')"><h3 id="qProphetTitle">🌙 المسجد النبوي</h3></div>
-<div class="card" onclick="startQuiz('egypt')"><h3 id="qEgyptTitle">🇪🇬 خريطة مصر</h3></div>
-<div class="card" onclick="startQuiz('october')"><h3 id="qOctoberTitle">🇪🇬 حرب أكتوبر 1973</h3></div>
+<div class="card" onclick="startQuiz('dome')"><h3 id="qz1">🕌 قبة الصخرة</h3></div>
+<div class="card" onclick="startQuiz('prophet')"><h3 id="qz2">🌙 المسجد النبوي</h3></div>
+<div class="card" onclick="startQuiz('egypt')"><h3 id="qz3">🇪🇬 خريطة مصر</h3></div>
+<div class="card" onclick="startQuiz('october')"><h3 id="qz4">🇪🇬 حرب أكتوبر 1973</h3></div>
 </div>
 <div id="quizArea"></div>
 </div>
 
 <!-- CAMERA -->
 <div id="camera" class="screen">
-<button class="back-btn" onclick="show('home')" id="backHomeCam">← الرجوع للرئيسية</button>
-<h2 id="camHeaderTitle">📷 التعرف الفوري على المجسمات بالكاميرا</h2>
-<div class="notice" id="camNoticeText">
+<button class="back-btn" onclick="show('dashboard')">← <span id="backDash5">الرجوع للقائمة</span></button>
+<h2 id="camH2">📷 التعرف الفوري على المجسمات بالكاميرا</h2>
+<div class="notice" id="camNotice">
 <strong>تعليمات الاستخدام:</strong><br>
-قم بتشغيل الكاميرا ووجه عدسة الهاتف نحو باركود المجسم (QR Code الخاص بقبة الصخرة، المسجد النبوي، خريطة مصر، أو حرب أكتوبر). سيقوم التطبيق بالتعرف عليه تلقائيًا وفتح الدرس الخاص به فورًا.
+قم بتشغيل الكاميرا ووجه عدسة الهاتف نحو باركود المجسم (QR Code). سيقوم التطبيق بالتعرف عليه تلقائيًا وفتح الدرس الخاص به فورًا.
 </div>
 <div class="camera-box">
 <video id="cameraVideo" autoplay playsinline></video>
@@ -479,7 +525,7 @@ body.ltr .braille{
 </div>
 
 <script>
-let lang = 'ar'; // افتراضيا اللغة العربية
+let currentLang = 'ar';
 let currentLesson = '';
 let currentQuiz = null;
 let quizIndex = 0;
@@ -487,300 +533,281 @@ let score = 0;
 let cameraStream = null;
 let scanningInterval = null;
 
-// محتويات الدروس باللغتين بالكامل
-const lessonsData = {
+// قاعدة بيانات الدروس والأسئلة منفصلة تماماً لكل لغة
+const contentData = {
 ar: {
+appTitle: 'مؤرخ برايل الذكي',
+appSub: 'Smart Braille Historian',
+navHome: 'الرئيسية',
+dashTitle: 'اكتشف التاريخ... اسمعه، اسأله، وتعلم منه',
+dashDesc: 'نموذج تعليمي تفاعلي مصمم لدعم المكفوفين وضعاف البصر',
+cAskTitle: '💬 اسأل المؤرخ', cAskDesc: 'اطرح أي سؤال تاريخي بأي صيغة واستمع للإجابة الصوتية.',
+cModelsTitle: '🏛️ النماذج التاريخية', cModelsDesc: 'استكشف المجسمات والدروس المرتبطة بها.',
+cLibraryTitle: '🎧 المكتبة الصوتية', cLibraryDesc: 'دروس تاريخية وقصص ومحاضرات مسموعة.',
+cQuizTitle: '❓ اختبارات تفاعلية', cQuizDesc: 'اختبر معلوماتك بعد كل درس.',
+cCameraTitle: '📷 قارئ المجسمات بالكاميرا', cCameraDesc: 'وجه الكاميرا نحو باركود المجسم للتعرف عليه وتشغيل شرحه.',
+backDash: 'الرجوع للقائمة',
+askH2: 'اسأل المؤرخ',
+chatWelcome: 'أهلًا بك! اطرح سؤالك التاريخي بأي طريقة تفضلها، وسأجيبك فورًا.',
+questionPlaceholder: 'اكتب سؤالك هنا...',
+sendBtn: 'إرسال',
+modelsH2: 'النماذج التاريخية اللمسية',
+mod1Title: '🕌 قبة الصخرة', mod1Desc: 'الدرس الأول: قبة الصخرة والقدس والقضية الفلسطينية.',
+mod2Title: '🌙 المسجد النبوي', mod2Desc: 'الدرس الثاني: حياة النبي محمد ﷺ والمسجد النبوي.',
+mod3Title: '🇪🇬 خريطة مصر', mod3Desc: 'الدرس الثالث: مصر والموقع والجغرافيا.',
+mod4Title: '🇪🇬 حرب أكتوبر 1973', mod4Desc: 'الدرس الرابع: العبور واسترداد الأرض.',
+backModText: 'العودة للنماذج',
+libH2: '🎧 المكتبة الصوتية التاريخية',
+lib1Title: 'قبة الصخرة والقضية الفلسطينية', lib1Desc: 'تشغيل الدرس صوتيًا.',
+lib2Title: 'حياة النبي ﷺ والمسجد النبوي', lib2Desc: 'تشغيل الدرس صوتيًا.',
+lib3Title: 'خريطة مصر', lib3Desc: 'تشغيل الدرس صوتيًا.',
+lib4Title: 'حرب أكتوبر 1973', lib4Desc: 'تشغيل الدرس صوتيًا.',
+nowPlaying: 'لم يتم اختيار درس بعد',
+stopAudioBtn: '⏹ إيقاف الصوت',
+quizH2: '❓ اختبارات الدروس',
+quizSub: 'اختر الدرس ثم أجب عن الأسئلة.',
+camH2: '📷 التعرف الفوري على المجسمات بالكاميرا',
+camNotice: '<strong>تعليمات الاستخدام:</strong><br>قم بتشغيل الكاميرا ووجه عدسة الهاتف نحو باركود المجسم (QR Code). سيقوم التطبيق بالتعرف عليه تلقائيًا وفتح الدرس الخاص به فورًا.',
+camStartBtn: '📷 تشغيل الكاميرا للتعرف',
+camStopBtn: '⏹ إيقاف الكاميرا',
+camStatus: 'الكاميرا متوقفة. اضغط تشغيل لتفعيل القارئ الفوري.',
+lessons: {
 dome: {
 title: '🕌 الدرس الأول: قبة الصخرة والقضية الفلسطينية',
-intro: 'أهلًا بك في درس جديد من تطبيق مؤرخ برايل الذكي. في هذا الدرس سنتعرف على قبة الصخرة ومدينة القدس، ثم نستعرض بصورة تاريخية مبسطة أهم المحطات المرتبطة بالقضية الفلسطينية، مع استخدام المجسم اللمسي لتكوين صورة ذهنية للمكان.',
+intro: 'أهلًا بك في درس قبة الصخرة والقدس والقضية الفلسطينية.',
 sections: [
-['أهداف الدرس', 'أن يتعرف الطالب على مدينة القدس وقبة الصخرة، ويفهم أهم المحطات التاريخية للقضية الفلسطينية، ويستخدم المجسم اللمسي والاستماع لتكون تصور ذهني للمكان.'],
-['قبة الصخرة', 'تقع قبة الصخرة في مدينة القدس داخل الحرم الشريف، في المنطقة التي تضم المسجد الأقصى. بُنيت في العصر الأموي في عهد الخليفة عبد الملك بن مروان، واكتمل بناؤها في أواخر القرن السابع الميلادي. وتتميز بقبتها الذهبية وزخارفها ونقوشها الإسلامية.'],
-['القدس وفلسطين', 'القدس مدينة ذات تاريخ طويل ومكانة دينية وحضارية كبيرة. ويُعد المسجد الأقصى من أبرز معالمها، وله مكانة مهمة في التاريخ الإسلامي والذاكرة الثقافية العربية.'],
-['القضية الفلسطينية', 'في أواخر القرن التاسع عشر وبدايات القرن العشرين ظهرت الحركة الصهيونية وسعت إلى إقامة وطن لليهود في فلسطين. وخلال الانتداب البريطاني زادت الهجرة اليهودية والتوترات السياسية. وفي عام 1917 صدر وعد بلفور، ثم أصبحت فلسطين تحت الانتداب البريطاني بعد الحرب العالمية الأولى.'],
-['عام 1947', 'في عام 1947 أصدرت الأمم المتحدة قرارًا يقترح تقسيم فلسطين إلى دولتين عربية ويهودية، مع وضع خاص لمدينة القدس. رفض العرب الفلسطينيون والدول العربية المشروع، بينما قبلته الحركة الصهيونية.'],
-['عام 1948 والنكبة', 'في عام 1948 أُعلن قيام دولة إسرائيل واندلعت الحرب. تعرض عدد كبير من الفلسطينيين للتهجير من مدنهم وقراهم وفقدوا منازلهم وأراضيهم، ويُعرف هذا الحدث في الذاكرة الفلسطينية باسم النكبة.'],
-['بعد عام 1967', 'في عام 1967 وقعت حرب جديدة في المنطقة وسيطرت إسرائيل على الضفة الغربية وقطاع غزة، بما في ذلك القدس الشرقية. واستمرت القضية الفلسطينية في العقود التالية، وأصبحت قضايا القدس واللاجئين والحدود والمستوطنات وحقوق الفلسطينيين من أبرز موضوعاتها.'],
-['استكشاف المجسم', 'ضع يديك على المجسم برفق. ابدأ من القاعدة ثم انتقل إلى الجزء الأوسط وابحث عن القبة في الأعلى. حاول تكوين صورة ذهنية لشكل المبنى من خلال اللمس والاستماع.']
+['أهداف الدرس', 'أن يتعرف الطالب على مدينة القدس وقبة الصخرة والمحطات التاريخية للقضية الفلسطينية.'],
+['قبة الصخرة', 'تقع قبة الصخرة في القدس داخل الحرم الشريف، بُنيت في العصر الأموي في عهد الخليفة عبد الملك بن مروان.'],
+['القضية الفلسطينية', 'مرت القضية الفلسطينية بمحطات كبرى تشمل وعد بلفور عام 1917، قرار التقسيم عام 1947، والنكبة عام 1948، وحرب 1967.']
 ]
 },
 prophet: {
 title: '🌙 الدرس الثاني: حياة النبي محمد ﷺ والمسجد النبوي',
-intro: 'في هذا الدرس سنتعرف على بعض المحطات الرئيسية في حياة النبي محمد ﷺ، والهجرة إلى المدينة المنورة، وبناء المسجد النبوي ودوره في المجتمع الإسلامي الأول.',
+intro: 'في هذا الدرس سنتعرف على حياة النبي محمد ﷺ والهجرة النبوية وبناء المسجد النبوي.',
 sections: [
-['مولد النبي ونشأته', 'وُلد النبي محمد ﷺ في مكة المكرمة في عام يُعرف بعام الفيل، في القرن السادس الميلادي. توفي والده قبل مولده، ثم توفيت والدته وهو صغير، ونشأ في مكة وعُرف بالصدق والأمانة.'],
-['بداية الدعوة', 'عندما بلغ النبي ﷺ الأربعين من عمره نزل عليه الوحي لأول مرة وهو يتعبد في غار حراء. وكانت بداية سورة العلق من أوائل ما نزل عليه: اقرأ باسم ربك الذي خلق. بدأ دعوته إلى الإسلام في مكة ودعا إلى عبادة الله والتحلي بالأخلاق والقيم.'],
-['الهجرة إلى المدينة', 'هاجر النبي ﷺ مع أصحابه من مكة إلى يثرب التي عُرفت بعد ذلك بالمدينة المنورة. وقعت الهجرة عام 622م، وأصبحت بداية للتقويم الهجري، وكانت نقطة تحول في تاريخ الإسلام.'],
-['بناء المسجد النبوي', 'بعد الوصول إلى المدينة كان من أهم الأعمال بناء المسجد النبوي. أصبح المسجد مكانًا للعبادة والتعليم والتشاور، ومركزًا مهمًا للمجتمع الإسلامي الأول.'],
-['المسجد النبوي عبر التاريخ', 'شهد المسجد النبوي توسعات متعددة عبر التاريخ لاستيعاب أعداد المسلمين المتزايدة، وشهد في العصر الحديث توسعات كبيرة وتجهيزات متطورة.'],
-['استكشاف المجسم', 'ضع يديك على قاعدة المجسم برفق، ثم تتبع حدود المبنى والأجزاء البارزة فيه. حاول تكوين صورة ذهنية للمكان من خلال اللمس والاستماع.']
+['مولد النبي ونشأته', 'وُلد النبي محمد ﷺ في مكة المكرمة في عام الفيل، وعُرف بالصدق والأمانة.'],
+['الهجرة والمسجد النبوي', 'هاجر النبي ﷺ إلى المدينة المنورة عام 622م وبنى المسجد النبوي الذي أصبح مركزاً للتعليم والعبادة.']
 ]
 },
 egypt: {
 title: '🇪🇬 الدرس الثالث: خريطة مصر',
-intro: 'في هذا الدرس سنستكشف خريطة جمهورية مصر العربية باللمس والاستماع، لنتعرف على موقع مصر وحدودها ونهر النيل والدلتا وسيناء وقناة السويس.',
+intro: 'استكشاف خريطة جمهورية مصر العربية وموقعها الجغرافي ونهر النيل.',
 sections: [
-['موقع مصر', 'تقع معظم أراضي مصر في شمال شرق قارة أفريقيا، وتمتد أجزاء من أراضيها في قارة آسيا وهي شبه جزيرة سيناء. ويمنحها ذلك موقعًا مهمًا عند ملتقى أفريقيا آسيا وقرب أوروبا.'],
-['حدود مصر', 'يحد مصر غربًا ليبيا، وجنوبًا السودان، وشمال شرق فلسطين، وتطل شمالًا على البحر المتوسط وشرقًا على البحر الأحمر.'],
-['نهر النيل', 'يجري نهر النيل من الجنوب نحو الشمال عبر الأراضي المصرية حتى يصب في البحر المتوسط. وارتبط تاريخ مصر وحضارتها بنهر النيل ارتباطًا وثيقًا.'],
-['وادي النيل والدلتا', 'يمتد وادي النيل في شريط طويل من الجنوب إلى الشمال، وعند الشمال تتفرع مياهه في منطقة واسعة تعرف بدلتا النيل، وهي منطقة زراعية وسكانية مهمة.'],
-['سيناء وقناة السويس', 'تقع شبه جزيرة سيناء في شرق مصر وهي الجزء الآسيوي من الأراضي المصرية. أما قناة السويس فهي ممر مائي يصل البحر المتوسط بالبحر الأحمر وتعد من أهم طرق الملاحة البحرية في العالم.'],
-['استكشاف الخريطة', 'ابدأ من الشمال وابحث عن البحر المتوسط، ثم تتبع نهر النيل من الجنوب إلى الشمال، وحدد الدلتا وسيناء والبحر الأحمر وقناة السويس.']
+['موقع مصر', 'تقع مصر في شمال شرق إفريقيا وتمتد في شبه جزيرة سيناء بآسيا، ويخترقها نهر النيل من الجنوب للشمال.']
 ]
 },
 october: {
-title: '🇪🇬 الدرس الرابع: حرب أكتوبر 1973: العبور واسترداد الأرض',
-intro: 'أهلًا بك في الدرس الرابع من تطبيق مؤرخ برايل الذكي. في هذا الدرس سنعود إلى السادس من أكتوبر عام 1973، لنتعرف على واحدة من أهم المحطات في التاريخ المصري الحديث. سنتعرف على الظروف التي سبقت الحرب، وكيف استعدت القوات المسلحة المصرية، وكيف بدأت عملية العبور وتحطيم خط بارليف، واستخدام المجسم اللمسي لتكوين تصور عن موقع قناة السويس واتجاه العبور.',
+title: '🇪🇬 الدرس الرابع: حرب أكتوبر 1973',
+intro: 'استعراض أحداث حرب أكتوبر المجيدة وعبور قناة السويس وتحطيم خط بارليف.',
 sections: [
-['أهداف الدرس', 'معرفة الظروف التي سبقت حرب أكتوبر، التعرف على تاريخ بداية الحرب، فهم أهمية قناة السويس في أحداث الحرب، التعرف على فكرة العبور، معرفة أهمية خط بارليف، فهم دور القوات المسلحة المصرية في الحرب، التعرف على النتائج السياسية والعسكرية للحرب، استخدام المجسم اللمسي لفهم الأحداث المكانية والربط بين الجغرافيا والتاريخ.'],
-['خلفية الحرب', 'في يونيو عام 1967 وقعت حرب بين إسرائيل ومصر وسوريا والأردن. وانتهت الحرب بسيطرة إسرائيل على شبه جزيرة سيناء المصرية، بالإضافة إلى أراضٍ عربية أخرى. وبعد الحرب بدأت مرحلة عُرفت باسم حرب الاستنزاف، وشهدت مواجهات عسكرية على الجبهة المصرية. واستمرت الاستعدادات المصرية لاستعادة الأراضي المحتلة حتى بدأت حرب أكتوبر عام 1973.'],
-['الاستعداد للحرب', 'عملت القوات المسلحة المصرية خلال السنوات السابقة للحرب على إعادة بناء قدراتها والاستعداد للمعركة. وشمل ذلك التدريب العسكري، وإعداد الخطط، والاستعداد لعبور قناة السويس. وكان عنصر المفاجأة والتخطيط الدقيق من العوامل المهمة في بداية العمليات العسكرية.'],
-['السادس من أكتوبر 1973', 'في يوم السبت السادس من أكتوبر عام 1973، الموافق العاشر من رمضان، بدأت القوات المصرية والسورية هجومًا متزامنًا ضد القوات الإسرائيلية. وعلى الجبهة المصرية بدأت القوات المسلحة المصرية عملية العبور عبر قناة السويس. ونجحت القوات المصرية في عبور القناة وإنشاء رؤوس جسور على الضفة الشرقية.'],
-['خط بارليف', 'أقامت إسرائيل على الضفة الشرقية لقناة السويس سلسلة من التحصينات العسكرية عُرفت باسم خط بارليف. وكان الهدف منها حماية القوات الإسرائيلية ومنع القوات المصرية من عبور القناة. وتمكنت القوات المصرية من التغلب على التحصينات وفتح ممرات لعبور القوات والمعدات إلى الضفة الشرقية.'],
-['عبور قناة السويس', 'توجد قناة السويس في المنطقة الفاصلة بين القوات المصرية في غرب القناة والقوات الإسرائيلية في شرقها. بدأت القوات المصرية في عبور القناة باستخدام وسائل متعددة، وأنشأت جسورًا وممرات سمحت بانتقال الجنود والمعدات. وأصبح العبور أحد أبرز أحداث حرب أكتوبر.'],
-['نتائج الحرب', 'كان لحرب أكتوبر تأثير كبير على مسار الصراع العربي الإسرائيلي. وأظهرت الحرب قدرة القوات المسلحة المصرية على التخطيط والتنفيذ والعبور. وأدت الحرب إلى تحولات سياسية وعسكرية مهمة، ومهدت الطريق لمفاوضات لاحقة. وفي عام 1982 اكتمل الانسحاب الإسرائيلي من معظم شبه جزيرة سيناء، مع استمرار وجود قضية طابا التي حُسمت لاحقًا لصالح مصر.'],
-['تحرير طابا', 'ظلت منطقة طابا موضع خلاف بين مصر وإسرائيل بعد الانسحاب من سيناء. ولجأت مصر إلى التحكيم الدولي لإثبات حقها في طابا. وفي عام 1988 صدر حكم هيئة التحكيم الدولية لصالح مصر، وفي عام 1989 تم رفع العلم المصري على طابا. وأصبحت عودة طابا مثالًا على أهمية استخدام الوسائل القانونية والدبلوماسية إلى جانب العمل العسكري والسياسي.'],
-['استكشاف مجسم حرب أكتوبر', 'الآن استخدم يديك لاستكشاف المجسم. ابدأ بتحديد الجزء الذي يمثل قناة السويس. حاول تحديد الضفة الغربية والضفة الشرقية. ثم تتبع المسارات التي توضح اتجاه العبور. ابحث عن العناصر التي تمثل مواقع القوات والتحصينات. أثناء استكشاف المجسم، تذكر أن فهم المكان واتجاه الحركة يساعدنا على فهم الحدث التاريخي بصورة أفضل.']
+['حرب أكتوبر', 'في السادس من أكتوبر 1973 عبرت القوات المسلحة المصرية قناة السويس وحطمت خط بارليف واستردت الأرض.']
 ]
 }
 },
+quizzes: {
+dome: [
+['أين تقع قبة الصخرة؟', ['القدس', 'القاهرة', 'دمشق'], 0],
+['من الخليفة المرتبط ببناء قبة الصخرة؟', ['صلاح الدين الأيوبي', 'عبد الملك بن مروان', 'عمر بن عبد العزيز'], 1]
+],
+prophet: [
+['أين وُلد النبي محمد ﷺ؟', ['مكة المكرمة', 'المدينة المنورة', 'القدس'], 0],
+['في أي عام وقعت الهجرة النبوية؟', ['570م', '610م', '622م'], 2]
+],
+egypt: [
+['في أي قارة تقع مصر؟', ['أفريقيا', 'أوروبا', 'آسيا'], 0],
+['ما النهر الذي يخترق مصر؟', ['النيل', 'دجلة', 'الفرات'], 0]
+],
+october: [
+['متى بدأت حرب أكتوبر؟', ['6 أكتوبر 1973', '5 يونيو 1967', '25 أبريل 1982'], 0],
+['ما اسم التحصينات الإسرائيلية على الضفة الشرقية؟', ['خط بارليف', 'خط السويس', 'خط الحدود'], 0]
+]
+},
+qa: [
+{ keywords: ['متى', 'حرب اكتوبر', 'أكتوبر'], answer: 'بدأت حرب أكتوبر في السادس من أكتوبر عام 1973.' },
+{ keywords: ['قبة الصخرة', 'القدس'], answer: 'تقع قبة الصخرة في القدس الشريف وبناها الخليفة عبد الملك بن مروان.' },
+{ keywords: ['مصر', 'النيل'], answer: 'تقع مصر في شمال شرق إفريقيا ويخترقها نهر النيل.' }
+]
+},
 en: {
+appTitle: 'Smart Braille Historian',
+appSub: 'مؤرخ برايل الذكي',
+navHome: 'Home',
+dashTitle: 'Discover History... Hear it, Ask it, Learn',
+dashDesc: 'Interactive educational prototype for blind and low-vision students',
+cAskTitle: '💬 Ask the Historian', cAskDesc: 'Ask any historical question and listen to audio answers.',
+cModelsTitle: '🏛️ Historical Models', cModelsDesc: 'Explore tactile models and lessons.',
+cLibraryTitle: '🎧 Audio Library', cLibraryDesc: 'Listen to historical lessons and lectures.',
+cQuizTitle: '❓ Interactive Quizzes', cQuizDesc: 'Test your knowledge after each lesson.',
+cCameraTitle: '📷 Camera QR Reader', cCameraDesc: 'Point the camera at model QR codes to play lessons instantly.',
+backDash: 'Back to Menu',
+askH2: 'Ask the Historian',
+chatWelcome: 'Welcome! Ask your historical question and I will answer immediately.',
+questionPlaceholder: 'Type your question here...',
+sendBtn: 'Send',
+modelsH2: 'Tactile Historical Models',
+mod1Title: '🕌 Dome of the Rock', mod1Desc: 'Lesson 1: Dome of the Rock, Jerusalem, and Palestine.',
+mod2Title: '🌙 Al-Nabawi Mosque', mod2Desc: 'Lesson 2: Life of Prophet Muhammad ﷺ & Al-Nabawi Mosque.',
+mod3Title: '🇪🇬 Map of Egypt', mod3Desc: 'Lesson 3: Egypt geography and location.',
+mod4Title: '🇪🇬 October 1973 War', mod4Desc: 'Lesson 4: Crossing and Land Recovery.',
+backModText: 'Back to Models',
+libH2: '🎧 Historical Audio Library',
+lib1Title: 'Dome of the Rock & Palestine', lib1Desc: 'Play lesson audio.',
+lib2Title: 'Prophet ﷺ Life & Al-Nabawi Mosque', lib2Desc: 'Play lesson audio.',
+lib3Title: 'Map of Egypt', lib3Desc: 'Play lesson audio.',
+lib4Title: 'October 1973 War', lib4Desc: 'Play lesson audio.',
+nowPlaying: 'No lesson selected yet',
+stopAudioBtn: '⏹ Stop Audio',
+quizH2: '❓ Lesson Quizzes',
+quizSub: 'Choose a lesson and answer questions.',
+camH2: '📷 Instant Camera QR Reader',
+camNotice: '<strong>Instructions:</strong><br>Turn on the camera and point lens at model QR code. The app will recognize it and open the lesson instantly.',
+camStartBtn: '📷 Start Camera',
+camStopBtn: '⏹ Stop Camera',
+camStatus: 'Camera stopped. Click start to activate.',
+lessons: {
 dome: {
-title: '🕌 Lesson 1: The Dome of the Rock and the Palestinian Cause',
-intro: 'Welcome to a new lesson from Smart Braille Historian. In this lesson, we will learn about the Dome of the Rock and Jerusalem, followed by an overview of the key historical milestones of the Palestinian cause, using tactile models to build a mental image.',
+title: '🕌 Lesson 1: The Dome of the Rock & Palestine',
+intro: 'Welcome to the lesson on the Dome of the Rock, Jerusalem, and Palestine.',
 sections: [
-['Lesson Objectives', 'To enable the student to recognize Jerusalem and the Dome of the Rock, understand the historical milestones of the Palestinian cause, and use tactile models and listening for mental visualization.'],
-['The Dome of the Rock', 'The Dome of the Rock is located in Jerusalem within Al-Aqsa Mosque compound. It was built during the Umayyad era under Caliph Abd al-Malik ibn Marwan and completed in the late 7th century AD, featuring a golden dome and Islamic inscriptions.'],
-['Jerusalem and Palestine', 'Jerusalem has a long history and great religious and cultural significance. Al-Aqsa Mosque is one of its most prominent landmarks, holding an essential place in Islamic history.'],
-['The Palestinian Cause', 'In the late 19th and early 20th centuries, the Zionist movement emerged seeking a national home for Jews in Palestine. During the British Mandate, Jewish immigration and political tensions increased, leading to the Balfour Declaration in 1917.'],
-['The Year 1947', 'In 1947, the United Nations proposed partitioning Palestine into Arab and Jewish states with a special status for Jerusalem. Palestinian and Arab leaders rejected the plan, while the Zionist movement accepted it.'],
-['The Year 1948 and the Nakba', 'In 1948, the State of Israel was declared, and war broke out. Large numbers of Palestinians were displaced from their homes and lands, an event known in Palestinian memory as the Nakba.'],
-['After 1967', 'In 1967, a new war erupted, and Israel captured the West Bank, Gaza Strip, and East Jerusalem. The Palestinian cause continued to focus on issues of Jerusalem, refugees, borders, and human rights.'],
-['Exploring the Model', 'Gently place your hands on the model. Start from the base, move to the middle, and locate the dome at the top. Try to build a mental image of the structure through touch and sound.']
+['Lesson Objectives', 'To understand Jerusalem, the Dome of the Rock, and Palestinian history milestones.'],
+['Dome of the Rock', 'Located in Jerusalem within Al-Aqsa compound, built during the Umayyad era by Abd al-Malik ibn Marwan.'],
+['Palestinian Cause', 'Key milestones include the Balfour Declaration 1917, Partition Plan 1947, Nakba 1948, and 1967 War.']
 ]
 },
 prophet: {
-title: '🌙 Lesson 2: The Life of Prophet Muhammad ﷺ and Al-Nabawi Mosque',
-intro: 'In this lesson, we will explore key milestones in the life of Prophet Muhammad ﷺ, the Migration to Medina, and the establishment of Al-Nabawi Mosque.',
+title: '🌙 Lesson 2: Life of Prophet Muhammad ﷺ',
+intro: 'Exploring the life of Prophet Muhammad ﷺ, the Hijrah, and Al-Nabawi Mosque.',
 sections: [
-['Birth and Early Life', 'Prophet Muhammad ﷺ was born in Mecca during the Year of the Elephant in the 6th century AD. Having lost his father before birth and mother at a young age, he grew up known for honesty and integrity.'],
-['The Beginning of the Message', 'At the age of forty, revelation descended upon him while meditating in Cave Hira. The early verses of Surah Al-Alaq began with: "Read in the name of your Lord who created." He initiated his call to Islam in Mecca.'],
-['Migration to Medina', 'The Prophet ﷺ and his companions migrated from Mecca to Yathrib, later known as Medina, in 622 AD. This migration marked the beginning of the Hijri calendar and a turning point in Islamic history.'],
-['Building Al-Nabawi Mosque', 'Upon reaching Medina, constructing Al-Nabawi Mosque was a top priority. It became a center for worship, education, consultation, and community building.'],
-['Al-Nabawi Mosque Through History', 'The mosque underwent various expansions throughout history to accommodate growing Muslim populations, culminating in modern mega-expansions.'],
-['Exploring the Model', 'Gently place your hands on the base of the model, trace its boundaries, and identify prominent features to form a mental picture.']
+['Birth and Early Life', 'Prophet Muhammad ﷺ was born in Mecca during the Year of the Elephant.'],
+['Hijrah and Al-Nabawi Mosque', 'Migrated to Medina in 622 AD and established Al-Nabawi Mosque as a center of learning.']
 ]
 },
 egypt: {
 title: '🇪🇬 Lesson 3: The Map of Egypt',
-intro: 'In this lesson, we will explore the map of the Arab Republic of Egypt through touch and audio, discovering its strategic location, borders, the Nile River, the Delta, Sinai, and the Suez Canal.',
+intro: 'Exploring the geography of Egypt and the Nile River.',
 sections: [
-['Location of Egypt', 'Most of Egypt is located in northeastern Africa, with parts extending into southwestern Asia via the Sinai Peninsula, giving it a unique transcontinental position.'],
-['Borders of Egypt', 'Egypt is bordered by Libya to the west, Sudan to the south, Palestine to the northeast, the Mediterranean Sea to the north, and the Red Sea to the east.'],
-['The Nile River', 'The Nile flows from south to north across Egyptian lands to empty into the Mediterranean, tying Egyptian history closely to its waters.'],
-['The Nile Valley and Delta', 'The Nile Valley stretches as a long strip from south to north, branching out into a wide agricultural and populated fan known as the Nile Delta.'],
-['Sinai and the Suez Canal', 'The Sinai Peninsula forms the Asian portion of Egypt in the east. The Suez Canal connects the Mediterranean and Red Seas, serving as a vital global maritime route.'],
-['Exploring the Map', 'Start from the north to locate the Mediterranean Sea, trace the Nile River from south to north, and identify the Delta, Sinai, Red Sea, and Suez Canal.']
+['Location', 'Egypt is located in northeastern Africa with Sinai in Asia, traversed by the Nile River.']
 ]
 },
 october: {
-title: '🇪🇬 Lesson 4: The October 1973 War: Crossing and Land Recovery',
-intro: 'Welcome to Lesson 4 of Smart Braille Historian. We return to October 6, 1973, to explore one of the most significant events in modern Egyptian history, including the military preparations, the crossing of the Suez Canal, and breaking the Bar Lev Line.',
+title: '🇪🇬 Lesson 4: October 1973 War',
+intro: 'Reviewing the glorious October War, crossing the Suez Canal, and breaking the Bar Lev Line.',
 sections: [
-['Lesson Objectives', 'Understand the conditions preceding the October War, the start date, the strategic importance of the Suez Canal, the crossing operation, the Bar Lev Line, the role of the Egyptian Armed Forces, and political outcomes.'],
-['Background of the War', 'In June 1967, a war broke out ending with Israeli control over the Sinai Peninsula and other Arab lands. This was followed by the War of Attrition, leading up to the preparations for the October 1973 War.'],
-['Preparation for War', 'The Egyptian Armed Forces spent years rebuilding capabilities, conducting military training, formulating precise plans, and preparing for the surprise crossing of the Suez Canal.'],
-['October 6, 1973', 'On Saturday, October 6, 1973 (10th of Ramadan), Egyptian and Syrian forces launched a synchronized offensive. The Egyptian Armed Forces successfully crossed the Suez Canal and established bridgeheads on the eastern bank.'],
-['The Bar Lev Line', 'Israel built a formidable chain of military fortifications known as the Bar Lev Line along the eastern bank of the Suez Canal. Egyptian forces successfully overcame these fortifications and opened crossing corridors.'],
-['Crossing the Suez Canal', 'The Suez Canal separated Egyptian forces in the west from Israeli forces in the east. Egyptian forces utilized multiple tactical means to cross, establishing bridges for troops and equipment.'],
-['Results of the War', 'The October War proved the planning and execution capabilities of the Egyptian Armed Forces, shifting regional dynamics and leading to peace negotiations and the eventual return of Sinai.'],
-['Liberation of Taba', 'Taba remained disputed after the Sinai withdrawal. Egypt resorted to international arbitration, and in 1988 an international ruling favored Egypt, leading to the raising of the Egyptian flag over Taba in 1989.'],
-['Exploring the October War Model', 'Use your hands to explore the model. Locate the Suez Canal, distinguish the western and eastern banks, and trace the crossing paths and military positions.']
+['October War', 'On October 6, 1973, the Egyptian Armed Forces crossed the Suez Canal and liberated the land.']
 ]
 }
-};
-
-// اختبارات الدروس باللغتين
-const quizzesData = {
-ar: {
-dome: [
-['أين تقع قبة الصخرة؟', ['القدس', 'القاهرة', 'دمشق'], 0],
-['في أي عصر بُنيت قبة الصخرة؟', ['العصر الأموي', 'العصر العثماني', 'العصر الحديث'], 0],
-['من الخليفة المرتبط ببناء قبة الصخرة؟', ['صلاح الدين الأيوبي', 'عبد الملك بن مروان', 'عمر بن عبد العزيز'], 1],
-['في أي عام صدر وعد بلفور؟', ['1917', '1947', '1967'], 0],
-['ماذا يُعرف عام 1948 في التاريخ الفلسطيني؟', ['النكبة', 'الثورة الصناعية', 'النهضة'], 0],
-['ما الحاسة الأساسية لاستكشاف المجسم؟', ['الشم', 'اللمس', 'التذوق'], 1]
-],
-prophet: [
-['أين وُلد النبي محمد ﷺ؟', ['مكة المكرمة', 'المدينة المنورة', 'القدس'], 0],
-['كم كان عمر النبي ﷺ عند نزول الوحي؟', ['25', '30', '40'], 2],
-['أين نزل الوحي أول مرة؟', ['غار حراء', 'غار ثور', 'المسجد النبوي'], 0],
-['إلى أين هاجر النبي ﷺ؟', ['دمشق', 'المدينة المنورة', 'بغداد'], 1],
-['في أي عام ميلادي وقعت الهجرة؟', ['570م', '610م', '622م'], 2],
-['ما أحد أدوار المسجد النبوي؟', ['التعليم والتشاور', 'التجارة فقط', 'السكن فقط'], 0]
-],
-egypt: [
-['في أي قارة تقع معظم أراضي مصر؟', ['أفريقيا', 'أوروبا', 'أمريكا الجنوبية'], 0],
-['ما الجزء المصري الواقع في آسيا؟', ['الدلتا', 'شبه جزيرة سيناء', 'الصحراء الغربية'], 1],
-['ما النهر المرتبط بالحضارة المصرية؟', ['النيل', 'دجلة', 'الفرات'], 0],
-['أين يقع البحر المتوسط بالنسبة لمصر؟', ['شمال مصر', 'جنوب مصر', 'غرب مصر'], 0],
-['ما الممر المائي الذي يصل المتوسط بالبحر الأحمر؟', ['قناة السويس', 'نهر النيل', 'خليج العقبة'], 0],
-['أين توجد دلتا النيل؟', ['جنوب مصر', 'شمال مصر', 'غرب مصر'], 1]
-],
-october: [
-['متى بدأت حرب أكتوبر؟', ['5 يونيو 1967', '6 أكتوبر 1973', '25 أبريل 1982'], 1],
-['ما الممر المائي الذي عبرته القوات المصرية؟', ['البحر المتوسط', 'قناة السويس', 'نهر النيل'], 1],
-['ما اسم التحصينات الإسرائيلية على الضفة الشرقية للقناة؟', ['خط بارليف', 'خط الحدود', 'خط سيناء'], 0],
-['ما الهدف الرئيسي من عملية العبور؟', ['عبور قناة السويس إلى الضفة الشرقية', 'الوصول إلى البحر المتوسط', 'عبور نهر النيل'], 0],
-['متى اكتمل الانسحاب الإسرائيلي من سيناء؟', ['1973', '1982', '1989'], 1],
-['ماذا حدث في طابا عام 1988؟', ['صدر حكم التحكيم الدولي لصالح مصر', 'بدأت حرب أكتوبر', 'بُنيت قناة السويس'], 0]
-]
 },
-en: {
+quizzes: {
 dome: [
 ['Where is the Dome of the Rock located?', ['Jerusalem', 'Cairo', 'Damascus'], 0],
-['During which era was the Dome of the Rock built?', ['Umayyad Era', 'Ottoman Era', 'Modern Era'], 0],
-['Which caliph ordered the building of the Dome of the Rock?', ['Saladin', 'Abd al-Malik ibn Marwan', 'Umar ibn Abd al-Aziz'], 1],
-['In what year was the Balfour Declaration issued?', ['1917', '1947', '1967'], 0],
-['What is the year 1948 known as in Palestinian history?', ['The Nakba', 'The Industrial Revolution', 'The Renaissance'], 0],
-['What is the primary sense used to explore the tactile model?', ['Smell', 'Touch', 'Taste'], 1]
+['Which caliph ordered building the Dome of the Rock?', ['Saladin', 'Abd al-Malik ibn Marwan', 'Umar II'], 1]
 ],
 prophet: [
 ['Where was Prophet Muhammad ﷺ born?', ['Mecca', 'Medina', 'Jerusalem'], 0],
-['How old was the Prophet ﷺ when revelation began?', ['25', '30', '40'], 2],
-['Where did the first revelation take place?', ['Cave Hira', 'Cave Thawr', 'Al-Nabawi Mosque'], 0],
-['To where did the Prophet ﷺ migrate?', ['Damascus', 'Medina', 'Baghdad'], 1],
-['In what Gregorian year did the Hijrah take place?', ['570 AD', '610 AD', '622 AD'], 2],
-['What was one of the roles of Al-Nabawi Mosque?', ['Education and consultation', 'Trade only', 'Housing only'], 0]
+['In what year did the Hijrah take place?', ['570 AD', '610 AD', '622 AD'], 2]
 ],
 egypt: [
-['On which continent is most of Egypt located?', ['Africa', 'Europe', 'South America'], 0],
-['Which part of Egypt is located in Asia?', ['The Delta', 'Sinai Peninsula', 'Western Desert'], 1],
-['What river is associated with Egyptian civilization?', ['Nile', 'Tigris', 'Euphrates'], 0],
-['Where is the Mediterranean Sea relative to Egypt?', ['North', 'South', 'West'], 0],
-['What waterway connects the Mediterranean and Red Seas?', ['Suez Canal', 'Nile River', 'Gulf of Aqaba'], 0],
-['Where is the Nile Delta located?', ['Southern Egypt', 'Northern Egypt', 'Western Egypt'], 1]
+['On which continent is most of Egypt located?', ['Africa', 'Europe', 'Asia'], 0],
+['What river traverses Egypt?', ['Nile', 'Tigris', 'Euphrates'], 0]
 ],
 october: [
-['When did the October War begin?', ['June 5, 1967', 'October 6, 1973', 'April 25, 1982'], 1],
-['What waterway did Egyptian forces cross?', ['Mediterranean Sea', 'Suez Canal', 'Nile River'], 1],
-['What was the name of the Israeli fortifications on the eastern bank?', ['Bar Lev Line', 'Border Line', 'Sinai Line'], 0],
-['What was the main goal of the crossing operation?', ['Crossing the Suez Canal to the eastern bank', 'Reaching the Mediterranean', 'Crossing the Nile'], 0],
-['When did the Israeli withdrawal from Sinai complete?', ['1973', '1982', '1989'], 1],
-['What happened in Taba in 1988?', ['International arbitration ruling favored Egypt', 'The October War began', 'The Suez Canal was built'], 0]
+['When did the October War begin?', ['October 6, 1973', 'June 5, 1967', 'April 25, 1982'], 0],
+['What was the name of the Israeli fortifications on the eastern bank?', ['Bar Lev Line', 'Suez Line', 'Border Line'], 0]
+]
+},
+qa: [
+{ keywords: ['when', 'war', 'october'], answer: 'The October War began on October 6, 1973.' },
+{ keywords: ['dome', 'rock', 'jerusalem'], answer: 'The Dome of the Rock is located in Jerusalem and was built by Caliph Abd al-Malik.' },
+{ keywords: ['egypt', 'nile'], answer: 'Egypt is located in northeastern Africa and is traversed by the Nile River.' }
 ]
 }
 };
 
-// محرك ذكاء اصطناعي محلي ثنائي اللغة للإجابة على الأسئلة
-const advancedAnswersData = {
-ar: [
-{ keywords: ['متى', 'يوم', 'تاريخ', 'بدأت', 'اندلعت', 'حرب اكتوبر', 'أكتوبر', 'حرب أكتوبر'], answer: 'بدأت حرب أكتوبر المجيدة في السادس من أكتوبر عام 1973 ميلاديًا، الموافق العاشر من رمضان 1393 هجريًا.' },
-{ keywords: ['خط بارليف', 'التحصينات', 'المانع الحصين'], answer: 'خط بارليف هو سلسلة من التحصينات العسكرية المانعة التي أقامتها إسرائيل على الضفة الشرقية لقناة السويس، وتمكنت القوات المسلحة المصرية من تحطيمه وفتح ممرات العبور في حرب أكتوبر 1973.' },
-{ keywords: ['قناة السويس', 'الممر', 'الملاحي'], answer: 'قناة السويس هي ممر مائي عالمي هام يربط بين البحر المتوسط والبحر الأحمر، وكانت مسرح العمليات الرئيسي لعملية العبور العظيمة في حرب أكتوبر.' },
-{ keywords: ['طابا', 'استرداد طابا', 'التحكيم الدولي'], answer: 'ظلت منطقة طابا موضع نزاع حتى لجأت مصر للتحكيم الدولي، وفي عام 1988 صدر الحكم لصالح مصر، وفي عام 1989 رُفع العلم المصري على طابا.' },
-{ keywords: ['قبة الصخرة', 'من بنى', 'عبد الملك'], answer: 'قبة الصخرة المعظمة تقع في القدس الشريف داخل الحرم القدسي، وبُنيت في العصر الأموي بأمر الخليفة عبد الملك بن مروان.' },
-{ keywords: ['النبي محمد', 'مولد', 'المسجد النبوي', 'الهجرة', 'غار حراء'], answer: 'وُلد النبي محمد ﷺ بمكة المكرمة، ونزل عليه الوحي بغار حراء، وهاجر إلى المدينة المنورة عام 622م حيث بني المسجد النبوي الشريف.' },
-{ keywords: ['مصر', 'موقع مصر', 'نهر النيل', 'سيناء'], answer: 'تقع مصر في شمال شرق إفريقيا وتضم شبه جزيرة سيناء بآسيا، ويخترقها نهر النيل العظيم الذي قامت على ضفافه أقدم الحضارات الإنسانية.' },
-{ keywords: ['1948', 'النكبة'], answer: 'عام 1948 شهد إعلان قيام دولة إسرائيل وتهجير أعداد كبيرة من الفلسطينيين، وهو ما يُعرف في الذاكرة الفلسطينية باسم النكبة.' }
-],
-en: [
-{ keywords: ['when', 'date', 'start', 'october war', 'war'], answer: 'The glorious October War began on October 6, 1973, corresponding to Ramadan 10, 1393 AH.' },
-{ keywords: ['bar lev', 'line', 'fortifications'], answer: 'The Bar Lev Line was a series of military fortifications built by Israel on the eastern bank of the Suez Canal, which was successfully breached by the Egyptian Armed Forces in 1973.' },
-{ keywords: ['suez canal', 'waterway'], answer: 'The Suez Canal is a vital global waterway connecting the Mediterranean and Red Seas, and was the primary theater for the October War crossing.' },
-{ keywords: ['taba', 'arbitration'], answer: 'Taba remained disputed until Egypt resorted to international arbitration. In 1988, a ruling favored Egypt, and the Egyptian flag was raised over Taba in 1989.' },
-{ keywords: ['dome of the rock', 'build', 'abd al-malik'], answer: 'The Dome of the Rock is located in Jerusalem within Al-Aqsa compound and was built during the Umayyad era by Caliph Abd al-Malik ibn Marwan.' },
-{ keywords: ['muhammad', 'prophet', 'born', 'migration', 'hijrah', 'hira'], answer: 'Prophet Muhammad ﷺ was born in Mecca, received revelation in Cave Hira, and migrated to Medina in 622 AD where Al-Nabawi Mosque was established.' },
-{ keywords: ['egypt', 'location', 'nile', 'sinai'], answer: 'Egypt is located in northeastern Africa with the Sinai Peninsula in Asia, traversed by the great Nile River.' },
-{ keywords: ['1948', 'nakba'], answer: 'The year 1948 marked the declaration of the State of Israel and the displacement of many Palestinians, known as the Nakba.' }
-]
-};
-
-function toggleGlobalLang(){
-lang = (lang === 'ar') ? 'en' : 'ar';
+function setLanguage(lang){
+currentLang = lang;
+const d = contentData[lang];
+const root = document.getElementById('htmlRoot');
 const body = document.body;
+
 if(lang === 'en'){
+root.dir = 'ltr';
+root.lang = 'en';
 body.classList.add('ltr');
-document.documentElement.dir = 'ltr';
-document.documentElement.lang = 'en';
-document.getElementById('langToggleBtn').textContent = 'التحويل للعربية';
-document.getElementById('brandTitle').textContent = 'Smart Braille Historian | مؤرخ برايل الذكي';
-document.getElementById('brandSub').textContent = 'Choose your language & lessons';
-document.getElementById('heroTitle').textContent = 'Discover history... hear it, ask it, learn from it';
-document.getElementById('heroText').textContent = 'An interactive educational prototype designed to support blind and low-vision learners in Arabic and English';
-document.getElementById('cardAskTitle').textContent = '💬 Ask the Historian';
-document.getElementById('cardAskDesc').textContent = 'Ask any historical question in any phrasing and listen to the audio answer.';
-document.getElementById('cardModelsTitle').textContent = '🏛️ Historical Models';
-document.getElementById('cardModelsDesc').textContent = 'Explore tactile models and their corresponding lessons.';
-document.getElementById('cardLibraryTitle').textContent = '🎧 Audio Library';
-document.getElementById('cardLibraryDesc').textContent = 'Listen to historical lessons, stories, and lectures.';
-document.getElementById('cardQuizTitle').textContent = '❓ Interactive Quizzes';
-document.getElementById('cardQuizDesc').textContent = 'Test your knowledge after each lesson.';
-document.getElementById('cardCameraTitle').textContent = '📷 Camera QR Reader';
-document.getElementById('cardCameraDesc').textContent = 'Point the camera at model QR codes to instantly identify and play lessons.';
-
-document.getElementById('backHomeAsk').textContent = '← Back to Home';
-document.getElementById('askHeaderTitle').textContent = 'Ask the Historian';
-document.getElementById('welcomeChatMsg').textContent = 'Welcome! Ask your historical question in any way you prefer (typing or voice), and I will answer immediately.';
-document.getElementById('question').placeholder = 'Type your question here in any phrasing...';
-document.getElementById('sendBtnText').textContent = 'Send';
-
-document.getElementById('backHomeModels').textContent = '← Back to Home';
-document.getElementById('modelsHeaderTitle').textContent = 'Tactile Historical Models';
-document.getElementById('mDomeTitle').textContent = '🕌 Dome of the Rock';
-document.getElementById('mDomeDesc').textContent = 'Lesson 1: Dome of the Rock, Jerusalem, and Palestine.';
-document.getElementById('mProphetTitle').textContent = '🌙 Al-Nabawi Mosque';
-document.getElementById('mProphetDesc').textContent = 'Lesson 2: Life of Prophet Muhammad ﷺ & Al-Nabawi Mosque.';
-document.getElementById('mEgyptTitle').textContent = '🇪🇬 Map of Egypt';
-document.getElementById('mEgyptDesc').textContent = 'Lesson 3: Egypt, location, and geography.';
-document.getElementById('mOctoberTitle').textContent = '🇪🇬 October 1973 War';
-document.getElementById('mOctoberDesc').textContent = 'Lesson 4: The Crossing and Land Recovery.';
-
-document.getElementById('backModelsBtn').textContent = '← Back to Models';
-
-document.getElementById('backHomeLib').textContent = '← Back to Home';
-document.getElementById('libHeaderTitle').textContent = '🎧 Historical Audio Library';
-document.getElementById('lDomeTitle').textContent = 'Dome of the Rock & Palestine';
-document.getElementById('lDomeDesc').textContent = 'Play full lesson audio.';
-document.getElementById('lProphetTitle').textContent = 'Prophet ﷺ Life & Al-Nabawi Mosque';
-document.getElementById('lProphetDesc').textContent = 'Play full lesson audio.';
-document.getElementById('lEgyptTitle').textContent = 'Map of Egypt';
-document.getElementById('lEgyptDesc').textContent = 'Play full lesson audio.';
-document.getElementById('lOctoberTitle').textContent = 'October 1973 War';
-document.getElementById('lOctoberDesc').textContent = 'Play full lesson audio.';
-document.getElementById('now').textContent = 'No lesson selected yet';
-document.getElementById('stopAudioBtn').textContent = '⏹ Stop Audio';
-
-document.getElementById('backHomeQuiz').textContent = '← Back to Home';
-document.getElementById('quizHeaderTitle').textContent = '❓ Lesson Quizzes';
-document.getElementById('quizSubText').textContent = 'Choose a lesson and answer the questions.';
-document.getElementById('qDomeTitle').textContent = '🕌 Dome of the Rock';
-document.getElementById('qProphetTitle').textContent = '🌙 Al-Nabawi Mosque';
-document.getElementById('qEgyptTitle').textContent = '🇪🇬 Map of Egypt';
-document.getElementById('qOctoberTitle').textContent = '🇪🇬 October 1973 War';
-
-document.getElementById('backHomeCam').textContent = '← Back to Home';
-document.getElementById('camHeaderTitle').textContent = '📷 Instant Model Camera Reader';
-document.getElementById('camNoticeText').innerHTML = '<strong>Instructions:</strong><br>Turn on the camera and point the lens at the model QR code (Dome of the Rock, Al-Nabawi Mosque, Egypt Map, or October War). The application will automatically recognize it and open the lesson instantly.';
-document.getElementById('camStartBtn').textContent = '📷 Start Camera Reader';
-document.getElementById('camStopBtn').textContent = '⏹ Stop Camera';
-document.getElementById('cameraStatus').textContent = 'Camera is stopped. Click start to activate instant reader.';
 } else {
+root.dir = 'rtl';
+root.lang = 'ar';
 body.classList.remove('ltr');
-document.documentElement.dir = 'rtl';
-document.documentElement.lang = 'ar';
-location.reload();
-}
 }
 
-function openSection(id){
-show(id);
-if(id === 'ask'){
-speak(lang==='ar' ? 'أهلًا بك في قسم اسأل المؤرخ. اطرح سؤالك بأي صيغة وسأجيبك فورًا.' : 'Welcome to Ask the Historian. Ask your question in any phrasing and I will answer immediately.');
+// تطبيق النصوص على الواجهة
+document.getElementById('appTitle').textContent = d.appTitle;
+document.getElementById('appSub').textContent = d.appSub;
+document.getElementById('navHomeText').textContent = d.navHome;
+document.getElementById('dashTitle').textContent = d.dashTitle;
+document.getElementById('dashDesc').textContent = d.dashDesc;
+
+document.getElementById('cAskTitle').textContent = d.cAskTitle;
+document.getElementById('cAskDesc').textContent = d.cAskDesc;
+document.getElementById('cModelsTitle').textContent = d.cModelsTitle;
+document.getElementById('cModelsDesc').textContent = d.cModelsDesc;
+document.getElementById('cLibraryTitle').textContent = d.cLibraryTitle;
+document.getElementById('cLibraryDesc').textContent = d.cLibraryDesc;
+document.getElementById('cQuizTitle').textContent = d.cQuizTitle;
+document.getElementById('cQuizDesc').textContent = d.cQuizDesc;
+document.getElementById('cCameraTitle').textContent = d.cCameraTitle;
+document.getElementById('cCameraDesc').textContent = d.cCameraDesc;
+
+for(let i=1; i<=5; i++){
+const el = document.getElementById('backDash'+i);
+if(el) el.textContent = d.backDash;
 }
-if(id === 'camera'){
-speak(lang==='ar' ? 'أهلاً بك في قارئ المجسمات بالكاميرا. وجه الكاميرا نحو باركود المجسم.' : 'Welcome to the camera model reader. Point the camera at the model barcode.');
+
+document.getElementById('askH2').textContent = d.askH2;
+document.getElementById('chatWelcome').textContent = d.chatWelcome;
+document.getElementById('question').placeholder = d.questionPlaceholder;
+document.getElementById('sendBtn').textContent = d.sendBtn;
+
+document.getElementById('modelsH2').textContent = d.modelsH2;
+document.getElementById('mod1Title').textContent = d.mod1Title;
+document.getElementById('mod1Desc').textContent = d.mod1Desc;
+document.getElementById('mod2Title').textContent = d.mod2Title;
+document.getElementById('mod2Desc').textContent = d.mod2Desc;
+document.getElementById('mod3Title').textContent = d.mod3Title;
+document.getElementById('mod3Desc').textContent = d.mod3Desc;
+document.getElementById('mod4Title').textContent = d.mod4Title;
+document.getElementById('mod4Desc').textContent = d.mod4Desc;
+document.getElementById('backModText').textContent = d.backModText;
+
+document.getElementById('libH2').textContent = d.libH2;
+document.getElementById('lib1Title').textContent = d.lib1Title;
+document.getElementById('lib1Desc').textContent = d.lib1Desc;
+document.getElementById('lib2Title').textContent = d.lib2Title;
+document.getElementById('lib2Desc').textContent = d.lib2Desc;
+document.getElementById('lib3Title').textContent = d.lib3Title;
+document.getElementById('lib3Desc').textContent = d.lib3Desc;
+document.getElementById('lib4Title').textContent = d.lib4Title;
+document.getElementById('lib4Desc').textContent = d.lib4Desc;
+document.getElementById('nowPlaying').textContent = d.nowPlaying;
+document.getElementById('stopAudioBtn').textContent = d.stopAudioBtn;
+
+document.getElementById('quizH2').textContent = d.quizH2;
+document.getElementById('quizSub').textContent = d.quizSub;
+
+document.getElementById('camH2').textContent = d.camH2;
+document.getElementById('camNotice').innerHTML = d.camNotice;
+document.getElementById('camStartBtn').textContent = d.camStartBtn;
+document.getElementById('camStopBtn').textContent = d.camStopBtn;
+document.getElementById('cameraStatus').textContent = d.camStatus;
+
+show('dashboard');
+speak(lang==='ar' ? 'تم تفعيل النسخة العربية بنجاح.' : 'English version activated successfully.');
 }
+
+function goHome(){
+stopCamera();
+stopSpeech();
+document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+document.getElementById('langSelectScreen').classList.add('active');
 }
 
 function show(id){
@@ -795,14 +822,11 @@ stopCamera();
 
 function speak(text){
 if(!text) return;
-if(!('speechSynthesis' in window)){
-alert('Speech synthesis is not supported in this browser.');
-return;
-}
+if(!('speechSynthesis' in window)) return;
 speechSynthesis.cancel();
 setTimeout(()=>{
 const u = new SpeechSynthesisUtterance(text);
-u.lang = (lang === 'en') ? 'en-US' : 'ar-SA';
+u.lang = (currentLang === 'en') ? 'en-US' : 'ar-SA';
 u.rate = .9;
 u.pitch = 1;
 speechSynthesis.speak(u);
@@ -815,61 +839,36 @@ speechSynthesis.cancel();
 
 function openLesson(id){
 currentLesson = id;
-const l = lessonsData[lang][id];
+const d = contentData[currentLang].lessons[id];
 let html = `<div class="lesson">
-<span class="pill">${lang==='ar' ? (id==='dome'?'الدرس الأول':id==='prophet'?'الدرس الثاني':id==='egypt'?'الدرس الثالث':'الدرس الرابع') : (id==='dome'?'Lesson 1':id==='prophet'?'Lesson 2':id==='egypt'?'Lesson 3':'Lesson 4')}</span>
-<h2>${l.title}</h2>
+<h2>${d.title}</h2>
 <div class="audio-bar">
-<button onclick="playFullLesson('${id}')">${lang==='ar'?'🔊 تشغيل الدرس كاملًا':'🔊 Play Full Lesson'}</button>
-<button class="secondary" onclick="stopSpeech()">${lang==='ar'?'⏹ إيقاف الصوت':'⏹ Stop Audio'}</button>
-<button onclick="startQuiz('${id}')">${lang==='ar'?'❓ اختبار الدرس':'❓ Lesson Quiz'}</button>
+<button onclick="playFullLesson('${id}')">${currentLang==='ar'?'🔊 تشغيل الدرس كاملًا':'🔊 Play Full Lesson'}</button>
+<button class="secondary" onclick="stopSpeech()">${currentLang==='ar'?'⏹ إيقاف الصوت':'⏹ Stop Audio'}</button>
+<button onclick="startQuiz('${id}')">${currentLang==='ar'?'❓ اختبار الدرس':'❓ Lesson Quiz'}</button>
 </div>
 <div class="lesson-section">
-<h3>${lang==='ar'?'المقدمة':'Introduction'}</h3>
-<p>${l.intro}</p>
+<p>${d.intro}</p>
 </div>`;
 
-l.sections.forEach(section => {
+d.sections.forEach(sec => {
 html += `<div class="lesson-section">
-<h3>${section[0]}</h3>
-<p>${section[1]}</p>
-<button class="btn" onclick="speak(${JSON.stringify(section[0]+'. '+section[1])})">${lang==='ar'?'🔊 استمع لهذا الجزء':'🔊 Listen to this part'}</button>
+<h3>${sec[0]}</h3>
+<p>${sec[1]}</p>
+<button class="btn" onclick="speak(${JSON.stringify(sec[0]+'. '+sec[1])})">${currentLang==='ar'?'🔊 استمع لهذا الجزء':'🔊 Listen'}</button>
 </div>`;
 });
 
-html += `<div class="braille">
-<strong>💠 ${lang==='ar'?'فكرة برايل والمجسم:':'Braille & Model Concept:'}</strong><br>
-${lang==='ar'?'يمكن تحويل عناوين الدرس والمجسم اللمسي إلى بطاقات برايل تفاعلية مساعدة.':'Lesson headings and tactile models can be converted into interactive assistive Braille cards.'}
-</div>
-</div>`;
-
+html += `</div>`;
 document.getElementById('lessonContent').innerHTML = html;
 show('lesson');
 }
 
 function playFullLesson(id){
-const l = lessonsData[lang][id];
-currentLesson = id;
-document.getElementById('now').textContent = '▶ ' + l.title;
-const text = l.intro + ' ' + l.sections.map(x => x[0] + '. ' + x[1]).join(' ');
+const d = contentData[currentLang].lessons[id];
+document.getElementById('nowPlaying').textContent = '▶ ' + d.title;
+const text = d.intro + ' ' + d.sections.map(x => x[0] + '. ' + x[1]).join(' ');
 speak(text);
-}
-
-function listenToVoice(){
-const R = window.SpeechRecognition || window.webkitSpeechRecognition;
-if(!R){
-speak(lang==='ar'?'خاصية التعرف على الصوت غير مدعومة في هذا المتصفح.':'Speech recognition is not supported in this browser.');
-return;
-}
-const r = new R();
-r.lang = (lang === 'en') ? 'en-US' : 'ar-EG';
-r.onstart = ()=>{ speak(lang==='ar'?'أنا أستمع إليك الآن':'Listening now'); };
-r.onresult = e => {
-document.getElementById('question').value = e.results[0][0].transcript;
-askQuestion();
-};
-r.onerror = ()=>{ speak(lang==='ar'?'لم أتمكن من سماعك، أعد المحاولة.':'Could not hear you, try again.'); };
-r.start();
 }
 
 function askQuestion(){
@@ -877,36 +876,51 @@ const input = document.getElementById('question');
 const q = input.value.trim();
 if(!q) return;
 const box = document.getElementById('messages');
-const user = document.createElement('div');
-user.className = 'msg user';
-user.textContent = q;
-box.appendChild(user);
+const userMsg = document.createElement('div');
+userMsg.className = 'msg user';
+userMsg.textContent = q;
+box.appendChild(userMsg);
 
-let foundAnswer = null;
+let ans = null;
 const cleanQ = q.toLowerCase();
-const currentAnswers = advancedAnswersData[lang];
+const qaList = contentData[currentLang].qa;
 
-for(let item of currentAnswers){
-let matched = item.keywords.some(kw => cleanQ.includes(kw));
-if(matched){
-foundAnswer = item.answer;
+for(let item of qaList){
+if(item.keywords.some(kw => cleanQ.includes(kw))){
+ans = item.answer;
 break;
 }
 }
 
-if(!foundAnswer){
-foundAnswer = (lang === 'ar') ? 
-'سؤالك مميز وعميق! بصفتي مؤرخك الذكي، أستطيع إجابتك بدقة عن تفاصيل حرب أكتوبر، خط بارليف، قبة الصخرة، سيرة النبي محمد، وموقع مصر الجغرافي. جرب طرح سؤالك بكلمات متعلقة بهذه الموضوعات.' : 
-'Your question is unique! As your smart historian, I can answer in detail about the October War, Bar Lev Line, Dome of the Rock, Prophet Muhammad, and Egypt geography. Try asking with related keywords.';
+if(!ans){
+ans = (currentLang === 'ar') ? 
+'أنا مستعد لإجابتك عن تفاصيل قبة الصخرة، حرب أكتوبر، ومصر. جرب استخدام كلمات مثل: حرب أكتوبر، قبة الصخرة، أو مصر.' :
+'I am ready to answer about the Dome of the Rock, October War, and Egypt. Try asking using related keywords.';
 }
 
-const bot = document.createElement('div');
-bot.className = 'msg bot';
-bot.textContent = foundAnswer;
-box.appendChild(bot);
+const botMsg = document.createElement('div');
+botMsg.className = 'msg bot';
+botMsg.textContent = ans;
+box.appendChild(botMsg);
 box.scrollTop = box.scrollHeight;
-speak(foundAnswer);
+speak(ans);
 input.value = '';
+}
+
+function listenToVoice(){
+const R = window.SpeechRecognition || window.webkitSpeechRecognition;
+if(!R){
+speak(currentLang==='ar' ? 'التعرف الصوتي غير مدعوم.' : 'Speech recognition not supported.');
+return;
+}
+const r = new R();
+r.lang = (currentLang === 'en') ? 'en-US' : 'ar-EG';
+r.onstart = ()=>{ speak(currentLang==='ar'?'أنا أستمع إليك...':'Listening...'); };
+r.onresult = e => {
+document.getElementById('question').value = e.results[0][0].transcript;
+askQuestion();
+};
+r.start();
 }
 
 function startQuiz(id){
@@ -918,125 +932,97 @@ renderQuestion();
 }
 
 function renderQuestion(){
-const q = quizzesData[lang][currentQuiz][quizIndex];
-const total = quizzesData[lang][currentQuiz].length;
+const qList = contentData[currentLang].quizzes[currentQuiz];
+const q = qList[quizIndex];
 let html = `<div class="quiz-card">
-<p><span class="pill">${lang==='ar' ? `السؤال ${quizIndex+1} من ${total}` : `Question ${quizIndex+1} of ${total}`}</span></p>
+<p><span class="pill">${currentLang==='ar' ? `السؤال ${quizIndex+1} من ${qList.length}` : `Question ${quizIndex+1} of ${qList.length}`}</span></p>
 <h3>${q[0]}</h3>`;
 q[1].forEach((opt, i) => {
 html += `<button class="option" onclick="chooseAnswer(${i})">${opt}</button>`;
 });
 html += `<div id="feedback" class="feedback"></div></div>`;
 document.getElementById('quizArea').innerHTML = html;
-speak(q[0] + '. ' + (lang==='ar'?'الاختيارات: ':'Choices: ') + q[1].join(lang==='ar'?'، ': ', '));
+speak(q[0]);
 }
 
 function chooseAnswer(i){
-const q = quizzesData[lang][currentQuiz][quizIndex];
+const qList = contentData[currentLang].quizzes[currentQuiz];
+const q = qList[quizIndex];
 const f = document.getElementById('feedback');
-const buttons = document.querySelectorAll('.option');
-buttons.forEach(b => b.disabled = true);
+document.querySelectorAll('.option').forEach(b => b.disabled = true);
 
 if(i === q[2]){
 score++;
 f.className = 'feedback correct';
-f.textContent = (lang==='ar') ? '✅ أحسنت! إجابة صحيحة.' : '✅ Correct answer!';
-speak(lang==='ar' ? 'أحسنت! إجابة صحيحة.' : 'Correct answer!');
+f.textContent = currentLang==='ar' ? '✅ إجابة صحيحة!' : '✅ Correct!';
+speak(currentLang==='ar' ? 'إجابة صحيحة' : 'Correct');
 } else {
 f.className = 'feedback wrong';
-f.textContent = (lang==='ar') ? '❌ إجابة غير صحيحة. الإجابة الصحيحة هي: ' + q[1][q[2]] : '❌ Incorrect. The correct answer is: ' + q[1][q[2]];
-speak((lang==='ar' ? 'إجابة غير صحيحة. الإجابة الصحيحة هي ' : 'Incorrect. The correct answer is ') + q[1][q[2]]);
+f.textContent = currentLang==='ar' ? '❌ خطأ. الإجابة: ' + q[1][q[2]] : '❌ Incorrect. Answer: ' + q[1][q[2]];
+speak(currentLang==='ar' ? 'إجابة خاطئة' : 'Incorrect');
 }
 
 setTimeout(()=>{
 quizIndex++;
-const total = quizzesData[lang][currentQuiz].length;
-if(quizIndex < total){
+if(quizIndex < qList.length){
 renderQuestion();
 } else {
-finishQuiz();
+document.getElementById('quizArea').innerHTML = `<div class="lesson">
+<h2>🏆 ${currentLang==='ar'?'انتهى الاختبار':'Quiz Finished'}</h2>
+<p>${currentLang==='ar'?'نتيجتك: ':'Your score: '}<strong>${score} / ${qList.length}</strong></p>
+<button class="btn" onclick="startQuiz('${currentQuiz}')">${currentLang==='ar'?'إعادة الاختبار':'Retake'}</button>
+</div>`;
+speak(currentLang==='ar' ? 'انتهى الاختبار' : 'Quiz finished');
 }
 }, 1200);
 }
 
-function finishQuiz(){
-const total = quizzesData[lang][currentQuiz].length;
-document.getElementById('quizArea').innerHTML = `<div class="lesson">
-<h2>🏆 ${lang==='ar'?'انتهى الاختبار':'Quiz Finished'}</h2>
-<p>${lang==='ar'?'نتيجتك: ':'Your score: '}<strong>${score} / ${total}</strong></p>
-<button class="btn" onclick="startQuiz('${currentQuiz}')">${lang==='ar'?'إعادة الاختبار':'Retake Quiz'}</button>
-<button class="btn" onclick="openLesson('${currentQuiz}')" style="${lang==='ar'?'margin-right:.5rem':'margin-left:.5rem'}">${lang==='ar'?'مراجعة الدرس':'Review Lesson'}</button>
-</div>`;
-speak((lang==='ar'?'انتهى الاختبار. نتيجتك ':'Quiz finished. Your score is ') + score + (lang==='ar'?' من ':' out of ') + total);
-}
-
 async function startCamera(){
-if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
-document.getElementById('cameraStatus').textContent = lang==='ar'?'الكاميرا غير مدعومة في هذا المتصفح.':'Camera not supported.';
-return;
-}
 try{
 cameraStream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}, audio:false});
-const videoElement = document.getElementById('cameraVideo');
-videoElement.srcObject = cameraStream;
-videoElement.setAttribute('playsinline', true);
-videoElement.play();
-
-document.getElementById('cameraStatus').textContent = lang==='ar'?'الكاميرا تعمل وجاهزة لقراءة باركود المجسم...':'Camera is active, ready to read barcode...';
-speak(lang==='ar'?'تم تشغيل الكاميرا. وجه العدسة نحو باركود المجسم.':'Camera started. Point lens at the model barcode.');
-
-scanningInterval = setInterval(scanQRCodeFrame, 500);
-} catch(e){
-document.getElementById('cameraStatus').textContent = lang==='ar'?'تعذر تشغيل الكاميرا. تأكد من إعطاء الصلاحية.':'Could not start camera. Check permissions.';
-speak(lang==='ar'?'تعذر تشغيل الكاميرا.':'Could not start camera.');
+const v = document.getElementById('cameraVideo');
+v.srcObject = cameraStream;
+v.play();
+document.getElementById('cameraStatus').textContent = currentLang==='ar'?'الكاميرا تعمل...':'Camera active...';
+scanningInterval = setInterval(scanQR, 500);
+}catch(e){
+document.getElementById('cameraStatus').textContent = currentLang==='ar'?'تعذر تشغيل الكاميرا.':'Camera error.';
 }
 }
 
-function scanQRCodeFrame(){
-const video = document.getElementById('cameraVideo');
-const canvasElement = document.getElementById('canvasElement');
-if(video.readyState === video.HAVE_ENOUGH_DATA){
-canvasElement.height = video.videoHeight;
-canvasElement.width = video.videoWidth;
-const canvas = canvasElement.getContext('2d');
-canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
-const imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
-const code = jsQR(imageData.data, imageData.width, imageData.height, {inversionAttempts:'dontInvert'});
-
+function scanQR(){
+const v = document.getElementById('cameraVideo');
+const c = document.getElementById('canvasElement');
+if(v.readyState === v.HAVE_ENOUGH_DATA){
+c.height = v.videoHeight;
+c.width = v.videoWidth;
+const ctx = c.getContext('2d');
+ctx.drawImage(v, 0, 0, c.width, c.height);
+const img = ctx.getImageData(0, 0, c.width, c.height);
+const code = jsQR(img.data, img.width, img.height);
 if(code){
 let text = code.data.trim().toLowerCase();
-let targetLesson = '';
+let target = '';
+if(text.includes('dome') || text.includes('قبة')) target = 'dome';
+else if(text.includes('prophet') || text.includes('نبي')) target = 'prophet';
+else if(text.includes('egypt') || text.includes('مصر')) target = 'egypt';
+else if(text.includes('october') || text.includes('اكتوبر')) target = 'october';
 
-if(text.includes('dome') || text.includes('قبة')) targetLesson = 'dome';
-else if(text.includes('prophet') || text.includes('نبي') || text.includes('مسجد نبوي')) targetLesson = 'prophet';
-else if(text.includes('egypt') || text.includes('مصر')) targetLesson = 'egypt';
-else if(text.includes('october') || text.includes('اكتوبر') || text.includes('أكتوبر')) targetLesson = 'october';
-
-if(targetLesson){
+if(target){
 stopCamera();
-document.getElementById('cameraStatus').innerHTML = lang==='ar' ? `✅ <strong>تم التعرف على المجسم بنجاح!</strong> جاري فتح الدرس...` : `✅ <strong>Model recognized successfully!</strong> Opening lesson...`;
-speak(lang==='ar'?'تم التعرف على المجسم بنجاح.':'Model recognized successfully.');
-setTimeout(()=>{
-openLesson(targetLesson);
-}, 1500);
+speak(currentLang==='ar' ? 'تم التعرف على المجسم' : 'Model recognized');
+openLesson(target);
 }
 }
 }
 }
 
 function stopCamera(){
-if(scanningInterval){
-clearInterval(scanningInterval);
-scanningInterval = null;
-}
-if(cameraStream){
-cameraStream.getTracks().forEach(t => t.stop());
-}
+if(scanningInterval) clearInterval(scanningInterval);
+if(cameraStream) cameraStream.getTracks().forEach(t => t.stop());
 cameraStream = null;
 const v = document.getElementById('cameraVideo');
 if(v) v.srcObject = null;
-const status = document.getElementById('cameraStatus');
-if(status) status.textContent = lang==='ar'?'تم إيقاف الكاميرا.':'Camera stopped.';
 }
 </script>
 
