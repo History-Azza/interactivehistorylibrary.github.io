@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -124,13 +123,6 @@ if ("serviceWorker" in navigator) {
     border-radius:18px;
     padding:14px;
     cursor:pointer
-  }
-  .model img{
-    width:100%;
-    height:145px;
-    object-fit:cover;
-    border-radius:14px;
-    background:#173d64
   }
   .model h3,.lesson h3{margin:10px 0 5px}
   .small{color:var(--muted)}
@@ -292,7 +284,7 @@ if ("serviceWorker" in navigator) {
   </div>
 
   <div class="access">
-    ♿ <strong id="accessTitle">تصميم شامل للجميع</strong> —
+    ♿ <strong id="accessTitle">تصصميم شامل للجميع</strong> —
     <span id="accessText">
       أوامر صوتية، قراءة صوتية، تكبير الخط ودعم برايل في مراحل التطوير.
     </span>
@@ -332,8 +324,8 @@ if ("serviceWorker" in navigator) {
 
       <button
         class="primary"
-        onclick="speakQuestion()"
-        title="التحدث"
+        onclick="listenToVoice()"
+        title="التحدث والتسجيل الصوتي"
       >
         🎙️
       </button>
@@ -357,20 +349,20 @@ if ("serviceWorker" in navigator) {
     <div
       class="model"
       onclick="modelInfo(
-        'المسجد الأقصى',
-        'استمع إلى وصف النموذج ومعلوماته التاريخية.'
+        'قبة الصخرة والمسجد الأقصى',
+        'استمع إلى وصف قبة الصخرة. مبنى ثماني الشكل ذو قبة ذهبية حفرت تفاصيله بالخشب المقوى، بني في العصر الأموي بأمر الخليفة عبد الملك بن مروان.'
       )"
     >
       <div style="font-size:58px;text-align:center">🕌</div>
-      <h3>المسجد الأقصى</h3>
-      <div class="small">شرح صوتي • أسئلة</div>
+      <h3>قبة الصخرة</h3>
+      <div class="small">شرح صوتي • تفاصيل لمسية</div>
     </div>
 
     <div
       class="model"
       onclick="modelInfo(
-        'مسجد النبي ﷺ',
-        'نموذج تعليمي ثلاثي الأبعاد مع شرح صوتي.'
+        'المسجد النبوي الشريف',
+        'نموذج تعليمي ثلاثي الأبعاد للمسجد النبوي الشريف، يحتوي على الأقواس والأعمدة والمئذنة والقباب الملموسة.'
       )"
     >
       <div style="font-size:58px;text-align:center">🕌</div>
@@ -381,25 +373,25 @@ if ("serviceWorker" in navigator) {
     <div
       class="model"
       onclick="modelInfo(
-        'خريطة مصر',
-        'استكشف خريطة مصر بطريقة تعليمية لمسية وصوتية.'
+        'خريطة مصر التضاريسية',
+        'خريطة لمسية مجسمة توضح نهر النيل والمنخفضات والهضاب مع نصوص بارزة بطريقة برايل لتعلم الجغرافيا.'
       )"
     >
       <div style="font-size:58px;text-align:center">🗺️</div>
       <h3>خريطة مصر</h3>
-      <div class="small">وصف صوتي • تعليم</div>
+      <div class="small">وصف صوتي • تضاريس لمسية</div>
     </div>
 
     <div
       class="model"
       onclick="modelInfo(
-        'حرب أكتوبر 1973',
-        'محتوى تاريخي صوتي وأسئلة مرتبطة بالنموذج.'
+        'معبد أبو سمبل',
+        'نموذج لمسي متكامل لمعبد أبو سمبل يظهر التماثيل الأربعة الضخمة في الواجهة والنص البارز بلغة برايل.'
       )"
     >
-      <div style="font-size:58px;text-align:center">⚔️</div>
-      <h3>حرب أكتوبر 1973</h3>
-      <div class="small">شرح صوتي • اختبار</div>
+      <div style="font-size:58px;text-align:center">🏛️</div>
+      <h3>معبد أبو سمبل</h3>
+      <div class="small">شرح صوتي • تاريخ قديم</div>
     </div>
 
   </div>
@@ -532,330 +524,183 @@ if ("serviceWorker" in navigator) {
 
 let currentLesson = '';
 let english = false;
+let audioUnlocked = false;
+
+// فك حظر محرك الصوت في متصفحات الموبايل مع أول لمسة
+document.addEventListener('click', function() {
+  if (!audioUnlocked && 'speechSynthesis' in window) {
+    const u = new SpeechSynthesisUtterance('');
+    window.speechSynthesis.speak(u);
+    audioUnlocked = true;
+  }
+}, { once: true });
 
 const answers = {
-
-  "متى بدأت حرب أكتوبر":
-    "بدأت حرب أكتوبر في 6 أكتوبر 1973، الموافق 10 رمضان 1393 هـ.",
-
-  "متى بدأت حرب اكتوبر":
-    "بدأت حرب أكتوبر في 6 أكتوبر 1973.",
-
-  "ما هي حرب أكتوبر":
-    "هي الحرب التي بدأت في 6 أكتوبر 1973، وخاضتها مصر وسوريا ضد إسرائيل.",
-
-  "من بنى قبة الصخرة":
-    "بُنيت قبة الصخرة في العصر الأموي بأمر الخليفة عبد الملك بن مروان، واكتمل بناؤها سنة 691 ميلادية تقريبًا.",
-
-  "ما أهمية المسجد الأقصى":
-    "المسجد الأقصى من أهم المواقع الدينية والتاريخية في القدس، وله مكانة كبيرة في التاريخ الإسلامي."
-
+  "متى بدأت حرب أكتوبر": "بدأت حرب أكتوبر في 6 أكتوبر 1973، الموافق 10 رمضان 1393 هـ.",
+  "متى بدأت حرب اكتوبر": "بدأت حرب أكتوبر في 6 أكتوبر 1973.",
+  "ما هي حرب أكتوبر": "هي الحرب التي بدأت في 6 أكتوبر 1973، وخاضتها مصر وسوريا ضد إسرائيل.",
+  "من بنى قبة الصخرة": "بُنيت قبة الصخرة في العصر الأموي بأمر الخليفة عبد الملك بن مروان، واكتمل بناؤها سنة 691 ميلادية تقريبًا.",
+  "ما أهمية المسجد الأقصى": "المسجد الأقصى من أهم المواقع الدينية والتاريخية في القدس، وله مكانة كبيرة في التاريخ الإسلامي."
 };
 
 function show(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top:0, behavior:'smooth' });
 
-  document.querySelectorAll('.screen')
-    .forEach(s => s.classList.remove('active'));
-
-  document.getElementById(id)
-    .classList.add('active');
-
-  window.scrollTo({
-    top:0,
-    behavior:'smooth'
-  });
-
+  if (id === 'ask') speak('أهلاً بك في قسم اسأل المؤرخ. يمكنك كتابة سؤالك أو الضغط على الميكروفون للتحدث.');
 }
 
-
 /* =========================
-   نظام الصوت المحسن للهاتف
+   نظام القراءة الصوتية القوي والمعدل
    ========================= */
 
-function speak(text, lang = 'ar-SA'){
+function speak(text) {
+  if (!text) return;
 
-  if(!text) return;
-
-  if(!('speechSynthesis' in window)){
-
+  if (!('speechSynthesis' in window)) {
     alert('القراءة الصوتية غير مدعومة على هذا الجهاز.');
-
     return;
   }
 
   const synth = window.speechSynthesis;
+  synth.cancel(); // إيقاف أي صوت سابق فوراً
 
-  synth.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = english ? 'en-US' : 'ar-SA';
+  u.rate = 0.88;
+  u.pitch = 1;
+  u.volume = 1;
 
-  const speakNow = () => {
-
-    const voices = synth.getVoices();
-
-    const voice =
-      voices.find(v => v.lang === 'ar-SA') ||
-      voices.find(v => v.lang.startsWith('ar')) ||
-      voices.find(v => v.lang === lang);
-
-    const u = new SpeechSynthesisUtterance(text);
-
-    u.lang = voice ? voice.lang : lang;
-    u.voice = voice || null;
-
-    u.rate = 0.85;
-    u.pitch = 1;
-    u.volume = 1;
-
-    synth.speak(u);
-
-    setTimeout(() => {
-
-      if(synth.paused){
-        synth.resume();
-      }
-
-    }, 300);
-
-  };
-
-
-  if(synth.getVoices().length === 0){
-
-    synth.onvoiceschanged = () => {
-
-      synth.onvoiceschanged = null;
-
-      speakNow();
-
-    };
-
-    setTimeout(speakNow, 500);
-
-  }else{
-
-    speakNow();
-
+  // البحث عن أصوات اللغة العربية الممتازة
+  const voices = synth.getVoices();
+  const arabicVoice = voices.find(v => v.lang.includes('ar'));
+  if (arabicVoice) {
+    u.voice = arabicVoice;
   }
 
+  synth.speak(u);
+
+  // حلقة معالجة تعليق الصوت في متصفح كروم على الموبايل
+  let resumeInterval = setInterval(() => {
+    if (!synth.speaking) {
+      clearInterval(resumeInterval);
+    } else {
+      synth.resume();
+    }
+  }, 1000);
 }
 
+// تحويل الكلام الشفهي لنص (ميكروفون)
+function listenToVoice() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  
+  if (!SpeechRecognition) {
+    speak('خاصية الاستماع الصوتي غير مدعومة في متصفحك.');
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+  recognition.lang = english ? 'en-US' : 'ar-EG';
+  recognition.start();
+
+  speak('تحدث الآن، أنا أستمع إليك');
+
+  recognition.onresult = function(event) {
+    const transcript = event.results[0][0].transcript;
+    document.getElementById('question').value = transcript;
+    askQuestion();
+  };
+
+  recognition.onerror = function() {
+    speak('لم أتمكن من سماعك بوضوح، أعد المحاولة من فضلك.');
+  };
+}
 
 function askQuestion(){
-
   const input = document.getElementById('question');
-
   const q = input.value.trim();
-
   if(!q) return;
 
   const box = document.getElementById('messages');
-
   const user = document.createElement('div');
-
   user.className = 'msg user';
-
   user.textContent = q;
-
   box.appendChild(user);
 
-
-  let a =
-    "سؤالك ممتاز. في النسخة النهائية سنربط هذا القسم بقاعدة معرفية تاريخية وذكاء اصطناعي متخصص في المشروع.";
-
+  let a = "سؤالك ممتاز. في النسخة النهائية سنربط هذا القسم بقاعدة معرفية تاريخية وذكاء اصطناعي متخصص في المشروع.";
 
   const key = Object.keys(answers).find(
-
     k => q.replace(/[؟?]/g,'').includes(k)
-
   );
-
 
   if(key) a = answers[key];
 
-
   const bot = document.createElement('div');
-
   bot.className = 'msg bot';
-
   bot.textContent = a;
-
   box.appendChild(bot);
 
-
   speak(a);
-
   input.value = '';
-
 }
 
-
-function speakQuestion(){
-
-  const q =
-    document.getElementById('question').value.trim();
-
-  if(!q){
-
-    speak('تحدث الآن، وسأستمع إلى سؤالك.');
-
-    return;
-  }
-
-  speak(q);
-
+function modelInfo(title, text){
+  const fullDescription = title + '. ' + text;
+  speak(fullDescription);
 }
-
-
-function modelInfo(title,text){
-
-  alert(
-
-    title +
-    '\n\n' +
-    text +
-    '\n\nفي النسخة التالية سنضيف الصورة/النموذج ثلاثي الأبعاد والتسجيل الصوتي الخاص بك.'
-
-  );
-
-}
-
 
 function playLesson(name){
-
   currentLesson = name;
-
-  document.getElementById('now').textContent =
-    '▶ ' + name;
-
-  speak(
-
-    'تم اختيار درس ' +
-    name +
-    '. في النسخة النهائية سيتم تشغيل التسجيل الصوتي الخاص بالمشروع.'
-
-  );
-
+  document.getElementById('now').textContent = '▶ ' + name;
+  speak('تم اختيار درس ' + name + '. جاري تجهيز الشرح الصوتي.');
 }
-
 
 function speakNow(){
-
   if(!currentLesson){
-
-    speak('اختر درسًا أولًا.');
-
+    speak('اختر درسًا أولًا من المكتبة الصوتية.');
     return;
   }
-
-  speak(
-
-    'الدرس الحالي هو ' +
-    currentLesson +
-    '. هذا نموذج أولي للمكتبة الصوتية.'
-
-  );
-
+  speak('الدرس الحالي هو ' + currentLesson);
 }
-
 
 function answer(correct){
-
-  const r =
-    document.getElementById('result');
-
+  const r = document.getElementById('result');
   if(correct){
-
-    r.textContent =
-      '✅ أحسنت! إجابة صحيحة.';
-
+    r.textContent = '✅ أحسنت! إجابة صحيحة.';
     speak('أحسنت! إجابة صحيحة.');
-
   }else{
-
-    r.textContent =
-      '❌ ليست الإجابة الصحيحة. الإجابة هي 1973.';
-
-    speak('الإجابة الصحيحة هي 1973.');
-
+    r.textContent = '❌ ليست الإجابة الصحيحة. الإجابة هي 1973.';
+    speak('ليست الإجابة الصحيحة. الإجابة هي 1973.');
   }
-
 }
 
-
 function toggleLang(){
-
   english = !english;
-
   if(english){
-
     document.documentElement.dir = 'ltr';
-
     document.documentElement.lang = 'en';
-
-
-    document.getElementById('brandAr').textContent =
-      'Smart Braille Historian';
-
-    document.getElementById('brandEn').textContent =
-      'مؤرخ برايل الذكي';
-
-
-    document.getElementById('langBtn').textContent =
-      'English | العربية';
-
-
-    document.getElementById('heroTitle').textContent =
-      'Discover history... hear it, ask it, learn from it';
-
-
-    document.getElementById('heroText').textContent =
-      'An educational prototype designed for blind and low-vision users';
-
-
-    document.getElementById('c1').textContent =
-      'Ask the Historian';
-
-    document.getElementById('p1').textContent =
-      'Ask a history question and hear the answer.';
-
-
-    document.getElementById('c2').textContent =
-      'Historical Models';
-
-    document.getElementById('p2').textContent =
-      'Explore models and listen to their descriptions.';
-
-
-    document.getElementById('c3').textContent =
-      'Audio Library';
-
-    document.getElementById('p3').textContent =
-      'Historical lessons, stories, and lectures.';
-
-
-    document.getElementById('c4').textContent =
-      'Quizzes';
-
-    document.getElementById('p4').textContent =
-      'Test your knowledge interactively.';
-
-
-    document.getElementById('accessTitle').textContent =
-      'Inclusive design for everyone';
-
-
-    document.getElementById('accessText').textContent =
-      'Voice commands, screen reading, text scaling, and future Braille support.';
-
+    document.getElementById('brandAr').textContent = 'Smart Braille Historian';
+    document.getElementById('brandEn').textContent = 'مؤرخ برايل الذكي';
+    document.getElementById('langBtn').textContent = 'English | العربية';
+    document.getElementById('heroTitle').textContent = 'Discover history... hear it, ask it, learn from it';
+    document.getElementById('heroText').textContent = 'An educational prototype designed for blind and low-vision users';
+    document.getElementById('c1').textContent = 'Ask the Historian';
+    document.getElementById('p1').textContent = 'Ask a history question and hear the answer.';
+    document.getElementById('c2').textContent = 'Historical Models';
+    document.getElementById('p2').textContent = 'Explore models and listen to their descriptions.';
+    document.getElementById('c3').textContent = 'Audio Library';
+    document.getElementById('p3').textContent = 'Historical lessons, stories, and lectures.';
+    document.getElementById('c4').textContent = 'Quizzes';
+    document.getElementById('p4').textContent = 'Test your knowledge interactively.';
+    document.getElementById('accessTitle').textContent = 'Inclusive design for everyone';
+    document.getElementById('accessText').textContent = 'Voice commands, screen reading, text scaling, and future Braille support.';
   }else{
-
     location.reload();
-
   }
-
 }
 
 </script>
 
 </body>
 </html>
-```
