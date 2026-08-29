@@ -1,1 +1,10 @@
-
+{
+  "name": "مؤرخ برايل الذكي",
+  "short_name": "المؤرخ الذكي",
+  "description": "نموذج تعليمي تفاعلي مصمم لدعم المكفوفين وضعاف البصر في دراسة التاريخ",
+  "start_url": "./Smart_Braille_Historian_Prototype.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2c3e50",
+  "icons": []
+}
