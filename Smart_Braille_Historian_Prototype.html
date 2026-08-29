@@ -1,410 +1,1669 @@
+```html
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>مؤرخ برايل الذكي | Smart Braille Historian</title>
-  <style>
-    :root {
-      --primary: #1e3a8a;
-      --secondary: #d97706;
-      --bg: #f8fafc;
-      --text: #1e293b;
-      --card-bg: #ffffff;
-    }
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      margin: 0;
-      padding: 0;
-      direction: rtl;
-    }
-    header {
-      background: var(--primary);
-      color: white;
-      padding: 1rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .brand {
-      display: flex;
-      flex-direction: column;
-    }
-    .brand h1 {
-      font-size: 1.2rem;
-      margin: 0;
-    }
-    .brand span {
-      font-size: 0.8rem;
-      color: #cbd5e1;
-    }
-    nav button {
-      background: var(--secondary);
-      border: none;
-      color: white;
-      padding: 0.5rem 1rem;
-      border-radius: 0.375rem;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    .container {
-      padding: 1.5rem;
-      max-width: 800px;
-      margin: auto;
-    }
-    .screen {
-      display: none;
-    }
-    .screen.active {
-      display: block;
-    }
-    .hero {
-      text-align: center;
-      padding: 2rem 1rem;
-    }
-    .hero h2 {
-      color: var(--primary);
-      margin-bottom: 0.5rem;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 1rem;
-      margin-top: 1.5rem;
-    }
-    .card {
-      background: var(--card-bg);
-      padding: 1.5rem;
-      border-radius: 0.5rem;
-      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-      cursor: pointer;
-      transition: transform 0.2s;
-      border: 1px solid #e2e8f0;
-    }
-    .card:hover {
-      transform: translateY(-3px);
-    }
-    .card h3 {
-      margin-top: 0;
-      color: var(--primary);
-    }
-    .chat-box {
-      background: white;
-      border: 1px solid #cbd5e1;
-      border-radius: 0.5rem;
-      height: 300px;
-      overflow-y: auto;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-    .msg {
-      padding: 0.75rem 1rem;
-      border-radius: 0.5rem;
-      max-width: 80%;
-      line-height: 1.5;
-    }
-    .msg.user {
-      background: #e0f2fe;
-      align-self: flex-start;
-    }
-    .msg.bot {
-      background: #f1f5f9;
-      align-self: flex-end;
-      border: 1px solid #e2e8f0;
-    }
-    .input-group {
-      display: flex;
-      gap: 0.5rem;
-    }
-    .input-group input {
-      flex: 1;
-      padding: 0.75rem;
-      border: 1px solid #cbd5e1;
-      border-radius: 0.375rem;
-      font-size: 1rem;
-    }
-    .input-group button {
-      padding: 0.75rem 1.25rem;
-      background: var(--primary);
-      color: white;
-      border: none;
-      border-radius: 0.375rem;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    .mic-btn {
-      background: var(--secondary) !important;
-    }
-    .back-btn {
-      background: #64748b;
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 0.375rem;
-      cursor: pointer;
-      margin-bottom: 1rem;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مؤرخ برايل الذكي | Smart Braille Historian</title>
+
+<style>
+:root{
+  --primary:#1e3a8a;
+  --secondary:#d97706;
+  --bg:#f8fafc;
+  --text:#1e293b;
+  --card:#ffffff;
+  --ok:#15803d;
+  --bad:#b91c1c;
+}
+
+*{box-sizing:border-box}
+
+body{
+  font-family:system-ui,-apple-system,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  margin:0;
+  direction:rtl;
+}
+
+header{
+  background:var(--primary);
+  color:white;
+  padding:1rem;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:1rem;
+}
+
+.brand h1{
+  font-size:1.2rem;
+  margin:0;
+}
+
+.brand span{
+  font-size:.8rem;
+  color:#cbd5e1;
+}
+
+nav button,
+.btn{
+  background:var(--secondary);
+  border:none;
+  color:white;
+  padding:.65rem 1rem;
+  border-radius:.5rem;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.container{
+  padding:1.5rem;
+  max-width:900px;
+  margin:auto;
+}
+
+.screen{
+  display:none;
+}
+
+.screen.active{
+  display:block;
+}
+
+.hero{
+  text-align:center;
+  padding:2rem 1rem;
+}
+
+.hero h2{
+  color:var(--primary);
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:1rem;
+  margin-top:1.5rem;
+}
+
+.card{
+  background:var(--card);
+  padding:1.3rem;
+  border-radius:.7rem;
+  box-shadow:0 4px 6px -1px rgb(0 0 0 / .1);
+  cursor:pointer;
+  border:1px solid #e2e8f0;
+  transition:.2s;
+}
+
+.card:hover{
+  transform:translateY(-3px);
+}
+
+.card h3{
+  margin-top:0;
+  color:var(--primary);
+}
+
+.back-btn{
+  background:#64748b;
+  color:white;
+  border:none;
+  padding:.55rem 1rem;
+  border-radius:.4rem;
+  cursor:pointer;
+  margin-bottom:1rem;
+}
+
+.lesson{
+  background:white;
+  padding:1.3rem;
+  border-radius:.7rem;
+  border:1px solid #e2e8f0;
+  margin-top:1rem;
+}
+
+.lesson h2,
+.lesson h3{
+  color:var(--primary);
+}
+
+.lesson-section{
+  margin:1.4rem 0;
+  line-height:1.9;
+}
+
+.audio-bar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.6rem;
+  margin:1rem 0;
+}
+
+.audio-bar button{
+  border:0;
+  border-radius:.45rem;
+  padding:.65rem 1rem;
+  cursor:pointer;
+  font-weight:bold;
+  background:var(--primary);
+  color:white;
+}
+
+.audio-bar button.secondary{
+  background:var(--secondary);
+}
+
+.chat-box{
+  background:white;
+  border:1px solid #cbd5e1;
+  border-radius:.5rem;
+  height:300px;
+  overflow-y:auto;
+  padding:1rem;
+  margin-bottom:1rem;
+  display:flex;
+  flex-direction:column;
+  gap:.5rem;
+}
+
+.msg{
+  padding:.75rem 1rem;
+  border-radius:.5rem;
+  max-width:85%;
+  line-height:1.5;
+}
+
+.msg.user{
+  background:#e0f2fe;
+  align-self:flex-start;
+}
+
+.msg.bot{
+  background:#f1f5f9;
+  align-self:flex-end;
+  border:1px solid #e2e8f0;
+}
+
+.input-group{
+  display:flex;
+  gap:.5rem;
+}
+
+.input-group input{
+  flex:1;
+  padding:.75rem;
+  border:1px solid #cbd5e1;
+  border-radius:.375rem;
+  font-size:1rem;
+}
+
+.input-group button{
+  padding:.75rem 1rem;
+  background:var(--primary);
+  color:white;
+  border:none;
+  border-radius:.375rem;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.mic-btn{
+  background:var(--secondary)!important;
+}
+
+.quiz-card{
+  margin-top:1rem;
+  background:white;
+  border:1px solid #e2e8f0;
+  border-radius:.7rem;
+  padding:1rem;
+}
+
+.option{
+  display:block;
+  width:100%;
+  text-align:right;
+  margin:.5rem 0;
+  padding:.75rem;
+  border:1px solid #cbd5e1;
+  background:white;
+  border-radius:.4rem;
+  cursor:pointer;
+}
+
+.option:hover{
+  background:#f1f5f9;
+}
+
+.feedback{
+  font-weight:bold;
+  margin-top:.7rem;
+}
+
+.correct{
+  color:var(--ok);
+}
+
+.wrong{
+  color:var(--bad);
+}
+
+.pill{
+  display:inline-block;
+  background:#dbeafe;
+  color:#1e3a8a;
+  padding:.25rem .6rem;
+  border-radius:999px;
+  font-weight:bold;
+}
+
+.notice{
+  background:#fff7ed;
+  border-right:4px solid var(--secondary);
+  padding:1rem;
+  border-radius:.5rem;
+  margin:1rem 0;
+}
+
+.camera-box{
+  background:white;
+  border:1px solid #cbd5e1;
+  border-radius:.7rem;
+  padding:1rem;
+  margin-top:1rem;
+  text-align:center;
+}
+
+video{
+  width:100%;
+  max-width:600px;
+  border-radius:.6rem;
+  background:#111;
+}
+
+.small{
+  font-size:.9rem;
+  color:#475569;
+}
+
+.braille{
+  background:#f1f5f9;
+  border-right:4px solid var(--primary);
+  padding:1rem;
+  border-radius:.5rem;
+  line-height:2;
+}
+
+</style>
 </head>
+
 <body>
 
-  <header>
-    <div class="brand">
-      <h1 id="brandAr">مؤرخ برايل الذكي</h1>
-      <span id="brandEn">Smart Braille Historian</span>
-    </div>
-    <nav>
-      <button id="langBtn" onclick="toggleLang()">English | العربية</button>
-    </nav>
-  </header>
+<header>
 
-  <div class="container">
-    <!-- الشاشة الرئيسية -->
-    <div id="home" class="screen active">
-      <div class="hero">
-        <h2 id="heroTitle">اكتشف التاريخ... اسمعه، اسأله، وتعلم منه</h2>
-        <p id="heroText">نموذج تعليمي تفاعلي مصمم لدعم المكفوفين وضعاف البصر في دراسة التاريخ</p>
-      </div>
-      <div class="grid">
-        <div class="card" onclick="show('ask')">
-          <h3 id="c1">💬 اسأل المؤرخ</h3>
-          <p id="p1">اطرح سؤالاً تاريخياً واستمع إلى الإجابة الصوتية.</p>
-        </div>
-        <div class="card" onclick="show('models')">
-          <h3 id="c2">🏛️ النماذج التاريخية</h3>
-          <p id="p2">تصفح المجسمات واستمع لوصفها التفصيلي.</p>
-        </div>
-        <div class="card" onclick="show('library')">
-          <h3 id="c3">🎧 المكتبة الصوتية</h3>
-          <p id="p3">دروس تاريخية وقصص ومحاضرات مسموعة.</p>
-        </div>
-        <div class="card" onclick="show('quiz')">
-          <h3 id="c4">❓ اختبارات تفاعلية</h3>
-          <p id="p4">اختبر معلوماتك بطريقة ممتعة.</p>
-        </div>
-      </div>
-    </div>
+<div class="brand">
+<h1 id="brandAr">مؤرخ برايل الذكي</h1>
+<span id="brandEn">Smart Braille Historian</span>
+</div>
 
-    <!-- شاشة اسأل المؤرخ -->
-    <div id="ask" class="screen">
-      <button class="back-btn" onclick="show('home')">← الرجوع للرئيسية</button>
-      <h2>اسأل المؤرخ</h2>
-      <div class="chat-box" id="messages">
-        <div class="msg bot">أهلاً بك! يمكنك كتابة سؤالك التاريخي أو الضغط على الميكروفون والتحدث مباشرة.</div>
-      </div>
-      <div class="input-group">
-        <input type="text" id="question" placeholder="اكتب سؤالك هنا..." onkeydown="if(event.key==='Enter') askQuestion()">
-        <button onclick="askQuestion()">إرسال</button>
-        <button class="mic-btn" onclick="listenToVoice()" title="تحدث بالميكروفون">🎙️</button>
-      </div>
-    </div>
+<nav>
+<button id="langBtn" onclick="toggleLang()">English | العربية</button>
+</nav>
 
-    <!-- شاشة النماذج التاريخية -->
-    <div id="models" class="screen">
-      <button class="back-btn" onclick="show('home')">← الرجوع للرئيسية</button>
-      <h2>النماذج التاريخية اللمسية</h2>
-      <div class="grid">
-        <div class="card" onclick="modelInfo('قبة الصخرة', 'بُنيت في العصر الأموي بأمر الخليفة عبد الملك بن مروان، وتعتبر من أهم المعالم المعمارية الإسلامية في القدس.')">
-          <h3>قبة الصخرة</h3>
-          <p>اضغط للاستماع لشرح المجسم الملموس.</p>
-        </div>
-        <div class="card" onclick="modelInfo('خريطة مصر التضاريسية', 'خريطة بارزة توضح نهر النيل، الدلتا، الصحراء الشرقية والغربية، وشبه جزيرة سيناء.')">
-          <h3>خريطة مصر التضاريسية</h3>
-          <p>اضغط للاستماع لشرح تفاصيل الخريطة.</p>
-        </div>
-        <div class="card" onclick="modelInfo('حجر رشيد', 'حجر أثري مفصلي تم اكتشافه سنة 1799، وساعد في فك رموز الكتابة المصرية القديمة الهيروغليفية.')">
-          <h3>حجر رشيد</h3>
-          <p>اضغط للاستماع للقصة التاريخية.</p>
-        </div>
-      </div>
-    </div>
+</header>
 
-    <!-- شاشة المكتبة الصوتية -->
-    <div id="library" class="screen">
-      <button class="back-btn" onclick="show('home')">← الرجوع للرئيسية</button>
-      <h2>المكتبة الصوتية التاريخية</h2>
-      <p id="now" style="font-weight: bold; color: var(--secondary);">لم يتم اختيار درس بعد</p>
-      <div class="grid">
-        <div class="card" onclick="playLesson('ثورة 1919 والمستشارون البريطانيون')">
-          <h3>ثورة 1919</h3>
-          <p>دور المستشارين البريطانيين وتصريح 28 فبراير.</p>
-        </div>
-        <div class="card" onclick="playLesson('حرب أكتوبر المجيدة')">
-          <h3>حرب أكتوبر 1973</h3>
-          <p>أسباب اندلاع الحرب ونتائجها الاستراتيجية.</p>
-        </div>
-      </div>
-      <div style="margin-top: 1.5rem;">
-        <button onclick="speakNow()" style="background: var(--primary); color:white; border:none; padding: 0.75rem 1.5rem; border-radius: 0.375rem; cursor:pointer;">تشغيل الدرس الحالي صوتياً</button>
-      </div>
-    </div>
+<div class="container">
 
-    <!-- شاشة الاختبارات -->
-    <div id="quiz" class="screen">
-      <button class="back-btn" onclick="show('home')">← الرجوع للرئيسية</button>
-      <h2>اختبارات سريعة</h2>
-      <div class="card">
-        <p><strong>سؤال:</strong> في أي عام قامت حرب أكتوبر المجيدة؟</p>
-        <button onclick="answer(true)" style="background: #16a34a; color:white; border:none; padding:0.5rem 1rem; border-radius:0.375rem; cursor:pointer; margin-left:0.5rem;">1973</button>
-        <button onclick="answer(false)" style="background: #dc2626; color:white; border:none; padding:0.5rem 1rem; border-radius:0.375rem; cursor:pointer;">1967</button>
-        <p id="result" style="margin-top: 1rem; font-weight: bold;"></p>
-      </div>
-    </div>
-  </div>
+<!-- HOME -->
 
-  <script>
-    let currentLesson = '';
-    let english = false;
+<div id="home" class="screen active">
 
-    const answers = {
-      "متى بدأت حرب أكتوبر": "بدأت حرب أكتوبر في 6 أكتوبر 1973، الموافق 10 رمضان 1393 هـ.",
-      "متى بدأت حرب اكتوبر": "بدأت حرب أكتوبر في 6 أكتوبر 1973.",
-      "ما هي حرب أكتوبر": "هي الحرب التي بدأت في 6 أكتوبر 1973، وخاضتها مصر وسوريا ضد إسرائيل.",
-      "من بنى قبة الصخرة": "بُنيت قبة الصخرة في العصر الأموي بأمر الخليفة عبد الملك بن مروان، واكتمل بناؤها سنة 691 ميلادية تقريبًا.",
-      "ما أهمية المسجد الأقصى": "المسجد الأقصى من أهم المواقع الدينية والتاريخية في القدس، وله مكانة كبيرة في التاريخ الإسلامي."
-    };
+<div class="hero">
 
-    function show(id){
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-      window.scrollTo({ top:0, behavior:'smooth' });
+<h2 id="heroTitle">
+اكتشف التاريخ... اسمعه، اسأله، وتعلم منه
+</h2>
 
-      if (id === 'ask') {
-        speak('أهلاً بك في قسم اسأل المؤرخ. اكتب سؤالك أو استخدم الميكروفون.');
-      }
-    }
+<p id="heroText">
+نموذج تعليمي تفاعلي مصمم لدعم المكفوفين وضعاف البصر في دراسة التاريخ
+</p>
 
-    function speak(text) {
-      if (!text) return;
+</div>
 
-      if (!('speechSynthesis' in window)) {
-        console.warn('Speech Synthesis is not supported in this browser.');
-        return;
-      }
+<div class="grid">
 
-      window.speechSynthesis.cancel();
+<div class="card" onclick="show('ask')">
+<h3>💬 اسأل المؤرخ</h3>
+<p>اطرح سؤالًا تاريخيًا واستمع إلى الإجابة الصوتية.</p>
+</div>
 
-      setTimeout(() => {
-        const u = new SpeechSynthesisUtterance(text);
-        u.lang = english ? 'en-US' : 'ar-SA';
-        u.rate = 0.9;
-        u.pitch = 1;
-        window.speechSynthesis.speak(u);
-      }, 50);
-    }
+<div class="card" onclick="show('models')">
+<h3>🏛️ النماذج التاريخية</h3>
+<p>استكشف المجسمات والدروس المرتبطة بها.</p>
+</div>
 
-    function listenToVoice() {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      
-      if (!SpeechRecognition) {
-        speak('خاصية التعرف على الصوت غير مدعومة في متصفح الموبايل، يمكنك كتابة السؤال.');
-        return;
-      }
+<div class="card" onclick="show('library')">
+<h3>🎧 المكتبة الصوتية</h3>
+<p>دروس تاريخية وقصص ومحاضرات مسموعة.</p>
+</div>
 
-      const recognition = new SpeechRecognition();
-      recognition.lang = english ? 'en-US' : 'ar-EG';
-      
-      recognition.onstart = function() {
-        speak('أنا أستمع إليك الآن');
-      };
+<div class="card" onclick="show('quiz')">
+<h3>❓ اختبارات تفاعلية</h3>
+<p>اختبر معلوماتك بعد كل درس.</p>
+</div>
 
-      recognition.onresult = function(event) {
-        const transcript = event.results[0][0].transcript;
-        document.getElementById('question').value = transcript;
-        askQuestion();
-      };
+<div class="card" onclick="show('camera')">
+<h3>📷 تعرف على المجسم بالكاميرا</h3>
+<p>ميزة تجريبية للتعرف على المجسم وتشغيل شرحه تلقائيًا.</p>
+</div>
 
-      recognition.onerror = function() {
-        speak('لم أتمكن من سماعك، اعد المحاولة.');
-      };
+</div>
+</div>
 
-      recognition.start();
-    }
 
-    function askQuestion(){
-      const input = document.getElementById('question');
-      const q = input.value.trim();
-      if(!q) return;
+<!-- ASK -->
 
-      const box = document.getElementById('messages');
-      const user = document.createElement('div');
-      user.className = 'msg user';
-      user.textContent = q;
-      box.appendChild(user);
+<div id="ask" class="screen">
 
-      let a = "سؤالك ممتاز. في النسخة النهائية سنربط هذا القسم بقاعدة معرفية تاريخية وذكاء اصطناعي متخصص.";
+<button class="back-btn" onclick="show('home')">
+← الرجوع للرئيسية
+</button>
 
-      const key = Object.keys(answers).find(
-        k => q.replace(/[؟?]/g,'').includes(k)
-      );
+<h2>اسأل المؤرخ</h2>
 
-      if(key) a = answers[key];
+<div class="chat-box" id="messages">
 
-      const bot = document.createElement('div');
-      bot.className = 'msg bot';
-      bot.textContent = a;
-      box.appendChild(bot);
+<div class="msg bot">
+أهلًا بك! اكتب سؤالك التاريخي أو استخدم الميكروفون.
+</div>
 
-      speak(a);
-      input.value = '';
-    }
+</div>
 
-    function modelInfo(title, text){
-      speak(title + '. ' + text);
-    }
+<div class="input-group">
 
-    function playLesson(name){
-      currentLesson = name;
-      document.getElementById('now').textContent = '▶ ' + name;
-      speak('تم اختيار درس ' + name);
-    }
+<input
+id="question"
+placeholder="اكتب سؤالك هنا..."
+onkeydown="if(event.key==='Enter')askQuestion()"
+>
 
-    function speakNow(){
-      if(!currentLesson){
-        speak('اختر درسًا أولًا.');
-        return;
-      }
-      speak('الدرس الحالي هو ' + currentLesson);
-    }
+<button onclick="askQuestion()">إرسال</button>
 
-    function answer(correct){
-      const r = document.getElementById('result');
-      if(correct){
-        r.textContent = '✅ أحسنت! إجابة صحيحة.';
-        speak('أحسنت! إجابة صحيحة.');
-      }else{
-        r.textContent = '❌ ليست الإجابة الصحيحة. الإجابة هي 1973.';
-        speak('إجابة خاطئة، الإجابة الصحيحة هي 1973.');
-      }
-    }
+<button
+class="mic-btn"
+onclick="listenToVoice()">
+🎙️
+</button>
 
-    function toggleLang(){
-      english = !english;
-      if(english){
-        document.documentElement.dir = 'ltr';
-        document.documentElement.lang = 'en';
-        document.getElementById('brandAr').textContent = 'Smart Braille Historian';
-        document.getElementById('brandEn').textContent = 'مؤرخ برايل الذكي';
-        document.getElementById('langBtn').textContent = 'English | العربية';
-        document.getElementById('heroTitle').textContent = 'Discover history... hear it, ask it, learn from it';
-        document.getElementById('heroText').textContent = 'An educational prototype designed for blind and low-vision users';
-        document.getElementById('c1').textContent = 'Ask the Historian';
-        document.getElementById('p1').textContent = 'Ask a history question and hear the answer.';
-        document.getElementById('c2').textContent = 'Historical Models';
-        document.getElementById('p2').textContent = 'Explore models and listen to their descriptions.';
-        document.getElementById('c3').textContent = 'Audio Library';
-        document.getElementById('p3').textContent = 'Historical lessons, stories, and lectures.';
-        document.getElementById('c4').textContent = 'Quizzes';
-        document.getElementById('p4').textContent = 'Test your knowledge interactively.';
-      }else{
-        location.reload();
-      }
-    }
-  </script>
+</div>
+
+</div>
+
+
+<!-- MODELS -->
+
+<div id="models" class="screen">
+
+<button class="back-btn" onclick="show('home')">
+← الرجوع للرئيسية
+</button>
+
+<h2>النماذج التاريخية اللمسية</h2>
+
+<div class="grid">
+
+<div class="card" onclick="openLesson('dome')">
+
+<h3>🕌 قبة الصخرة</h3>
+
+<p>
+الدرس الأول: قبة الصخرة والقدس والقضية الفلسطينية.
+</p>
+
+</div>
+
+
+<div class="card" onclick="openLesson('prophet')">
+
+<h3>🌙 المسجد النبوي</h3>
+
+<p>
+الدرس الثاني: حياة النبي محمد ﷺ والمسجد النبوي.
+</p>
+
+</div>
+
+
+<div class="card" onclick="openLesson('egypt')">
+
+<h3>🇪🇬 خريطة مصر</h3>
+
+<p>
+الدرس الثالث: مصر والموقع والجغرافيا.
+</p>
+
+</div>
+
+
+<div class="card" onclick="openLesson('october')">
+
+<h3>🇪🇬 حرب أكتوبر</h3>
+
+<p>
+الدرس الرابع: العبور واسترداد الأرض.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- LESSON -->
+
+<div id="lesson" class="screen">
+
+<button class="back-btn" onclick="show('models')">
+← العودة للنماذج
+</button>
+
+<div id="lessonContent"></div>
+
+</div>
+
+
+<!-- LIBRARY -->
+
+<div id="library" class="screen">
+
+<button class="back-btn" onclick="show('home')">
+← الرجوع للرئيسية
+</button>
+
+<h2>🎧 المكتبة الصوتية التاريخية</h2>
+
+<div class="grid">
+
+<div class="card" onclick="playFullLesson('dome')">
+<h3>قبة الصخرة والقضية الفلسطينية</h3>
+<p>تشغيل الدرس صوتيًا.</p>
+</div>
+
+<div class="card" onclick="playFullLesson('prophet')">
+<h3>حياة النبي ﷺ والمسجد النبوي</h3>
+<p>تشغيل الدرس صوتيًا.</p>
+</div>
+
+<div class="card" onclick="playFullLesson('egypt')">
+<h3>خريطة مصر</h3>
+<p>تشغيل الدرس صوتيًا.</p>
+</div>
+
+<div class="card" onclick="playFullLesson('october')">
+<h3>حرب أكتوبر 1973</h3>
+<p>تشغيل الدرس صوتيًا.</p>
+</div>
+
+</div>
+
+<p id="now" class="pill">
+لم يتم اختيار درس بعد
+</p>
+
+<div class="audio-bar">
+
+<button onclick="stopSpeech()">
+⏹ إيقاف الصوت
+</button>
+
+</div>
+
+</div>
+
+
+<!-- QUIZ -->
+
+<div id="quiz" class="screen">
+
+<button class="back-btn" onclick="show('home')">
+← الرجوع للرئيسية
+</button>
+
+<h2>❓ اختبارات الدروس</h2>
+
+<p>
+اختر الدرس ثم أجب عن الأسئلة.
+</p>
+
+<div class="grid">
+
+<div class="card" onclick="startQuiz('dome')">
+<h3>🕌 قبة الصخرة</h3>
+</div>
+
+<div class="card" onclick="startQuiz('prophet')">
+<h3>🌙 المسجد النبوي</h3>
+</div>
+
+<div class="card" onclick="startQuiz('egypt')">
+<h3>🇪🇬 خريطة مصر</h3>
+</div>
+
+<div class="card" onclick="startQuiz('october')">
+<h3>🇪🇬 حرب أكتوبر</h3>
+</div>
+
+</div>
+
+<div id="quizArea"></div>
+
+</div>
+
+
+<!-- CAMERA -->
+
+<div id="camera" class="screen">
+
+<button class="back-btn" onclick="show('home')">
+← الرجوع للرئيسية
+</button>
+
+<h2>📷 التعرف على المجسم بالكاميرا</h2>
+
+<div class="notice">
+
+<strong>ميزة التعرف الذكي:</strong>
+
+<br>
+
+هذه المرحلة تشغل كاميرا الهاتف.
+أما التعرف الحقيقي على نوع المجسم وتشغيل الدرس تلقائيًا فسيتم ربطه لاحقًا بنموذج رؤية بالذكاء الاصطناعي.
+
+</div>
+
+<div class="camera-box">
+
+<video id="cameraVideo" autoplay playsinline></video>
+
+<div class="audio-bar">
+
+<button onclick="startCamera()">
+📷 تشغيل الكاميرا
+</button>
+
+<button
+class="secondary"
+onclick="stopCamera()">
+⏹ إيقاف الكاميرا
+</button>
+
+</div>
+
+<p id="cameraStatus" class="small">
+لم تبدأ الكاميرا بعد.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+let english=false;
+let currentLesson='';
+let currentQuiz=null;
+let quizIndex=0;
+let score=0;
+let cameraStream=null;
+
+
+/* =========================
+   LESSONS
+========================= */
+
+const lessons={
+
+dome:{
+
+title:'🕌 الدرس الأول: قبة الصخرة والقضية الفلسطينية',
+
+intro:
+'أهلًا بك في درس جديد من تطبيق Smart Braille Historian. في هذا الدرس سنتعرف على قبة الصخرة ومدينة القدس، ثم نستعرض بصورة تاريخية مبسطة أهم المحطات المرتبطة بالقضية الفلسطينية، مع استخدام المجسم اللمسي لتكوين صورة ذهنية للمكان.',
+
+sections:[
+
+[
+'أهداف الدرس',
+'أن يتعرف الطالب على مدينة القدس وقبة الصخرة، ويفهم أهم المحطات التاريخية للقضية الفلسطينية، ويستخدم المجسم اللمسي والاستماع لتكوين تصور ذهني للمكان.'
+],
+
+[
+'قبة الصخرة',
+'تقع قبة الصخرة في مدينة القدس داخل الحرم الشريف، في المنطقة التي تضم المسجد الأقصى. بُنيت في العصر الأموي في عهد الخليفة عبد الملك بن مروان، واكتمل بناؤها في أواخر القرن السابع الميلادي. وتتميز بقبتها الذهبية وزخارفها ونقوشها الإسلامية.'
+],
+
+[
+'القدس وفلسطين',
+'القدس مدينة ذات تاريخ طويل ومكانة دينية وحضارية كبيرة. ويُعد المسجد الأقصى من أبرز معالمها، وله مكانة مهمة في التاريخ الإسلامي والذاكرة الثقافية العربية.'
+],
+
+[
+'القضية الفلسطينية',
+'في أواخر القرن التاسع عشر وبدايات القرن العشرين ظهرت الحركة الصهيونية وسعت إلى إقامة وطن لليهود في فلسطين. وخلال الانتداب البريطاني زادت الهجرة اليهودية والتوترات السياسية. وفي عام 1917 صدر وعد بلفور، ثم أصبحت فلسطين تحت الانتداب البريطاني بعد الحرب العالمية الأولى.'
+],
+
+[
+'عام 1947',
+'في عام 1947 أصدرت الأمم المتحدة قرارًا يقترح تقسيم فلسطين إلى دولتين عربية ويهودية، مع وضع خاص لمدينة القدس. رفض العرب الفلسطينيون والدول العربية المشروع، بينما قبلته الحركة الصهيونية.'
+],
+
+[
+'عام 1948 والنكبة',
+'في عام 1948 أُعلن قيام دولة إسرائيل واندلعت الحرب. تعرض عدد كبير من الفلسطينيين للتهجير من مدنهم وقراهم وفقدوا منازلهم وأراضيهم، ويُعرف هذا الحدث في الذاكرة الفلسطينية باسم النكبة.'
+],
+
+[
+'بعد عام 1967',
+'في عام 1967 وقعت حرب جديدة في المنطقة وسيطرت إسرائيل على الضفة الغربية وقطاع غزة، بما في ذلك القدس الشرقية. واستمرت القضية الفلسطينية في العقود التالية، وأصبحت قضايا القدس واللاجئين والحدود والمستوطنات وحقوق الفلسطينيين من أبرز موضوعاتها.'
+],
+
+[
+'استكشاف المجسم',
+'ضع يديك على المجسم برفق. ابدأ من القاعدة ثم انتقل إلى الجزء الأوسط وابحث عن القبة في الأعلى. حاول تكوين صورة ذهنية لشكل المبنى من خلال اللمس والاستماع.'
+]
+
+]
+
+},
+
+
+prophet:{
+
+title:'🌙 الدرس الثاني: حياة النبي محمد ﷺ والمسجد النبوي',
+
+intro:
+'في هذا الدرس سنتعرف على بعض المحطات الرئيسية في حياة النبي محمد ﷺ، والهجرة إلى المدينة المنورة، وبناء المسجد النبوي ودوره في المجتمع الإسلامي الأول.',
+
+sections:[
+
+[
+'مولد النبي ونشأته',
+'وُلد النبي محمد ﷺ في مكة المكرمة في عام يُعرف بعام الفيل، في القرن السادس الميلادي. توفي والده قبل مولده، ثم توفيت والدته وهو صغير، ونشأ في مكة وعُرف بالصدق والأمانة.'
+],
+
+[
+'بداية الدعوة',
+'عندما بلغ النبي ﷺ الأربعين من عمره نزل عليه الوحي لأول مرة وهو يتعبد في غار حراء. وكانت بداية سورة العلق من أوائل ما نزل عليه: اقرأ باسم ربك الذي خلق. بدأ دعوته إلى الإسلام في مكة ودعا إلى عبادة الله والتحلي بالأخلاق والقيم.'
+],
+
+[
+'الهجرة إلى المدينة',
+'هاجر النبي ﷺ مع أصحابه من مكة إلى يثرب التي عُرفت بعد ذلك بالمدينة المنورة. وقعت الهجرة عام 622م، وأصبحت بداية للتقويم الهجري، وكانت نقطة تحول في تاريخ الإسلام.'
+],
+
+[
+'بناء المسجد النبوي',
+'بعد الوصول إلى المدينة كان من أهم الأعمال بناء المسجد النبوي. أصبح المسجد مكانًا للعبادة والتعليم والتشاور، ومركزًا مهمًا للمجتمع الإسلامي الأول.'
+],
+
+[
+'المسجد النبوي عبر التاريخ',
+'شهد المسجد النبوي توسعات متعددة عبر التاريخ لاستيعاب أعداد المسلمين المتزايدة، وشهد في العصر الحديث توسعات كبيرة وتجهيزات متطورة.'
+],
+
+[
+'استكشاف المجسم',
+'ضع يديك على قاعدة المجسم برفق، ثم تتبع حدود المبنى والأجزاء البارزة فيه. حاول تكوين صورة ذهنية للمكان من خلال اللمس والاستماع.'
+]
+
+]
+
+},
+
+
+egypt:{
+
+title:'🇪🇬 الدرس الثالث: خريطة مصر',
+
+intro:
+'في هذا الدرس سنستكشف خريطة جمهورية مصر العربية باللمس والاستماع، لنتعرف على موقع مصر وحدودها ونهر النيل والدلتا وسيناء وقناة السويس.',
+
+sections:[
+
+[
+'موقع مصر',
+'تقع معظم أراضي مصر في شمال شرق قارة أفريقيا، وتمتد أجزاء من أراضيها في قارة آسيا وهي شبه جزيرة سيناء. ويمنحها ذلك موقعًا مهمًا عند ملتقى أفريقيا وآسيا وقرب أوروبا.'
+],
+
+[
+'حدود مصر',
+'يحد مصر غربًا ليبيا، وجنوبًا السودان، وشمال شرق فلسطين، وتطل شمالًا على البحر المتوسط وشرقًا على البحر الأحمر.'
+],
+
+[
+'نهر النيل',
+'يجري نهر النيل من الجنوب نحو الشمال عبر الأراضي المصرية حتى يصب في البحر المتوسط. وارتبط تاريخ مصر وحضارتها بنهر النيل ارتباطًا وثيقًا.'
+],
+
+[
+'وادي النيل والدلتا',
+'يمتد وادي النيل في شريط طويل من الجنوب إلى الشمال، وعند الشمال تتفرع مياهه في منطقة واسعة تعرف بدلتا النيل، وهي منطقة زراعية وسكانية مهمة.'
+],
+
+[
+'سيناء وقناة السويس',
+'تقع شبه جزيرة سيناء في شرق مصر وهي الجزء الآسيوي من الأراضي المصرية. أما قناة السويس فهي ممر مائي يصل البحر المتوسط بالبحر الأحمر وتعد من أهم طرق الملاحة البحرية في العالم.'
+],
+
+[
+'استكشاف الخريطة',
+'ابدأ من الشمال وابحث عن البحر المتوسط، ثم تتبع نهر النيل من الجنوب إلى الشمال، وحدد الدلتا وسيناء والبحر الأحمر وقناة السويس.'
+]
+
+]
+
+},
+
+
+october:{
+
+title:'🇪🇬 الدرس الرابع: حرب أكتوبر 1973',
+
+intro:
+'في هذا الدرس سنتعرف على خلفية حرب أكتوبر 1973، والاستعداد للحرب، وعبور قناة السويس، والتغلب على تحصينات خط بارليف، والنتائج المهمة للحرب.',
+
+sections:[
+
+[
+'خلفية الحرب',
+'في يونيو 1967 وقعت حرب بين إسرائيل ومصر وسوريا والأردن، وانتهت بسيطرة إسرائيل على شبه جزيرة سيناء المصرية وأراضٍ عربية أخرى. وبعدها بدأت مصر مرحلة عُرفت بحرب الاستنزاف واستمرت الاستعدادات لاستعادة الأراضي.'
+],
+
+[
+'الاستعداد للحرب',
+'عملت القوات المسلحة المصرية على إعادة بناء قدراتها والتدريب وإعداد الخطط والاستعداد لعبور قناة السويس، وكان التخطيط وعنصر المفاجأة من العوامل المهمة في بداية العمليات.'
+],
+
+[
+'6 أكتوبر 1973',
+'في يوم السبت السادس من أكتوبر 1973، الموافق العاشر من رمضان، بدأت القوات المصرية والسورية هجومًا متزامنًا. وعلى الجبهة المصرية بدأت القوات المسلحة عملية العبور عبر قناة السويس وأنشأت رؤوس جسور على الضفة الشرقية.'
+],
+
+[
+'خط بارليف',
+'أقامت إسرائيل على الضفة الشرقية لقناة السويس سلسلة من التحصينات العسكرية عُرفت باسم خط بارليف. وتمكنت القوات المصرية من التغلب على التحصينات وفتح ممرات لعبور القوات والمعدات.'
+],
+
+[
+'نتائج الحرب',
+'كان لحرب أكتوبر تأثير كبير على مسار الصراع العربي الإسرائيلي، وأدت إلى تحولات سياسية وعسكرية مهمة ومهدت الطريق لمفاوضات لاحقة. اكتمل الانسحاب الإسرائيلي من معظم سيناء عام 1982.'
+],
+
+[
+'طابا',
+'ظلت طابا موضع خلاف بعد الانسحاب من سيناء. لجأت مصر إلى التحكيم الدولي، وفي عام 1988 صدر حكم هيئة التحكيم الدولية لصالح مصر، وفي عام 1989 تم رفع العلم المصري على طابا.'
+],
+
+[
+'استكشاف المجسم',
+'حدد قناة السويس على المجسم، ثم حاول تحديد الضفة الغربية والشرقية واتجاه العبور ومواقع التحصينات. فهم المكان واتجاه الحركة يساعد على فهم الحدث التاريخي.'
+]
+
+]
+
+}
+
+};
+
+
+/* =========================
+   QUIZZES
+========================= */
+
+const quizzes={
+
+dome:[
+
+['أين تقع قبة الصخرة؟',
+['القدس','القاهرة','دمشق'],0],
+
+['في أي عصر بُنيت قبة الصخرة؟',
+['العصر الأموي','العصر العثماني','العصر الحديث'],0],
+
+['من الخليفة المرتبط ببناء قبة الصخرة؟',
+['صلاح الدين الأيوبي','عبد الملك بن مروان','عمر بن عبد العزيز'],1],
+
+['في أي عام صدر وعد بلفور؟',
+['1917','1947','1967'],0],
+
+['ماذا يُعرف عام 1948 في التاريخ الفلسطيني؟',
+['النكبة','الثورة الصناعية','النهضة'],0],
+
+['ما الحاسة الأساسية لاستكشاف المجسم؟',
+['الشم','اللمس','التذوق'],1]
+
+],
+
+
+prophet:[
+
+['أين وُلد النبي محمد ﷺ؟',
+['مكة المكرمة','المدينة المنورة','القدس'],0],
+
+['كم كان عمر النبي ﷺ عند نزول الوحي؟',
+['25','30','40'],2],
+
+['أين نزل الوحي أول مرة؟',
+['غار حراء','غار ثور','المسجد النبوي'],0],
+
+['إلى أين هاجر النبي ﷺ؟',
+['دمشق','المدينة المنورة','بغداد'],1],
+
+['في أي عام ميلادي وقعت الهجرة؟',
+['570م','610م','622م'],2],
+
+['ما أحد أدوار المسجد النبوي؟',
+['التعليم والتشاور','التجارة فقط','السكن فقط'],0]
+
+],
+
+
+egypt:[
+
+['في أي قارة تقع معظم أراضي مصر؟',
+['أفريقيا','أوروبا','أمريكا الجنوبية'],0],
+
+['ما الجزء المصري الواقع في آسيا؟',
+['الدلتا','شبه جزيرة سيناء','الصحراء الغربية'],1],
+
+['ما النهر المرتبط بالحضارة المصرية؟',
+['النيل','دجلة','الفرات'],0],
+
+['أين يقع البحر المتوسط بالنسبة لمصر؟',
+['شمال مصر','جنوب مصر','غرب مصر'],0],
+
+['ما الممر المائي الذي يصل المتوسط بالبحر الأحمر؟',
+['قناة السويس','نهر النيل','خليج العقبة'],0],
+
+['أين توجد دلتا النيل؟',
+['جنوب مصر','شمال مصر','غرب مصر'],1]
+
+],
+
+
+october:[
+
+['متى بدأت حرب أكتوبر؟',
+['6 أكتوبر 1973','5 يونيو 1967','25 أبريل 1982'],0],
+
+['ما الممر المائي الذي عبرته القوات المصرية؟',
+['البحر المتوسط','قناة السويس','نهر النيل'],1],
+
+['ما اسم التحصينات الإسرائيلية على الضفة الشرقية؟',
+['خط بارليف','خط الحدود','خط سيناء'],0],
+
+['ما الهدف من عملية العبور؟',
+['عبور قناة السويس إلى الضفة الشرقية','الوصول إلى البحر المتوسط','عبور نهر النيل'],0],
+
+['متى اكتمل الانسحاب الإسرائيلي من سيناء؟',
+['1973','1982','1989'],1],
+
+['ماذا حدث في طابا عام 1988؟',
+['صدر حكم التحكيم الدولي لصالح مصر','بدأت حرب أكتوبر','بُنيت قناة السويس'],0]
+
+]
+
+};
+
+
+/* =========================
+   ASK HISTORIAN
+========================= */
+
+const answers={
+
+'متى بدأت حرب أكتوبر':
+'بدأت حرب أكتوبر في 6 أكتوبر 1973، الموافق 10 رمضان 1393 هـ.',
+
+'متى بدأت حرب اكتوبر':
+'بدأت حرب أكتوبر في 6 أكتوبر 1973.',
+
+'ما هي حرب أكتوبر':
+'هي الحرب التي بدأت في 6 أكتوبر 1973، وخاضتها مصر وسوريا ضد إسرائيل.',
+
+'من بنى قبة الصخرة':
+'بُنيت قبة الصخرة في العصر الأموي بأمر الخليفة عبد الملك بن مروان، واكتمل بناؤها في أواخر القرن السابع الميلادي.',
+
+'ما أهمية المسجد الأقصى':
+'المسجد الأقصى من أهم المواقع الدينية والتاريخية في القدس، وله مكانة كبيرة في التاريخ الإسلامي.',
+
+'اين تقع قبة الصخرة':
+'تقع قبة الصخرة في مدينة القدس داخل الحرم الشريف.',
+
+'من هو النبي محمد':
+'النبي محمد ﷺ هو خاتم الأنبياء والمرسلين، وُلد في مكة المكرمة وبدأت رسالته بنزول الوحي عليه في غار حراء.',
+
+'اين ولد النبي محمد':
+'وُلد النبي محمد ﷺ في مكة المكرمة.',
+
+'متى كانت الهجرة النبوية':
+'وقعت الهجرة النبوية عام 622 ميلادية، من مكة إلى المدينة المنورة.',
+
+'ما هو نهر النيل':
+'نهر النيل يجري عبر مصر من الجنوب إلى الشمال ويصب في البحر المتوسط، وارتبطت به الحضارة المصرية ارتباطًا وثيقًا.',
+
+'ما اهمية قناة السويس':
+'قناة السويس ممر مائي يصل البحر المتوسط بالبحر الأحمر، وتعد من أهم طرق الملاحة البحرية في العالم.',
+
+'ماذا حدث عام 1948':
+'أُعلن قيام دولة إسرائيل واندلعت الحرب، وتعرض عدد كبير من الفلسطينيين للتهجير، ويُعرف ذلك في الذاكرة الفلسطينية باسم النكبة.',
+
+'ما هو خط بارليف':
+'خط بارليف كان سلسلة من التحصينات العسكرية الإسرائيلية على الضفة الشرقية لقناة السويس قبل حرب أكتوبر.',
+
+'متى عادت طابا لمصر':
+'صدر حكم التحكيم الدولي لصالح مصر عام 1988، ورُفع العلم المصري على طابا عام 1989.',
+
+'ما هو المسجد النبوي':
+'المسجد النبوي هو المسجد الذي بناه النبي محمد ﷺ بعد هجرته إلى المدينة، وكان مركزًا مهمًا للعبادة والتعليم والتشاور.',
+
+'اين تقع مصر':
+'تقع معظم أراضي مصر في شمال شرق أفريقيا، وتمتد شبه جزيرة سيناء في قارة آسيا.',
+
+'ما اهمية نهر النيل':
+'ارتبط نهر النيل بالحياة والزراعة والاستقرار وقيام الحضارة المصرية عبر آلاف السنين.'
+
+};
+
+
+/* =========================
+   NAVIGATION
+========================= */
+
+function show(id){
+
+document
+.querySelectorAll('.screen')
+.forEach(s=>s.classList.remove('active'));
+
+const el=document.getElementById(id);
+
+if(el){
+el.classList.add('active');
+}
+
+window.scrollTo({
+top:0,
+behavior:'smooth'
+});
+
+if(id==='ask'){
+speak('أهلًا بك في قسم اسأل المؤرخ. اكتب سؤالك أو استخدم الميكروفون.');
+}
+
+}
+
+
+/* =========================
+   SPEECH
+========================= */
+
+function speak(text){
+
+if(!text)return;
+
+if(!('speechSynthesis' in window)){
+
+alert('القراءة الصوتية غير مدعومة في هذا المتصفح.');
+
+return;
+}
+
+speechSynthesis.cancel();
+
+setTimeout(()=>{
+
+const u=new SpeechSynthesisUtterance(text);
+
+u.lang=english?'en-US':'ar-SA';
+
+u.rate=.9;
+
+u.pitch=1;
+
+speechSynthesis.speak(u);
+
+},50);
+
+}
+
+function stopSpeech(){
+
+speechSynthesis.cancel();
+
+}
+
+
+/* =========================
+   LESSON
+========================= */
+
+function openLesson(id){
+
+currentLesson=id;
+
+const l=lessons[id];
+
+let html=`
+
+<div class="lesson">
+
+<span class="pill">
+
+${id==='dome'?'الدرس الأول':
+id==='prophet'?'الدرس الثاني':
+id==='egypt'?'الدرس الثالث':
+'الدرس الرابع'}
+
+</span>
+
+<h2>${l.title}</h2>
+
+<div class="audio-bar">
+
+<button onclick="playFullLesson('${id}')">
+🔊 تشغيل الدرس كاملًا
+</button>
+
+<button
+class="secondary"
+onclick="stopSpeech()">
+⏹ إيقاف الصوت
+</button>
+
+<button onclick="startQuiz('${id}')">
+❓ اختبار الدرس
+</button>
+
+</div>
+
+<div class="lesson-section">
+
+<h3>المقدمة</h3>
+
+<p>${l.intro}</p>
+
+</div>
+`;
+
+l.sections.forEach(section=>{
+
+html+=`
+
+<div class="lesson-section">
+
+<h3>${section[0]}</h3>
+
+<p>${section[1]}</p>
+
+<button
+class="btn"
+onclick="speak(${JSON.stringify(section[0]+'. '+section[1])})">
+
+🔊 استمع لهذا الجزء
+
+</button>
+
+</div>
+
+`;
+
+});
+
+html+=`
+
+<div class="braille">
+
+<strong>💠 فكرة برايل:</strong>
+
+<br>
+
+يمكن تحويل عناوين الدرس والمعلومات الأساسية والأسئلة إلى بطاقات أو ملصقات برايل مرتبطة بالمجسم.
+
+</div>
+
+</div>
+
+`;
+
+document.getElementById('lessonContent').innerHTML=html;
+
+show('lesson');
+
+}
+
+
+/* =========================
+   FULL LESSON
+========================= */
+
+function playFullLesson(id){
+
+const l=lessons[id];
+
+currentLesson=id;
+
+document.getElementById('now').textContent='▶ '+l.title;
+
+const text=
+l.intro+
+' '+
+l.sections
+.map(x=>x[0]+'. '+x[1])
+.join(' ');
+
+speak(text);
+
+}
+
+
+/* =========================
+   VOICE INPUT
+========================= */
+
+function listenToVoice(){
+
+const R=
+window.SpeechRecognition||
+window.webkitSpeechRecognition;
+
+if(!R){
+
+speak(
+'خاصية التعرف على الصوت غير مدعومة في هذا المتصفح، يمكنك كتابة السؤال.'
+);
+
+return;
+}
+
+const r=new R();
+
+r.lang=english?'en-US':'ar-EG';
+
+r.onstart=()=>{
+
+speak('أنا أستمع إليك الآن');
+
+};
+
+r.onresult=e=>{
+
+document.getElementById('question').value=
+e.results[0][0].transcript;
+
+askQuestion();
+
+};
+
+r.onerror=()=>{
+
+speak('لم أتمكن من سماعك، أعد المحاولة.');
+
+};
+
+r.start();
+
+}
+
+
+/* =========================
+   QUESTIONS
+========================= */
+
+function normalize(s){
+
+return s
+.toLowerCase()
+.replace(/[؟?!.,،؛:]/g,'')
+.replace(/\s+/g,' ')
+.trim();
+
+}
+
+
+function askQuestion(){
+
+const input=
+document.getElementById('question');
+
+const q=input.value.trim();
+
+if(!q)return;
+
+const box=
+document.getElementById('messages');
+
+const user=
+document.createElement('div');
+
+user.className='msg user';
+
+user.textContent=q;
+
+box.appendChild(user);
+
+const nq=normalize(q);
+
+let a=null;
+
+for(const k in answers){
+
+if(
+nq.includes(normalize(k))
+){
+
+a=answers[k];
+
+break;
+
+}
+
+}
+
+
+if(!a){
+
+if(nq.includes('قبة الصخرة')){
+
+a=answers['من بنى قبة الصخرة'];
+
+}
+
+else if(nq.includes('المسجد النبوي')){
+
+a=answers['ما هو المسجد النبوي'];
+
+}
+
+else if(nq.includes('مصر')){
+
+a=answers['اين تقع مصر'];
+
+}
+
+else if(nq.includes('أكتوبر')){
+
+a=answers['ما هي حرب أكتوبر'];
+
+}
+
+else if(nq.includes('النيل')){
+
+a=answers['ما هو نهر النيل'];
+
+}
+
+else{
+
+a=
+'سؤالك ممتاز. لا توجد له إجابة في قاعدة المعرفة الحالية. جرّب سؤالًا عن قبة الصخرة أو المسجد النبوي أو مصر أو حرب أكتوبر.';
+
+}
+
+}
+
+const bot=
+document.createElement('div');
+
+bot.className='msg bot';
+
+bot.textContent=a;
+
+box.appendChild(bot);
+
+box.scrollTop=box.scrollHeight;
+
+speak(a);
+
+input.value='';
+
+}
+
+
+/* =========================
+   QUIZ
+========================= */
+
+function startQuiz(id){
+
+currentQuiz=id;
+
+quizIndex=0;
+
+score=0;
+
+show('quiz');
+
+renderQuestion();
+
+}
+
+
+function renderQuestion(){
+
+const q=
+quizzes[currentQuiz][quizIndex];
+
+let html=`
+
+<div class="quiz-card">
+
+<p>
+
+<span class="pill">
+
+السؤال ${quizIndex+1}
+من
+${quizzes[currentQuiz].length}
+
+</span>
+
+</p>
+
+<h3>${q[0]}</h3>
+`;
+
+q[1].forEach((opt,i)=>{
+
+html+=`
+
+<button
+class="option"
+onclick="chooseAnswer(${i})">
+
+${opt}
+
+</button>
+
+`;
+
+});
+
+html+=`
+
+<div
+id="feedback"
+class="feedback">
+</div>
+
+</div>
+
+`;
+
+document.getElementById('quizArea').innerHTML=html;
+
+speak(
+q[0]+
+'. الاختيارات: '+
+q[1].join('، ')
+);
+
+}
+
+
+function chooseAnswer(i){
+
+const q=
+quizzes[currentQuiz][quizIndex];
+
+const f=
+document.getElementById('feedback');
+
+const buttons=
+document.querySelectorAll('.option');
+
+buttons.forEach(
+b=>b.disabled=true
+);
+
+if(i===q[2]){
+
+score++;
+
+f.className='feedback correct';
+
+f.textContent=
+'✅ أحسنت! إجابة صحيحة.';
+
+speak(
+'أحسنت! إجابة صحيحة.'
+);
+
+}
+
+else{
+
+f.className='feedback wrong';
+
+f.textContent=
+'❌ إجابة غير صحيحة. الإجابة الصحيحة هي: '+
+q[1][q[2]];
+
+speak(
+'إجابة غير صحيحة. الإجابة الصحيحة هي '+
+q[1][q[2]]
+);
+
+}
+
+setTimeout(()=>{
+
+quizIndex++;
+
+if(
+quizIndex<
+quizzes[currentQuiz].length
+){
+
+renderQuestion();
+
+}
+
+else{
+
+finishQuiz();
+
+}
+
+},1200);
+
+}
+
+
+function finishQuiz(){
+
+const total=
+quizzes[currentQuiz].length;
+
+document.getElementById('quizArea').innerHTML=`
+
+<div class="lesson">
+
+<h2>🏆 انتهى الاختبار</h2>
+
+<p>
+نتيجتك:
+<strong>
+${score} من ${total}
+</strong>
+</p>
+
+<button
+class="btn"
+onclick="startQuiz('${currentQuiz}')">
+
+إعادة الاختبار
+
+</button>
+
+<button
+class="btn"
+onclick="openLesson('${currentQuiz}')"
+style="margin-right:.5rem">
+
+مراجعة الدرس
+
+</button>
+
+</div>
+
+`;
+
+speak(
+'انتهى الاختبار. نتيجتك '+
+score+
+' من '+
+total
+);
+
+}
+
+
+/* =========================
+   CAMERA
+========================= */
+
+async function startCamera(){
+
+if(
+!navigator.mediaDevices||
+!navigator.mediaDevices.getUserMedia
+){
+
+document.getElementById('cameraStatus')
+.textContent=
+'الكاميرا غير مدعومة في هذا المتصفح.';
+
+return;
+
+}
+
+try{
+
+cameraStream=
+await navigator.mediaDevices.getUserMedia({
+
+video:{
+facingMode:'environment'
+},
+
+audio:false
+
+});
+
+document.getElementById('cameraVideo')
+.srcObject=cameraStream;
+
+document.getElementById('cameraStatus')
+.textContent=
+'الكاميرا تعمل. سيتم لاحقًا ربطها بنموذج رؤية للتعرف على المجسم تلقائيًا.';
+
+speak(
+'الكاميرا تعمل الآن.'
+);
+
+}
+
+catch(e){
+
+document.getElementById('cameraStatus')
+.textContent=
+'تعذر تشغيل الكاميرا. تأكد من السماح باستخدام الكاميرا.';
+
+speak(
+'تعذر تشغيل الكاميرا. تأكد من السماح باستخدام الكاميرا.'
+);
+
+}
+
+}
+
+
+function stopCamera(){
+
+if(cameraStream){
+
+cameraStream
+.getTracks()
+.forEach(t=>t.stop());
+
+}
+
+cameraStream=null;
+
+document.getElementById('cameraVideo')
+.srcObject=null;
+
+document.getElementById('cameraStatus')
+.textContent=
+'تم إيقاف الكاميرا.';
+
+}
+
+
+/* =========================
+   LANGUAGE
+========================= */
+
+function toggleLang(){
+
+english=!english;
+
+if(english){
+
+document.documentElement.dir='ltr';
+
+document.documentElement.lang='en';
+
+document.getElementById('brandAr')
+.textContent=
+'Smart Braille Historian';
+
+document.getElementById('brandEn')
+.textContent=
+'مؤرخ برايل الذكي';
+
+document.getElementById('heroTitle')
+.textContent=
+'Discover history... hear it, ask it, learn from it';
+
+document.getElementById('heroText')
+.textContent=
+'An interactive educational prototype for blind and low-vision learners';
+
+document.getElementById('langBtn')
+.textContent=
+'English | العربية';
+
+}
+
+else{
+
+location.reload();
+
+}
+
+}
+
+</script>
+
 </body>
 </html>
+```
