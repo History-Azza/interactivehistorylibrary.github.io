@@ -1,21 +1,15 @@
 {
-  "background_color": "#ffffff",
-  "dir": "ltr",
+  "name": "مؤرخ برايل الذكي",
+  "short_name": "مؤرخ برايل",
+  "start_url": "./index.html",
   "display": "standalone",
-  "name": "Smart Braille Historian",
-  "orientation": "any",
-  "scope": "/https://history-azza.github.io/interactivehistorylibrary.github.io/",
-  "short_name": "Braille Historian",
-  "start_url": "/ https://history-azza.github.io/interactivehistorylibrary.github.io/Smart_Braille_Historian_Prototype.html",
-  "theme_color": "#ffffff",
-  "id": "/smart-braille-historian",
-  "description": "An interactive educational application that uses 3D tactile models, Braille, audio guidance and artificial intelligence to make history accessible to visually impaired students.",
-  "lang": "ar",
-  "display_override": [
-    "standalone",
-    "window-controls-overlay"
-  ],
-  "categories": [
-    "education"
+  "background_color": "#ffffff",
+  "theme_color": "#2c3e50",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
   ]
 }
