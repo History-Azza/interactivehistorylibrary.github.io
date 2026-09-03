@@ -1,16 +1,13 @@
 {
-  "name": "مؤرخ برايل الذكي",
-  "short_name": "المؤرخ الذكي",
-  "description": "نموذج تعليمي تفاعلي مصمم لدعم المكفوفين وضعاف البصر في دراسة التاريخ",
-  "start_url": "./Smart_Braille_Historian_Prototype.html",
-  "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#2c3e50",
-  "icons": [
-    {
-      "src": "https://www.pwabuilder.com/assets/images/icon_512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ]
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "Smart Braille Historian",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "Braille Historian",
+  "start_url": "/",
+  "theme_color": "#ffffff",
+  "id": "/smart-braille-historian",
+  "description": "An interactive educational application that uses 3D tactile models, Braille, audio guidance and artificial intelligence to make history accessible to visually impaired students."
 }
