@@ -1,180 +1,1637 @@
 <!DOCTYPE html>
-<html lang="ar">
-
+<html lang="ar" dir="rtl" id="htmlRoot">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<link rel="manifest" href="manifest.json">
-
-<title>Interactive History Library</title>
+<title>مؤرخ برايل الذكي | Smart Braille Historian</title>
+<!-- مكتبة قراءة الـ QR Code -->
+<script src="https://cdn.jsdelivr.net/npm/jsQR@1.4.0/dist/jsQR.js"></script>
+<!-- خطوط احترافية تدعم العربية والإنجليزية بوضوح عالٍ لضعاف البصر -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-
-body {
-    direction: rtl;
-    text-align: center;
-    font-family: Arial, sans-serif;
-    background: #f5f5f5;
-    margin: 0;
-    padding: 40px 20px;
+:root{
+  --primary:#0f3d63;
+  --primary-dark:#0a2c48;
+  --secondary:#c2703d;
+  --secondary-dark:#a35a2c;
+  --bg:#f6f5f1;
+  --text:#1c2430;
+  --card:#ffffff;
+  --ok:#15803d;
+  --bad:#b91c1c;
+  --font-scale: 1rem;
+  --font-ar: 'Tajawal', system-ui, sans-serif;
+  --font-en: 'Inter', system-ui, sans-serif;
 }
 
-.container {
-    max-width: 900px;
-    margin: auto;
-    background: white;
-    padding: 40px 25px;
-    border-radius: 20px;
-    box-shadow: 0 3px 15px rgba(0,0,0,0.15);
+/* وضع التباين العالي */
+body.high-contrast {
+  --primary: #000000;
+  --secondary: #ffcc00;
+  --bg: #000000;
+  --text: #ffffff;
+  --card: #121212;
+  --ok: #00ff00;
+  --bad: #ff4444;
 }
 
-h1 {
-    color: #333;
-    font-size: 32px;
+*{box-sizing:border-box}
+
+body{
+  font-family:var(--font-ar);
+  background:var(--bg);
+  color:var(--text);
+  margin:0;
+  direction:rtl;
+  font-size: var(--font-scale);
+  transition: background 0.3s, color 0.3s;
 }
 
-.subtitle {
-    font-size: 21px;
-    line-height: 1.8;
-    color: #555;
+body.ltr{
+  direction:ltr;
+  font-family:var(--font-en);
 }
 
-.language {
-    margin: 25px 0;
+header{
+  background:linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color:white;
+  padding:1rem 1.5rem;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:1rem;
+  flex-wrap: wrap;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  position: sticky;
+  top: 0;
+  z-index: 50;
 }
 
-.language button {
-    padding: 10px 20px;
-    margin: 5px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 18px;
+.brand h1{
+  font-size:1.4rem;
+  margin:0;
+  font-weight: 800;
 }
 
-.cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 20px;
-    margin-top: 35px;
+.brand span{
+  font-size:.85rem;
+  color:#cbd5e1;
 }
 
-.card {
-    background: #fafafa;
-    padding: 25px 15px;
-    border-radius: 15px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+.header-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
-.card h2 {
-    font-size: 22px;
+nav button,
+.btn,
+.control-btn{
+  background:var(--secondary);
+  border:none;
+  color:white;
+  padding:.5rem .9rem;
+  border-radius:.5rem;
+  cursor:pointer;
+  font-weight:bold;
+  font-size: 0.9rem;
+  transition: 0.2s;
 }
 
-.card p {
-    font-size: 17px;
-    line-height: 1.6;
+.control-btn:hover, .btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
 }
 
-.card a {
-    display: inline-block;
-    margin-top: 10px;
-    padding: 12px 20px;
-    background: #1976d2;
-    color: white;
-    text-decoration: none;
-    border-radius: 10px;
+.container{
+  padding:2rem 1rem;
+  max-width:1000px;
+  margin:auto;
 }
 
+.screen{
+  display:none;
+}
+
+.screen.active{
+  display:block;
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hero{
+  text-align:center;
+  padding:2rem 1rem;
+}
+
+.hero h2{
+  color:var(--primary);
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.lang-selector-box{
+  display:flex;
+  justify-content:center;
+  gap:1.5rem;
+  margin-top:2rem;
+  flex-wrap: wrap;
+}
+
+.lang-card{
+  background:var(--card);
+  border:2px solid var(--primary);
+  padding:2rem;
+  border-radius:1rem;
+  cursor:pointer;
+  text-align:center;
+  transition:.2s;
+  width:260px;
+  color: var(--text);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+}
+
+.lang-card:hover{
+  transform:translateY(-5px);
+  border-color: var(--secondary);
+}
+
+.lang-card h3{
+  color:var(--primary);
+  margin-top:0;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(270px,1fr));
+  gap:1.2rem;
+  margin-top:1.5rem;
+}
+
+.card{
+  background:var(--card);
+  padding:1.5rem;
+  border-radius:.8rem;
+  box-shadow:0 4px 10px -2px rgb(0 0 0 / .08);
+  cursor:pointer;
+  border:1px solid #e2e8f0;
+  transition:.2s;
+  color: var(--text);
+}
+
+.card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 8px 16px -4px rgb(0 0 0 / .12);
+  border-color: var(--primary);
+}
+
+.card h3{
+  margin-top:0;
+  color:var(--primary);
+  font-size: 1.2rem;
+}
+
+.back-btn{
+  background:#64748b;
+  color:white;
+  border:none;
+  padding:.6rem 1.1rem;
+  border-radius:.5rem;
+  cursor:pointer;
+  margin-bottom:1.2rem;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+.back-btn:hover {
+  background: #475569;
+}
+
+.lesson{
+  background:var(--card);
+  padding:2rem;
+  border-radius:.8rem;
+  border:1px solid #e2e8f0;
+  margin-top:1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.lesson h2{
+  color:var(--primary);
+  font-size: 1.6rem;
+  margin-top: 0;
+}
+
+.lesson h3{
+  color:var(--primary);
+  font-size: 1.2rem;
+}
+
+.lesson-section{
+  margin:1.6rem 0;
+  line-height:2;
+}
+
+.suggested-q-btn {
+  display: block;
+  width: 100%;
+  text-align: right;
+  background: #f0fdf4;
+  border: 1px solid #4ade80;
+  color: #166534;
+  padding: 0.8rem 1.1rem;
+  margin: 0.6rem 0;
+  border-radius: 0.6rem;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: 0.2s;
+}
+
+body.ltr .suggested-q-btn {
+  text-align: left;
+}
+
+.suggested-q-btn:hover {
+  background: #dcfce7;
+  transform: translateX(-4px);
+}
+
+body.ltr .suggested-q-btn:hover {
+  transform: translateX(4px);
+}
+
+.audio-bar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.8rem;
+  margin:1.2rem 0;
+}
+
+.audio-bar button{
+  border:0;
+  border-radius:.5rem;
+  padding:.7rem 1.2rem;
+  cursor:pointer;
+  font-weight:bold;
+  background:var(--primary);
+  color:white;
+}
+
+.audio-bar button.secondary{
+  background:var(--secondary);
+}
+
+.chat-box{
+  background:var(--card);
+  border:1px solid #cbd5e1;
+  border-radius:.6rem;
+  height:360px;
+  overflow-y:auto;
+  padding:1.2rem;
+  margin-bottom:1rem;
+  display:flex;
+  flex-direction:column;
+  gap:.8rem;
+}
+
+.msg{
+  padding:.85rem 1.1rem;
+  border-radius:.6rem;
+  max-width:85%;
+  line-height:1.6;
+  font-size: 1.05rem;
+}
+
+.msg.user{
+  background:#e0f2fe;
+  color:#0f172a;
+  align-self:flex-start;
+}
+
+body.ltr .msg.user{
+  align-self:flex-end;
+}
+
+.msg.bot{
+  background:#f1f5f9;
+  color:#0f172a;
+  align-self:flex-end;
+  border:1px solid #e2e8f0;
+}
+
+body.ltr .msg.bot{
+  align-self:flex-start;
+}
+
+.input-group{
+  display:flex;
+  gap:.6rem;
+}
+
+.input-group input{
+  flex:1;
+  padding:.85rem;
+  border:1px solid #cbd5e1;
+  border-radius:.5rem;
+  font-size:1rem;
+  background: var(--card);
+  color: var(--text);
+}
+
+.input-group button{
+  padding:.85rem 1.2rem;
+  background:var(--primary);
+  color:white;
+  border:none;
+  border-radius:.5rem;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.mic-btn{
+  background:var(--secondary)!important;
+  position: relative;
+  transition: 0.2s;
+}
+
+.mic-btn.listening{
+  background:var(--bad)!important;
+  animation: micPulse 1.2s infinite;
+}
+
+@keyframes micPulse{
+  0%   { box-shadow: 0 0 0 0 rgba(185,28,28,0.55); }
+  70%  { box-shadow: 0 0 0 12px rgba(185,28,28,0); }
+  100% { box-shadow: 0 0 0 0 rgba(185,28,28,0); }
+}
+
+.mic-status{
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: var(--secondary);
+  margin: 0 0 .6rem;
+  min-height: 1.2rem;
+}
+
+.quiz-card{
+  margin-top:1.2rem;
+  background:var(--card);
+  border:1px solid #e2e8f0;
+  border-radius:.8rem;
+  padding:1.5rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.option{
+  display:block;
+  width:100%;
+  text-align:inherit;
+  margin:.7rem 0;
+  padding:.9rem 1.1rem;
+  border:1px solid #cbd5e1;
+  background:var(--card);
+  color: var(--text);
+  border-radius:.5rem;
+  cursor:pointer;
+  font-size: 1.05rem;
+  transition: 0.2s;
+}
+
+.option:hover{
+  background:var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.feedback{
+  font-weight:bold;
+  margin-top:1rem;
+  font-size: 1.1rem;
+}
+
+.correct{
+  color:var(--ok);
+}
+
+.wrong{
+  color:var(--bad);
+}
+
+.pill{
+  display:inline-block;
+  background:#dbeafe;
+  color:#1e3a8a;
+  padding:.35rem 1rem;
+  border-radius:999px;
+  font-weight:bold;
+  font-size: 0.9rem;
+}
+
+.notice{
+  background:#fff7ed;
+  color:#9a3412;
+  border-right:4px solid var(--secondary);
+  padding:1.2rem;
+  border-radius:.6rem;
+  margin:1.2rem 0;
+  line-height: 1.7;
+}
+
+body.ltr .notice{
+  border-right:none;
+  border-left:4px solid var(--secondary);
+}
+
+.camera-box{
+  background:var(--card);
+  border:1px solid #cbd5e1;
+  border-radius:.8rem;
+  padding:1.2rem;
+  margin-top:1rem;
+  text-align:center;
+}
+
+video{
+  width:100%;
+  max-width:520px;
+  border-radius:.6rem;
+  background:#111;
+}
+
+canvas{
+  display:none;
+}
+
+.small{
+  font-size:.95rem;
+  color:var(--text);
+  opacity: 0.85;
+}
+
+.braille-box{
+  background:#f1f5f9;
+  color:#0f172a;
+  border-right:4px solid var(--primary);
+  padding:1.2rem;
+  border-radius:.6rem;
+  line-height:2.2;
+  margin: 1.2rem 0;
+  font-family: monospace;
+  font-size: 1.15rem;
+  letter-spacing: 1px;
+}
+
+body.ltr .braille-box{
+  border-right:none;
+  border-left:4px solid var(--primary);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
 </style>
-
 </head>
 
 <body>
 
+<!-- إعلانات قارئ الشاشة -->
+<div id="srAnnounce" class="sr-only" aria-live="polite"></div>
+
+<header>
+<div class="brand">
+<h1 id="appTitle">مؤرخ برايل الذكي</h1>
+<span id="appSub">Smart Braille Historian</span>
+</div>
+<div class="header-controls">
+<button class="control-btn" onclick="toggleBackgroundMusic()" id="musicBtn" title="تشغيل الموسيقى الهادئة">🎶 موسيقى</button>
+<button class="control-btn" onclick="adjustFontSize(1)" title="تكبير الخط">➕ A</button>
+<button class="control-btn" onclick="adjustFontSize(-1)" title="تصغير الخط">➖ A</button>
+<button class="control-btn" onclick="toggleHighContrast()" title="وضع التباين العالي">🌓 تباين</button>
+<button class="control-btn" onclick="cycleSpeechRate()" id="speedBtn" title="سرعة الصوت">🗣️ سرعة: 1x</button>
+<nav style="display:inline-block;">
+<button onclick="goHome()">🏠 <span id="navHomeText">الرئيسية</span></button>
+</nav>
+</div>
+</header>
+
 <div class="container">
 
-<h1>📚 المكتبة التفاعلية للتاريخ</h1>
-
-<p class="subtitle">
-مرحبًا بك في عالم التاريخ التفاعلي.
-<br>
-استكشف التاريخ من خلال الصوت والمجسمات والتفاعل الذكي.
-</p>
-
-<div class="language">
-
-<button onclick="setArabic()">🇪🇬 العربية</button>
-
-<button onclick="setEnglish()">🇬🇧 English</button>
-
+<!-- LANGUAGE SELECTION HOME -->
+<div id="langSelectScreen" class="screen active">
+<div class="hero">
+<h2>اختر لغة التطبيق / Choose Application Language</h2>
+<p>يرجى اختيار النسخة المفضلة لديك للبدء في استكشاف الدروس والتشغيل الصوتي الاحترافي</p>
+<div class="lang-selector-box">
+<div class="lang-card" onclick="setLanguage('ar')" tabindex="0">
+<h3>🇪🇬 النسخة العربية</h3>
+<p>دروس موسعة، تفاعل صوتي، وأسئلة تفصيلية مشكولة بالكامل</p>
+</div>
+<div class="lang-card" onclick="setLanguage('en')" tabindex="0">
+<h3>🇬🇧 English Version</h3>
+<p>Expanded historical lessons, interactive quizzes & audio</p>
+</div>
+</div>
+</div>
 </div>
 
-<div class="cards">
-
-<div class="card">
-
-<h2>🗺️ خريطة جمهورية مصر العربية</h2>
-
-<p>
-استكشف خريطة مصر واستمع إلى المعلومات التاريخية والجغرافية وتفاعل مع المؤرخ الذكي.
-</p>
-
-<a href="egypt-bilingual.html">
-ابدأ الاستكشاف
-</a>
-
+<!-- MAIN DASHBOARD -->
+<div id="dashboard" class="screen">
+<div class="hero">
+<h2 id="dashTitle">اكتشف التاريخ... اسمعه، اسأله، وتعلم منه</h2>
+<p id="dashDesc">نموذج تعليمي تفاعلي ذكي مصمم خصيصاً لدعم المكفوفين وضعاف البصر بأحدث تقنيات إمكانية الوصول</p>
 </div>
 
-<div class="card">
-
-<h2>🎧 المكتبة الصوتية</h2>
-
-<p>
-استكشف المحتوى التاريخي الصوتي بطريقة تفاعلية.
-</p>
-
+<div class="grid">
+<div class="card" onclick="show('ask')">
+<h3 id="cAskTitle">💬 اسأل المؤرخ</h3>
+<p id="cAskDesc">اطرح أي سؤال تاريخي بأي صيغة واستمع للإجابة الصوتية المفصلة.</p>
+</div>
+<div class="card" onclick="show('models')">
+<h3 id="cModelsTitle">🏛️ النماذج التاريخية</h3>
+<p id="cModelsDesc">استكشف المجسمات اللمسية والدروس التاريخية المشكولة.</p>
+</div>
+<div class="card" onclick="show('library')">
+<h3 id="cLibraryTitle">🎧 المكتبة الصوتية</h3>
+<p id="cLibraryDesc">استمع للدروس والمحاضرات التاريخية بالكامل.</p>
+</div>
+<div class="card" onclick="show('quiz')">
+<h3 id="cQuizTitle">❓ اختبارات تفاعلية متقدمة</h3>
+<p id="cQuizDesc">اختبر مدى استيعابك للمعلومات بعد كل درس.</p>
+</div>
+<div class="card" onclick="show('camera')">
+<h3 id="cCameraTitle">📷 قارئ المجسمات بالكاميرا (QR)</h3>
+<p id="cCameraDesc">وجه الكاميرا نحو باركود المجسم للتعرف عليه وتشغيل شرحه فوراً.</p>
+</div>
+</div>
 </div>
 
-<div class="card">
-
-<h2>🤖 المؤرخ الذكي</h2>
-
-<p>
-تحدث مع النظام واطرح أسئلتك حول التاريخ.
-</p>
-
+<!-- ASK -->
+<div id="ask" class="screen">
+<button class="back-btn" onclick="show('dashboard')">← <span id="backDash1">الرجوع للقائمة</span></button>
+<h2 id="askH2">اسأل المؤرخ</h2>
+<div class="chat-box" id="messages">
+<div class="msg bot" id="chatWelcome">أهْلًا بِكَ يَا بَطَلُ! اطْرَحْ سُؤَالَكَ التَّارِيخِيَّ بَأَيِّ صِيغَةٍ تُفَضِّلُهَا، وَسَأُجِيبُكَ فَوْرًا بِالتَّفْصِيلِ.</div>
+</div>
+<p id="micStatus" class="mic-status"></p>
+<div class="input-group">
+<input id="question" placeholder="اكتب سؤالك التاريخي هنا..." onkeydown="if(event.key==='Enter') askQuestion();">
+<button onclick="askQuestion()" id="sendBtn">إرسال</button>
+<button class="mic-btn" onclick="listenToVoice()" id="micBtn" title="التحدث بالصوت">🎙️</button>
+</div>
 </div>
 
+<!-- MODELS -->
+<div id="models" class="screen">
+<button class="back-btn" onclick="show('dashboard')">← <span id="backDash2">الرجوع للقائمة</span></button>
+<h2 id="modelsH2">النماذج التاريخية اللمسية</h2>
+<div class="grid">
+<div class="card" onclick="openLesson('dome')">
+<h3 id="mod1Title">🕌 قبة الصخرة</h3>
+<p id="mod1Desc">الدرس الأول: العمارة الإسلامية في القدس ومحطات القضية الفلسطينية.</p>
+</div>
+<div class="card" onclick="openLesson('prophet')">
+<h3 id="mod2Title">🌙 المسجد النبوي</h3>
+<p id="mod2Desc">الدرس الثاني: حياة النبي محمد ﷺ والمسجد النبوي والمدينة المنورة.</p>
+</div>
+<div class="card" onclick="openLesson('egypt')">
+<h3 id="mod3Title">🇪🇬 خريطة مصر</h3>
+<p id="mod3Desc">الدرس الثالث: موقع مصر الجغرافي الفريد وأهمية نهر النيل التاريخية.</p>
+</div>
+<div class="card" onclick="openLesson('october')">
+<h3 id="mod4Title">🇪🇬 حرب أكتوبر 1973</h3>
+<p id="mod4Desc">الدرس الرابع: بطولات الجيش المصري العبور العظيم وتحطيم خط بارليف.</p>
+</div>
+</div>
+</div>
+
+<!-- LESSON -->
+<div id="lesson" class="screen">
+<button class="back-btn" onclick="show('models')">← <span id="backModText">العودة للنماذج</span></button>
+<div id="lessonContent"></div>
+</div>
+
+<!-- LIBRARY -->
+<div id="library" class="screen">
+<button class="back-btn" onclick="show('dashboard')">← <span id="backDash3">الرجوع للقائمة</span></button>
+<h2 id="libH2">🎧 المكتبة الصوتية التاريخية</h2>
+<div class="grid">
+<div class="card" onclick="playFullLesson('dome')">
+<h3 id="lib1Title">قبة الصخرة والقضية الفلسطينية</h3>
+<p id="lib1Desc">تشغيل الدرس كاملاً صوتياً.</p>
+</div>
+<div class="card" onclick="playFullLesson('prophet')">
+<h3 id="lib2Title">حياة النبي ﷺ والمسجد النبوي</h3>
+<p id="lib2Desc">تشغيل الدرس كاملاً صوتياً.</p>
+</div>
+<div class="card" onclick="playFullLesson('egypt')">
+<h3 id="lib3Title">خريطة مصر وجغرافيتها</h3>
+<p id="lib3Desc">تشغيل الدرس كاملاً صوتياً.</p>
+</div>
+<div class="card" onclick="playFullLesson('october')">
+<h3 id="lib4Title">حرب أكتوبر المجيدة 1973</h3>
+<p id="lib4Desc">تشغيل الدرس كاملاً صوتياً.</p>
+</div>
+</div>
+<p id="nowPlaying" class="pill" style="margin-top:1.2rem;">لم يتم اختيار درس بعد</p>
+<div class="audio-bar">
+<button onclick="stopSpeech()" id="stopAudioBtn">⏹ إيقاف الصوت</button>
+</div>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz" class="screen">
+<button class="back-btn" onclick="show('dashboard')">← <span id="backDash4">الرجوع للقائمة</span></button>
+<h2 id="quizH2">❓ اختبارات الدروس التفاعلية</h2>
+<p id="quizSub">اختر الدرس أدناه لبدء الاختبار وتقييم معلوماتك التاريخية.</p>
+<div class="grid">
+<div class="card" onclick="startQuiz('dome')"><h3 id="qz1">🕌 قبة الصخرة</h3></div>
+<div class="card" onclick="startQuiz('prophet')"><h3 id="qz2">🌙 المسجد النبوي</h3></div>
+<div class="card" onclick="startQuiz('egypt')"><h3 id="qz3">🇪🇬 خريطة مصر</h3></div>
+<div class="card" onclick="startQuiz('october')"><h3 id="qz4">🇪🇬 حرب أكتوبر 1973</h3></div>
+</div>
+<div id="quizArea"></div>
+</div>
+
+<!-- CAMERA -->
+<div id="camera" class="screen">
+<button class="back-btn" onclick="show('dashboard')">← <span id="backDash5">الرجوع للقائمة</span></button>
+<h2 id="camH2">📷 التعرف الفوري على المجسمات بالكاميرا</h2>
+<div class="notice" id="camNotice">
+<strong>تعليمات الاستخدام الاحترافي:</strong><br>
+قم بتشغيل الكاميرا ووجه عدسة الهاتف نحو باركود المجسم (QR Code). سيتعرف التطبيق عليه فورا بذكاء اصطناعي ويفتح الدرس الخاص به مع التشغيل الصوتي.
+</div>
+<div class="camera-box">
+<video id="cameraVideo" autoplay playsinline></video>
+<canvas id="canvasElement"></canvas>
+<div class="audio-bar" style="justify-content:center;">
+<button onclick="startCamera()" id="camStartBtn">📷 تشغيل الكاميرا للتعرف</button>
+<button class="secondary" onclick="stopCamera()" id="camStopBtn">⏹ إيقاف الكاميرا</button>
+</div>
+<p id="cameraStatus" class="small">الكاميرا متوقفة. اضغط تشغيل لتفعيل القارئ الفوري.</p>
+</div>
 </div>
 
 </div>
 
 <script>
+let currentLang = 'ar';
+let currentLesson = '';
+let currentQuiz = null;
+let quizIndex = 0;
+let score = 0;
+let cameraStream = null;
+let scanningInterval = null;
+let speechRate = 1.0;
+let fontSizeLevel = 16; // px
 
-function setArabic() {
+// إدارة الموسيقى الهادئة الخلفية عبر Web Audio API
+let audioCtx = null;
+let ambientInterval = null;
+let isMusicPlaying = false;
 
-    document.documentElement.lang = "ar";
-
-    document.body.style.direction = "rtl";
-
-    alert("تم اختيار اللغة العربية");
-
+function toggleBackgroundMusic() {
+  const btn = document.getElementById('musicBtn');
+  if(!isMusicPlaying) {
+    try {
+      window.AudioContext = window.AudioContext || window.webkitAudioContext;
+      audioCtx = new AudioContext();
+      playAmbientChord();
+      ambientInterval = setInterval(() => {
+        if(audioCtx && audioCtx.state === 'running') playAmbientChord();
+      }, 9000);
+      isMusicPlaying = true;
+      btn.textContent = '🎶 إيقاف الموسيقى';
+      speak(currentLang==='ar' ? 'تم تشغيل الموسيقى الهادئة بنجاح' : 'Ambient music started');
+    } catch(e) {
+      console.log(e);
+    }
+  } else {
+    stopBackgroundMusic();
+    btn.textContent = '🎶 موسيقى';
+    speak(currentLang==='ar' ? 'تم إيقاف الموسيقى الهادئة' : 'Ambient music stopped');
+  }
 }
 
-function setEnglish() {
-
-    document.documentElement.lang = "en";
-
-    document.body.style.direction = "ltr";
-
-    alert("English language selected");
-
+function playAmbientChord() {
+  if(!audioCtx) return;
+  // ألحان هادئة وناعمة تناسب التركيز والتعليم
+  const frequencies = [261.63, 329.63, 392.00, 523.25]; // C major chord frequencies
+  frequencies.forEach((freq, index) => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    
+    gain.gain.setValueAtTime(0, audioCtx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.018, audioCtx.currentTime + 3);
+    gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 8.5);
+    
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    
+    osc.start(audioCtx.currentTime + index * 0.4);
+    osc.stop(audioCtx.currentTime + 9);
+  });
 }
 
+function stopBackgroundMusic() {
+  if(ambientInterval) clearInterval(ambientInterval);
+  if(audioCtx) {
+    audioCtx.close();
+    audioCtx = null;
+  }
+  isMusicPlaying = false;
+}
+
+const contentData = {
+ar: {
+appTitle: 'مؤرخ برايل الذكي',
+appSub: 'Smart Braille Historian',
+navHome: 'الرئيسية',
+dashTitle: 'اكتشف التاريخ... اسمعه، اسأله، وتعلم منه',
+dashDesc: 'نموذج تعليمي تفاعلي ذكي مصمم خصيصاً لدعم المكفوفين وضعاف البصر بأحدث تقنيات إمكانية الوصول',
+cAskTitle: '💬 اسأل المؤرخ', cAskDesc: 'اطرح أي سؤال تاريخي بأي صيغة واستمع للإجابة الصوتية المفصلة.',
+cModelsTitle: '🏛️ النماذج التاريخية', cModelsDesc: 'استكشف المجسمات اللمسية والدروس التاريخية المشكولة.',
+cLibraryTitle: '🎧 المكتبة الصوتية', cLibraryDesc: 'استمع للدروس والمحاضرات التاريخية بالكامل.',
+cQuizTitle: '❓ اختبارات تفاعلية متقدمة', cQuizDesc: 'اختبر مدى استيعابك للمعلومات بعد كل درس.',
+cCameraTitle: '📷 قارئ المجسمات بالكاميرا (QR)', cCameraDesc: 'وجه الكاميرا نحو باركود المجسم للتعرف عليه وتشغيل شرحه فوراً.',
+backDash: 'الرجوع للقائمة',
+askH2: 'اسأل المؤرخ',
+chatWelcome: 'أهْلًا بِكَ يَا بَطَلُ! اطْرَحْ سُؤَالَكَ التَّارِيخِيَّ بِأَيِّ صِيغَةٍ تُفَضِّلُهَا، وَسَأُجِيبُكَ فَوْرًا بِالتَّفْصِيلِ.',
+questionPlaceholder: 'اكتب سؤالك التاريخي هنا...',
+sendBtn: 'إرسال',
+modelsH2: 'النماذج التاريخية اللمسية',
+mod1Title: '🕌 قبة الصخرة', mod1Desc: 'الدرس الأول: العمارة الإسلامية في القدس ومحطات القضية الفلسطينية.',
+mod2Title: '🌙 المسجد النبوي', mod2Desc: 'الدرس الثاني: حياة النبي محمد ﷺ والمسجد النبوي والمدينة المنورة.',
+mod3Title: '🇪🇬 خريطة مصر', mod3Desc: 'الدرس الثالث: موقع مصر الجغرافي الفريد وأهمية نهر النيل التاريخية.',
+mod4Title: '🇪🇬 حرب أكتوبر 1973', mod4Desc: 'الدرس الرابع: بطولات الجيش المصري العبور العظيم وتحطيم خط بارليف.',
+backModText: 'العودة للنماذج',
+libH2: '🎧 المكتبة الصوتية التاريخية',
+lib1Title: 'قبة الصخرة والقضية الفلسطينية', lib1Desc: 'تشغيل الدرس كاملاً صوتياً.',
+lib2Title: 'حياة النبي ﷺ والمسجد النبوي', lib2Desc: 'تشغيل الدرس كاملاً صوتياً.',
+lib3Title: 'خريطة مصر وجغرافيتها', lib3Desc: 'تشغيل الدرس كاملاً صوتياً.',
+lib4Title: 'حرب أكتوبر المجيدة 1973', lib4Desc: 'تشغيل الدرس كاملاً صوتياً.',
+nowPlaying: 'لم يتم اختيار درس بعد',
+stopAudioBtn: '⏹ إيقاف الصوت',
+quizH2: '❓ اختبارات الدروس التفاعلية',
+quizSub: 'اختر الدرس أدناه لبدء الاختبار وتقييم معلوماتك التاريخية.',
+camH2: '📷 التعرف الفوري على المجسمات بالكاميرا',
+camNotice: '<strong>تعليمات الاستخدام الاحترافي:</strong><br>قم بتشغيل الكاميرا ووجه عدسة الهاتف نحو باركود المجسم (QR Code). سيتعرف التطبيق عليه فورا بذكاء اصطناعي ويفتح الدرس الخاص به مع التشغيل الصوتي.',
+camStartBtn: '📷 تشغيل الكاميرا للتعرف',
+camStopBtn: '⏹ إيقاف الكاميرا',
+camStatus: 'الكاميرا متوقفة. اضغط تشغيل لتفعيل القارئ الفوري.',
+lessons: {
+dome: {
+title: '🕌 الدَّرْسُ الْأَوَّلُ: قُبَّةُ الصَّخْرَةِ الْمُشَرَّفَةُ وَتَارِيخُ الْقُدْسِ',
+intro: 'مَرْحَبًا بِكَ فِي هَذَا الدَّرْسِ التَّارِيخِيِّ الْهَامِّ عَنْ قُبَّةِ الصَّخْرَةِ وَمَدِينَةِ الْقُدْسِ الشَّرِيفِ وَأَبْرَزِ مَحَطَّاتِ الْقَضِيَّةِ الْفِلَسْطِينِيَّةِ.',
+brailleLabel: 'رُمُوزُ بْرَايِل لِلْمُجَسَّمِ: ⠠⠯⠥⠃⠤⠁⠡⠎ (قبة الصخرة - القدس الشريف)',
+sections: [
+['أهْدَافُ الدَّرْسِ وَأَمَاجِدُهُ', 'يَهْدِفُ هَذَا الدَّرْسُ إِلَى تَعْرِيفِ الطَّالِبِ بِالْقِيمَةِ الدِّينِيَّةِ وَالتَّارِيخِيَّةِ لِمَدِينَةِ الْقُدْسِ، وَمَكَانَةِ قُبَّةِ الصَّخْرَةِ كَأَحَدِ أَعْظَمِ الْمَعَالِمِ الْإِسْلَامِيَّةِ فِي التَّارِيخِ.'],
+['بِنَاءُ قُبَّةِ الصَّخْرَةِ', 'تَقَعُ قُبَّةُ الصَّخْرَةِ دَاخِلَ الْمَسْجِدِ الْأَقْصَى الْمُبَارَكِ بِالْقُدْسِ الشَّرِيفِ. وَقَدْ أَمَرَ بَبِنَائِهَا الْخَلِيفَةُ الْأُمَوِيُّ الْعَظِيمُ عَبْدُ الْمَلِكِ بْنُ مَرْوَانَ، وَانْتَهَى بِنَاؤُهَا عَامَ 72 هِجْرِيَّةً، تَمَيُّزًا بِعِمَارَتِهَا الْهَنْدَسِيَّةِ الْفَرِيدَةِ وَزَخَارِفِهَا الرَّائِعَةِ.'],
+['مَحَطَّاتُ الْقَضِيَّةِ الْفِلَسْطِينِيَّةِ', 'مَرَّتِ الْقَضِيَّةُ الْفِلَسْطِينِيَّةُ بِتَحَوُّلَاتٍ كُبْرَى؛ بَدْءًا بِالْغَطْرَسَةِ الِاسْتِعْمَارِيَّةِ وَوَعْدِ بِلْفُورَ الْمَشْئُومِ عَامَ 1917 مِيلَادِيَّةً، مُرُورًا بِقَرَارِ التَّقْسِيمِ الظَّالِمِ عَامَ 1947، وَالنَّكْبَةِ الْأَلِيمَةِ عَامَ 1948، وَحَرْبِ حُزَيْرَانَ عَامَ 1967، إِلَى نِضَالِ الشَّعْبِ الْفِلَسْطِينِيِّ الصَّامِدِ حَتَّى الْيَوْمِ.']
+],
+suggestedQuestions: [
+'أَيْنَ تَقَعُ قُبَّةُ الصَّخْرَةِ الْمُشَرَّفَةُ بِالتَّحْدِيدِ؟',
+'مَنْ هُوَ الْخَلِيفَةُ الْأُمَوِيُّ الَّذِي أَمَرَ بِبِنَاءِ قُبَّةِ الصَّخْرَةِ؟',
+'مَا هِيَ السَّنَةُ الَّتِي انْتَهَى فِيهَا بِنَاءُ قُبَّةِ الصَّخْرَةِ؟',
+'مَا هِيَ أَبْرَزُ مَحَطَّاتِ التَّارِيخِ فِي الْقَضِيَّةِ الْفِلَسْطِينِيَّةِ؟',
+'مَا هُوَ وَعْدُ بِلْفُورَ وَمَتَى صَدَرَ؟'
+]
+},
+prophet: {
+title: '🌙 الدَّرْسُ الثَّانِي: السِّيرَةُ النَّبَوِيَّةُ الشَّرِيفَةُ وَبِنَاءُ الْمَسْجِدِ النَّبَوِيِّ',
+intro: 'فِي هَذَا الدَّرْسِ، نَسْتَعْرِضُ سِيرَةَ خَاتِمِ الْأَنْبِيَاءِ وَالْمُرْسَلِينَ سَيِّدِنَا مُحَمَّدٍ ﷺ وَأَثَرَ الْهِجْرَةِ النَّبَوِيَّةِ فِي تَأْسيسِ الدَّوْلَةِ الْإِسْلَامِيَّةِ.',
+brailleLabel: 'رُمُوزُ بْرَايِل لِلْمُجَسَّمِ: ⠠⠍⠎⠚⠙ ⠤⠁لنَّبَوِي (المسجد النبوي الشريف)',
+sections: [
+['الْمَوْلِدُ النَّبَوِيُّ الشَّرِيفُ وَالنَّشْأَةُ', 'وُلِدَ النَّبِيُّ مُحَمَّدٌ ﷺ فِي مَكَّةَ الْمُكَرَّمَةِ فِي عَامِ الْفِيلِ (صَفْوَةِ الْأَعَامِ)، وَنَشَأَ يَتِيمًا عَفِيفًا، عُرِفَ بَيْنَ قَوْمِهِ بِالصِّدْقِ وَالْأَمَانَةِ حَتَّى لَقَّبُوهُ بِالْأَمِينِ.'],
+['الْهِجْرَةُ الْمُبَارَكَةُ إِلَى الْمَدِينَةِ', 'هَاجَرَ النَّبِيُّ مُحَمَّدٌ ﷺ مِصْرَفًا مَكَّةَ إِلَى الْمَدِينَةِ الْمُنَوَّرَةِ عَامَ 622 مِيلَادِيَّةً (1 هِجْرِيَّةً)، حَيْثُ اسْتَقْبَلَهُ الْأَنْصَارُ بِحَفَاوَةٍ بَالِغَةٍ، وَبَدَأَتْ مَرْحَلَةُ بِنَاءِ الْمُجْتَمَعِ الْمُسْلِمِ الرَّصِينِ.'],
+['بِنَاءُ الْمَسْجِدِ النَّبَوِيِّ الشَّرِيفِ', 'أَوَّلُ مَا قَامَ بِهِ النَّبِيُّ ﷺ فِي الْمَدِينَةِ هُوَ بِنَاءُ الْمَسْجِدِ النَّبَوِيِّ لِيَكُونَ مَحْرَابًا لِلْعِبَادَةِ، وَمَرْكَزًا لِلتَّعْلِيمِ، وَمُلْتَقًى لِإِدَارَةِ شُؤُونِ الدَّوْلَةِ وَإِصْلَاحِ ذَاتِ بَيْنِ النَّاسِ.']
+],
+suggestedQuestions: [
+'أَيْنَ وُلِدَ النَّبِيُّ مُحَمَّدٌ عَلَيْهِ الصَّلَاةُ وَالسَّلَامُ؟',
+'فِي أَيِّ عَامٍ وَقَعَتِ الْهِجْرَةُ النَّبَوِيَّةُ الْمُبَارَكَةُ إِلَى الْمَدِينَةِ؟',
+'لِمَاذَا لُقِّبَ النَّبِيُّ مُحَمَّدٌ ﷺ قَبْلَ الْبِعْثَةِ بِالصَّادِقِ الْأَمِينِ؟',
+'مَا هِيَ أَهَمِّيَّةُ بِنَاءِ الْمَسْجِدِ النَّبَوِيِّ فِي الْعَهْدِ النَّبَوِيِّ؟',
+'كَيْفَ اسْتَقْبَلَ أَهْلُ الْمَدِينَةِ النَّبِيَّ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ؟'
+]
+},
+egypt: {
+title: '🇪🇬 الدَّرْسُ الثَّالِثُ: جُغْرَافِيَّةُ جُمْهُورِيَّةِ مِصْرَ الْعَرَبِيَّةِ وَحَضَارَتُهَا',
+intro: 'نَسْتَكْشِفُ مَوْقِعَ مِصْرَ الْاسْتِرَاتِيجِيَّ الْفَرِيدَ، وَالتِّلْكَ الْهِبَةِ الْعَظِيمَةِ (نَهْرُ النِّيلِ) الَّتِي صَنَعَتْ أَمْجَادَ التَّارِيخِ.',
+brailleLabel: 'رُمُوزُ بْرَايِل لِلْمُجَسَّمِ: ⠠⠡⠗⠔⠜ ⠤⠍⠡⠗ (خريطة مصر التاريخية)',
+sections: [
+['الْمَوْقِعُ الْجُغْرَافِيُّ الْفَرِيدُ', 'تَقَعُ جُمْهُورِيَّةُ مِصْرَ الْعَرَبِيَّةِ فِي الرُّكْنِ الشَّمَالِيِّ الشَّرْقِيِّ مِنْ قَارَّةِ إِفْرِيقْيَا، وَتَمْتَدُّ رُقْعَتُهَا إِلَى شِبْهِ جَزِيرَةِ سِينَاءَ الْغَالِيَةِ فِي قَارَّةِ آسْيَا، لِتَكُونَ حَْلَقَةَ وَصْلٍ بَيْنَ الْقَارَّاتِ.'],
+['شِرْيَانُ الْحَيَاةِ: نَهْرُ النِّيلِ', 'يَخْتَرِقُ نَهْرُ النِّيلِ الْعَظِيمُ أَرَاضِيَ مِصْرَ مِنَ الْجَنُوبِ إِلَى الشَّمَالِ حَتَّى يَصُبَّ فِي الْبَحْرِ الْمُتَوَسِّطِ، مُكَوِّنًا دِيلْتَاهَا الْخَصْبَةَ الَّتِي مَكَّنَتِ الْمِصْرِيِّينَ مِنَ الِاسْتِقْرَارِ وَبِنَاءِ أَقْدَمِ حَضَارَاتِ الْبَشَرِيَّةِ.']
+],
+suggestedQuestions: [
+'فِي أَيِّ قَارَّةٍ تَقَعُ مِصْرُ جُغْرَافِيّاً وَتَارِيخِيّاً؟',
+'مَا هُوَ النَّهْرُ الْعَظِيمُ الَّذِي يَخْتَرِقُ أَرَاضِيَ مِصْرَ مِنَ الْجَنُوبِ لِلشَّمَالِ؟',
+'مَا هِيَ أَهَمِّيَّةُ شِبْهِ جَزِيرَةِ سِينَاءَ بِالْحِصْنِ الْمِصْرِيِّ؟',
+'كَيْفَ أَسْهَمَ نَهْرُ النِّيلِ فِي قِيَامِ الْحَضَارَةِ الْمِصْرِيَّةِ الْقَدِيمَةِ؟',
+'مَا هِيَ أَهَمُّ الْبِحَارِ الْمُحِيطَةِ بِمِصْرَ؟'
+]
+},
+october: {
+title: '🇪🇬 الدَّرْسُ الرَّابِعُ: حَرْبُ أُكْتُوبِرَ الْمَجِيدَةِ عَامَ 1973 مِيلَادِيّاً',
+intro: 'نَسْتَعْرِضُ بَطُولَاتِ الْقُوَّاتِ الْمُسَلَّحَةِ الْمِصْرِيَّةِ فِي عُبُورِ قَنَاةِ السُّوَيسِ وَاسْتِرْدَادِ كَرَامَةِ الْوَطَنِ.',
+brailleLabel: 'رُمُوزُ بْرَايِل لِلْمُجَسَّمِ: ⠠⠟⠝⠕⠂ ⠤⠕⠅⠞⠕ْبَر (عُبُورُ 6 أُكْتُوبِرَ)',
+sections: [
+['يَوْمُ الْعُبُورِ الْعَظِيمِ', 'فِي السَّادِسِ مِنْ أُكْتُوبِرَ عَامَ 1973 مِيلَادِيَّةً (اَلْمُوَافِقِ لِعَاشِرِ مِنْ رَمَضَانَ)، شَنَّتِ الْقُوَّاتُ الْمُسَلَّحَةُ الْمِصْرِيَّةُ هُجُومًا مَجِيدًا لِعُبُورِ قَنَاةِ السُّوَيسِ وَكَسْرِ الصَّمْتِ الْحَرْبِيِّ.'],
+['تَحْطِيمُ خَطِّ بَارْلِيفَ', 'تَمَكَّنَ أَبْنَاءُ مِصْرَ الْأَبْطَالُ مِنْ تَحْطِيمِ خَطِّ بَارْلِيفَ الْمَنِيعِ (الَّذِي زَعَمَتْ إِسْرَائِيلُ أَنَّهُ لَا يُقَهَرُ) فِي غَضُونِ سَاعَاتٍ مَعْدُودَةٍ، وَرَفْعِ عَلَمِ مِصْرَ فَوْقَ سِينَاءِ الطَّاهِرَةِ.']
+],
+suggestedQuestions: [
+'مَتَى بَدَأَتْ حَرْبُ أُكْتُوبِرَ الْمَجِيدَةُ تَارِيخِيّاً؟',
+'مَا هُوَ الشَّهْرُ الْهِجْرِيُّ الَّذِي وَافَقَ قِيَامَ حَرْبِ أُكْتُوبِرَ؟',
+'كَيْفَ تَمَكَّنَ الْجَيْشُ الْمِصْرِيُّ مِنَ التَّغَلُّبِ عَلَى مَانِعِ قَنَاةِ السُّوَيسِ؟',
+'مَا اسْمُ التَّحْصِينِ الْإِسْرَائِيلِيِّ الضَّخْمِ الَّذِي حَطَّمَهُ الْجَيْشُ الْمِصْرِيُّ؟',
+'مَا هِيَ النَّتِيجَةُ الْكُبْرَى لِحَرْبِ أُكْتُوبِرَ الْمَجِيدَةِ؟'
+]
+}
+},
+quizzes: {
+dome: [
+['أَيْنَ تَقَعُ قُبَّةُ الصَّخْرَةِ الْمُشَرَّفَةُ بَالْقُدْسِ؟', ['دَاخِلَ الْمَسْجِدِ الْأَقْصَى', 'فِي وَسَطِ مَدِينَةِ غَزَّةَ', 'فِي مَدِينَةِ خَانْ يُونِسَ'], 0],
+['مَنْ هُوَ الْخَلِيفَةُ الْأُمَوِيُّ الَّذِي أَمَرَ بِبِنَاءِ قُبَّةِ الصَّخْرَةِ؟', ['صَلَاحُ الدِّينِ الْأَيُّوبِيُّ', 'عَبْدُ الْمَلِكِ بْنُ مَرْوَانَ', 'عُمَرُ بْنُ الْخَطَّابِ'], 1],
+['فِي أَيِّ قَرْنٍ أَوْ فَتْرَةٍ بَنَى الْمُسْلِمُونَ قُبَّةَ الصَّخْرَةِ؟', ['الْعَصْرِ الْعَبَّاسِيِّ', 'الْعَصْرِ الْأُمَوِيِّ', 'الْعَصْرِ الْمَمْلُوكِيِّ'], 1]
+],
+prophet: [
+['أَيْنَ وُلِدَ النَّبِيُّ مُحَمَّدٌ عَلَيْهِ الصَّلَاةُ وَالسَّلَامُ؟', ['مَكَّةُ الْمُكَرَّمَةُ', 'الْمَدِينَةُ الْمُنَوَّرَةُ', 'الطَّائِفُ'], 0],
+['فِي أَيِّ عَامٍ هَاجَرَ النَّبِيُّ ﷺ إِلَى الْمَدِينَةِ الْمُنَوَّرَةِ؟', ['570 مِيلَادِيَّةً', '610 مِيلَادِيَّةً', '622 مِيلَادِيَّةً'], 2],
+['مَا هُوَ أَوَّلُ عَمَلٍ قَامَ بِهِ النَّبِيُّ ﷺ بَعْدَ وُصُولِهِ لِلْمَدِينَةِ؟', ['بِنَاءُ السُّوقِ التِّجَارِيِّ', 'بِنَاءُ الْمَسْجِدِ النَّبَوِيِّ', 'تَأْسيسُ الْجَيْشِ'], 1]
+],
+egypt: [
+['فِي أَيِّ قَارَّةٍ تَقَعُ مُعْظَمُ أَرَاضِي مِصْرَ الْجُغْرَافِيَّةِ؟', ['إِفْرِيقْيَا', 'أُورُوبَّا', 'آسْيَا'], 0],
+['مَا اسْمُ النَّهْرِ الْعَظِيمِ الَّذِي يَخْتَرِقُ مِصْرَ مِنَ الْجَنُوبِ لِلشَّمَالِ؟', ['نَهْرُ النِّيلِ', 'نَهْرُ دِجْلَةَ', 'نَهْرُ الْفُرَاتِ'], 0],
+['أَيْنَ تَقَعُ شِبْهُ جَزِيرَةِ سِينَاءَ الْغَالِيَةِ جُغْرَافِيّاً؟', ['فِي قَارَّةِ إِفْرِيقْيَا', 'فِي قَارَّةِ آسْيَا', 'فِي قَارَّةِ أُورُوبَّا'], 1]
+],
+october: [
+['مَتَى بَدَأَتْ حَرْبُ أُكْتُوبِرَ الْمَجِيدَةُ؟', ['6 أُكْتُوبِرَ 1973', '5 يُونْيُوَ 1967', '25 أَبْرِيلَ 1982'], 0],
+['مَا اسْمُ التَّحْصِينَاتِ الْإِسْرَائِيلِيَّةِ عَلَى الضِّفَّةِ الشَّرْقِيَّةِ لِقَنَاةِ السُّوَيسِ؟', ['خَطُّ بَارْلِيفَ', 'خَطُّ السُّوَيسِ الدِّفَاعِيِّ', 'خَطُّ حُدُودِ صِنَاءَ'], 0],
+['مَا هُوَ الشَّهْرُ الْهِجْرِيُّ الَّذِي تَزَامَنَ مَعَ حَرْبِ أُكْتُوبِرَ 1973؟', ['شَهْرُ رَمَضَانَ الْمُبَارَكِ', 'شَهْرُ شَعْبَانَ', 'شَهْرُ رَبِيعِ الْأَوَّلِ'], 0]
+]
+},
+qa: [
+{ keywords: ['متى', 'حرب اكتوبر', 'أكتوبر', 'حَرْبُ'], answer: 'بَدَأَتْ حَرْبُ أُكْتُوبِرَ الْمَجِيدَةُ فِي السَّادِسِ مِنْ أُكْتُوبِرَ عَامَ 1973 مِيلَادِيَّةً، وَحَطَّمَ فِيهَا الْجَيْشُ الْمِصْرِيُّ خَطَّ بَارْلِيفَ.' },
+{ keywords: ['قبة الصخرة', 'القدس', 'قُبَّةُ'], answer: 'تَقَعُ قُبَّةُ الصَّخْرَةِ الْمُشَرَّفَةُ دَاخِلَ الْمَسْجِدِ الْأَقْصَى بِالْقُدْسِ، وَبَنَاهَا الْخَلِيفَةُ عَبْدُ الْمَلِكِ بْنُ مَرْوَانَ.' },
+{ keywords: ['مصر', 'النيل', 'مِصْرُ'], answer: 'تَقَعُ مِصْرُ فِي شَمَالِ شَرْقِ إِفْرِيقْيَا مُمْتَدَّةً لِسِينَاءَ فِي آسْيَا، وَيَخْتَرِقُهَا نَهْرُ النِّيلِ الْعَظِيمُ.' },
+{ keywords: ['أسباب', 'ثورة', '1919'], answer: 'أَبْرَزُ أَسْبَابِ ثَوْرَةِ 1919 مِيلَادِيَّةً هِيَ نَفْيُ سَعْدِ زَغْلُول وَزُمَلَائِهِ، وَإِعْلَانُ الْحِمَايَةِ الْبِرِيطَانِيَّةِ عَلَى مِصْرَ.' },
+{ keywords: ['المسجد النبوي', 'النبي', 'مولد'], answer: 'وُلِدَ النَّبِيُّ مُحَمَّدٌ ﷺ فِي مَكَّةَ فِي عَامِ الْفِيلِ، وَهَاجَرَ إِلَى الْمَدِينَةِ بَانِيًا فِيهَا الْمَسْجِدَ النَّبَوِيَّ الشَّرِيفَ.' }
+]
+},
+en: {
+appTitle: 'Smart Braille Historian',
+appSub: 'مؤرخ برايل الذكي',
+navHome: 'Home',
+dashTitle: 'Discover History... Hear it, Ask it, Learn',
+dashDesc: 'Advanced interactive educational prototype designed for blind and low-vision students with full accessibility',
+cAskTitle: '💬 Ask the Historian', cAskDesc: 'Ask any historical question and listen to detailed audio answers.',
+cModelsTitle: '🏛️ Historical Models', cModelsDesc: 'Explore tactile historical models and lessons.',
+cLibraryTitle: '🎧 Audio Library', cLibraryDesc: 'Listen to complete historical lessons and lectures.',
+cQuizTitle: '❓ Advanced Quizzes', cQuizDesc: 'Test your knowledge after completing each lesson.',
+cCameraTitle: '📷 Camera QR Reader', cCameraDesc: 'Point the camera at model QR codes to play lessons instantly.',
+backDash: 'Back to Menu',
+askH2: 'Ask the Historian',
+chatWelcome: 'Welcome champion! Ask your historical question and I will answer immediately with full detail.',
+questionPlaceholder: 'Type your historical question here...',
+sendBtn: 'Send',
+modelsH2: 'Tactile Historical Models',
+mod1Title: '🕌 Dome of the Rock', mod1Desc: 'Lesson 1: Islamic architecture in Jerusalem & Palestinian history.',
+mod2Title: '🌙 Al-Nabawi Mosque', mod2Desc: 'Lesson 2: Life of Prophet Muhammad ﷺ & Al-Nabawi Mosque.',
+mod3Title: '🇪🇬 Map of Egypt', mod3Desc: 'Lesson 3: Egypt strategic geographic location & the Nile River.',
+mod4Title: '🇪🇬 October 1973 War', mod4Desc: 'Lesson 4: Egyptian Armed Forces victory & Bar Lev Line crossing.',
+backModText: 'Back to Models',
+libH2: '🎧 Historical Audio Library',
+lib1Title: 'Dome of the Rock & Palestine', lib1Desc: 'Play complete lesson audio.',
+lib2Title: 'Prophet ﷺ Life & Al-Nabawi Mosque', lib2Desc: 'Play complete lesson audio.',
+lib3Title: 'Map of Egypt & Geography', lib3Desc: 'Play complete lesson audio.',
+lib4Title: 'October 1973 War', lib4Desc: 'Play complete lesson audio.',
+nowPlaying: 'No lesson selected yet',
+stopAudioBtn: '⏹ Stop Audio',
+quizH2: '❓ Interactive Lesson Quizzes',
+quizSub: 'Choose a lesson below to start the quiz and test your knowledge.',
+camH2: '📷 Instant Camera QR Reader',
+camNotice: '<strong>Professional Instructions:</strong><br>Turn on the camera and point lens at model QR code. The app will recognize it instantly via AI and open the lesson.',
+camStartBtn: '📷 Start Camera',
+camStopBtn: '⏹ Stop Camera',
+camStatus: 'Camera stopped. Click start to activate.',
+lessons: {
+dome: {
+title: '🕌 Lesson 1: The Dome of the Rock & Jerusalem',
+intro: 'Welcome to this essential historical lesson about the Dome of the Rock, Jerusalem, and Palestine.',
+brailleLabel: 'Braille Cells: Dome of the Rock - Jerusalem',
+sections: [
+['Lesson Objectives', 'To introduce the student to the religious and historical value of Jerusalem and the Dome of the Rock.'],
+['Dome Construction', 'Located within Al-Aqsa compound in Jerusalem, ordered by Umayyad Caliph Abd al-Malik ibn Marwan and completed in 72 AH.'],
+['Palestinian Milestone', 'Key events include the Balfour Declaration 1917, Partition Plan 1947, Nakba 1948, and the ongoing Palestinian struggle.']
+],
+suggestedQuestions: [
+'Where is the Dome of the Rock located?',
+'Which Umayyad caliph ordered building the Dome of the Rock?',
+'In what year was the construction of the Dome of the Rock completed?',
+'What are the key historical milestones of the Palestinian cause?',
+'What was the Balfour Declaration and when was it issued?'
+]
+},
+prophet: {
+title: '🌙 Lesson 2: Prophetic Biography & Al-Nabawi Mosque',
+intro: 'Exploring the life of Prophet Muhammad ﷺ and the impact of the Hijrah in establishing the Islamic state.',
+brailleLabel: 'Braille Cells: Al-Nabawi Mosque',
+sections: [
+['Birth and Early Life', 'Prophet Muhammad ﷺ was born in Mecca during the Year of the Elephant, known for honesty and integrity.'],
+['The Blessed Hijrah', 'Migrated from Mecca to Medina in 622 AD (1 AH), welcomed warmly by the Ansar.'],
+['Building Al-Nabawi Mosque', 'The first action in Medina was building Al-Nabawi Mosque as a center for worship, education, and community management.']
+],
+suggestedQuestions: [
+'Where was Prophet Muhammad ﷺ born?',
+'In what year did the blessed Hijrah to Medina take place?',
+'Why was Prophet Muhammad ﷺ titled Al-Amin before prophethood?',
+'What is the importance of building Al-Nabawi Mosque?',
+'How did the people of Medina welcome the Prophet ﷺ?'
+]
+},
+egypt: {
+title: '🇪🇬 Lesson 3: Geography of Egypt & Civilization',
+intro: 'Exploring Egypt unique strategic location and the great Nile River that shaped history.',
+brailleLabel: 'Braille Cells: Map of Egypt',
+sections: [
+['Strategic Location', 'Egypt is located in northeastern Africa, extending into the Sinai Peninsula in Asia, bridging continents.'],
+['The Nile River', 'The Nile river traverses Egypt from south to north into the Mediterranean, enabling ancient civilizations.']
+],
+suggestedQuestions: [
+'On which continent is Egypt located geographically and historically?',
+'What great river traverses Egypt from south to north?',
+'What is the importance of the Sinai Peninsula to Egypt?',
+'How did the Nile River contribute to ancient Egyptian civilization?',
+'What are the main seas surrounding Egypt?'
+]
+},
+october: {
+title: '🇪🇬 Lesson 4: October 1973 Glorious War',
+intro: 'Reviewing the heroism of the Egyptian Armed Forces in crossing the Suez Canal and regaining national dignity.',
+brailleLabel: 'Braille Cells: October Crossing',
+sections: [
+['The Great Crossing Day', 'On October 6, 1973 (10 Ramadan), the Egyptian Armed Forces launched a glorious offensive to cross the Suez Canal.'],
+['Breaking the Bar Lev Line', 'Egyptian heroes destroyed the Bar Lev Line within hours and raised the Egyptian flag over Sinai.']
+],
+suggestedQuestions: [
+'When did the glorious October War begin historically?',
+'Which Islamic month coincided with the October War?',
+'How did the Egyptian army overcome the Suez Canal barrier?',
+'What was the name of the massive Israeli fortification destroyed by Egypt?',
+'What was the major outcome of the October War?'
+]
+}
+},
+quizzes: {
+dome: [
+['Where is the Dome of the Rock located in Jerusalem?', ['Inside Al-Aqsa compound', 'In central Gaza', 'In Khan Yunis'], 0],
+['Which Umayyad caliph ordered building the Dome of the Rock?', ['Saladin', 'Abd al-Malik ibn Marwan', 'Umar ibn al-Khattab'], 1],
+['In which era was the Dome of the Rock built?', ['Abbasid Era', 'Umayyad Era', 'Mamluk Era'], 1]
+],
+prophet: [
+['Where was Prophet Muhammad ﷺ born?', ['Mecca', 'Medina', 'Taif'], 0],
+['In what year did the Hijrah take place?', ['570 AD', '610 AD', '622 AD'], 2],
+['What was the first action taken by the Prophet ﷺ in Medina?', ['Building a market', 'Building Al-Nabawi Mosque', 'Establishing an army'], 1]
+],
+egypt: [
+['On which continent is most of Egypt located?', ['Africa', 'Europe', 'Asia'], 0],
+['What great river traverses Egypt from south to north?', ['Nile River', 'Tigris River', 'Euphrates River'], 0],
+['Where is the Sinai Peninsula located geographically?', ['In Africa', 'In Asia', 'In Europe'], 1]
+],
+october: [
+['When did the glorious October War begin?', ['October 6, 1973', 'June 5, 1967', 'April 25, 1982'], 0],
+['What was the name of Israeli fortifications on the eastern bank of the Suez Canal?', ['Bar Lev Line', 'Suez Defense Line', 'Sinai Border Line'], 0],
+['Which Islamic month coincided with the October War of 1973?', ['Ramadan', 'Shaaban', 'Rabi al-Awwal'], 0]
+]
+},
+qa: [
+{ keywords: ['when', 'war', 'october'], answer: 'The October War began on October 6, 1973, where the Egyptian army crushed the Bar Lev Line.' },
+{ keywords: ['dome', 'rock', 'jerusalem'], answer: 'The Dome of the Rock is located inside Al-Aqsa compound in Jerusalem, built by Caliph Abd al-Malik.' },
+{ keywords: ['egypt', 'nile'], answer: 'Egypt is located in northeastern Africa with Sinai in Asia, traversed by the great Nile River.' }
+]
+}
+};
+
+function announce(msg) {
+  const ann = document.getElementById('srAnnounce');
+  if(ann) ann.textContent = msg;
+}
+
+function setLanguage(lang){
+currentLang = lang;
+const d = contentData[lang];
+const root = document.getElementById('htmlRoot');
+const body = document.body;
+
+if(lang === 'en'){
+root.dir = 'ltr';
+root.lang = 'en';
+body.classList.add('ltr');
+} else {
+root.dir = 'rtl';
+root.lang = 'ar';
+body.classList.remove('ltr');
+}
+
+document.getElementById('appTitle').textContent = d.appTitle;
+document.getElementById('appSub').textContent = d.appSub;
+document.getElementById('navHomeText').textContent = d.navHome;
+document.getElementById('dashTitle').textContent = d.dashTitle;
+document.getElementById('dashDesc').textContent = d.dashDesc;
+
+document.getElementById('cAskTitle').textContent = d.cAskTitle;
+document.getElementById('cAskDesc').textContent = d.cAskDesc;
+document.getElementById('cModelsTitle').textContent = d.cModelsTitle;
+document.getElementById('cModelsDesc').textContent = d.cModelsDesc;
+document.getElementById('cLibraryTitle').textContent = d.cLibraryTitle;
+document.getElementById('cLibraryDesc').textContent = d.cLibraryDesc;
+document.getElementById('cQuizTitle').textContent = d.cQuizTitle;
+document.getElementById('cQuizDesc').textContent = d.cQuizDesc;
+document.getElementById('cCameraTitle').textContent = d.cCameraTitle;
+document.getElementById('cCameraDesc').textContent = d.cCameraDesc;
+
+for(let i=1; i<=5; i++){
+const el = document.getElementById('backDash'+i);
+if(el) el.textContent = d.backDash;
+}
+
+document.getElementById('askH2').textContent = d.askH2;
+document.getElementById('chatWelcome').textContent = d.chatWelcome;
+document.getElementById('question').placeholder = d.questionPlaceholder;
+document.getElementById('sendBtn').textContent = d.sendBtn;
+
+document.getElementById('modelsH2').textContent = d.modelsH2;
+document.getElementById('mod1Title').textContent = d.mod1Title;
+document.getElementById('mod1Desc').textContent = d.mod1Desc;
+document.getElementById('mod2Title').textContent = d.mod2Title;
+document.getElementById('mod2Desc').textContent = d.mod2Desc;
+document.getElementById('mod3Title').textContent = d.mod3Title;
+document.getElementById('mod3Desc').textContent = d.mod3Desc;
+document.getElementById('mod4Title').textContent = d.mod4Title;
+document.getElementById('mod4Desc').textContent = d.mod4Desc;
+document.getElementById('backModText').textContent = d.backModText;
+
+document.getElementById('libH2').textContent = d.libH2;
+document.getElementById('lib1Title').textContent = d.lib1Title;
+document.getElementById('lib1Desc').textContent = d.lib1Desc;
+document.getElementById('lib2Title').textContent = d.lib2Title;
+document.getElementById('lib2Desc').textContent = d.lib2Desc;
+document.getElementById('lib3Title').textContent = d.lib3Title;
+document.getElementById('lib3Desc').textContent = d.lib3Desc;
+document.getElementById('lib4Title').textContent = d.lib4Title;
+document.getElementById('lib4Desc').textContent = d.lib4Desc;
+document.getElementById('nowPlaying').textContent = d.nowPlaying;
+document.getElementById('stopAudioBtn').textContent = d.stopAudioBtn;
+
+document.getElementById('quizH2').textContent = d.quizH2;
+document.getElementById('quizSub').textContent = d.quizSub;
+
+document.getElementById('camH2').textContent = d.camH2;
+document.getElementById('camNotice').innerHTML = d.camNotice;
+document.getElementById('camStartBtn').textContent = d.camStartBtn;
+document.getElementById('camStopBtn').textContent = d.camStopBtn;
+document.getElementById('cameraStatus').textContent = d.cameraStatus;
+
+const micStatusEl = document.getElementById('micStatus');
+if(micStatusEl) micStatusEl.textContent = '';
+
+show('dashboard', {silent:true});
+const msg = lang==='ar' ? 'تم تفعيل النسخة العربية الاحترافية بنجاح. القائمة الرئيسية: اسأل المؤرخ، النماذج التاريخية، المكتبة الصوتية، الاختبارات، أو قارئ الكاميرا.' : 'English professional version activated successfully. Main menu: Ask the Historian, Historical Models, Audio Library, Quizzes, or Camera Reader.';
+speak(msg);
+announce(msg);
+}
+
+function goHome(){
+stopCamera();
+stopSpeech();
+if(recognitionInstance && isListening){
+recognitionInstance.stop();
+}
+document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+document.getElementById('langSelectScreen').classList.add('active');
+announce('العودة للقائمة الرئيسية');
+}
+
+// نصوص التعريف بكل قسم: تُقال بصوت واضح فور دخول القسم حتى يعرف الطالب الكفيف أين هو بالضبط
+const screenAnnouncements = {
+ar: {
+dashboard: 'القائمة الرئيسية. اختر أحد الأقسام: اسأل المؤرخ، النماذج التاريخية، المكتبة الصوتية، الاختبارات التفاعلية، أو قارئ الكاميرا.',
+ask: 'اسأل المؤرخ. اكتب سؤالك أو اضغط زر الميكروفون وتكلم الآن.',
+models: 'قسم النماذج التاريخية اللمسية. اختر نموذجًا لتستمع إلى شرحه الكامل.',
+library: 'المكتبة الصوتية التاريخية. اختر درسًا من القائمة لتشغيله كاملًا بالصوت.',
+quiz: 'قسم اختبارات الدروس التفاعلية. اختر درسًا لتبدأ الاختبار وتقييم معلوماتك.',
+camera: 'قارئ المجسمات بالكاميرا. اضغط زر تشغيل الكاميرا، ثم وجّهها نحو رمز الباركود الخاص بالمجسم.'
+},
+en: {
+dashboard: 'Main menu. Choose a section: Ask the Historian, Historical Models, Audio Library, Interactive Quizzes, or Camera Reader.',
+ask: 'Ask the Historian. Type your question, or press the microphone button and speak now.',
+models: 'Tactile Historical Models section. Choose a model to hear its full explanation.',
+library: 'Historical Audio Library. Choose a lesson from the list to play it completely.',
+quiz: 'Interactive Lesson Quizzes section. Choose a lesson to start the quiz and test your knowledge.',
+camera: 'Camera Model Reader. Press the start camera button, then point it at the model QR code.'
+}
+};
+
+function show(id, opts){
+opts = opts || {};
+document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+const el = document.getElementById(id);
+if(el){ el.classList.add('active'); }
+window.scrollTo({top:0, behavior:'smooth'});
+if(id !== 'camera'){
+stopCamera();
+}
+if(id !== 'ask' && recognitionInstance && isListening){
+recognitionInstance.stop();
+}
+// الطالب مستخدم كفيف، فلازم يتعرّف بصوت واضح على أي قسم يدخله كل خطوة بخطوة
+if(!opts.silent){
+const intro = screenAnnouncements[currentLang] && screenAnnouncements[currentLang][id];
+if(intro){
+speak(intro);
+announce(intro);
+}
+}
+}
+
+// إزالة الرموز التعبيرية (إيموجي) قبل النطق حتى لا يحاول المتصفح لفظها بشكل غريب
+function stripEmoji(text){
+if(!text) return text;
+return text.replace(/[\u{1F1E6}-\u{1F1FF}\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\uFE0F\u200D]/gu, '').replace(/\s+/g, ' ').trim();
+}
+
+function speak(text){
+if(!text) return;
+if(!('speechSynthesis' in window)) return;
+const cleanText = stripEmoji(text);
+speechSynthesis.cancel();
+setTimeout(()=>{
+const u = new SpeechSynthesisUtterance(cleanText);
+u.lang = (currentLang === 'en') ? 'en-US' : 'ar-SA';
+u.rate = speechRate;
+u.pitch = 1;
+speechSynthesis.speak(u);
+}, 50);
+}
+
+function stopSpeech(){
+speechSynthesis.cancel();
+announce('تم إيقاف الصوت');
+}
+
+function cycleSpeechRate(){
+if(speechRate === 1.0) speechRate = 1.25;
+else if(speechRate === 1.25) speechRate = 0.75;
+else speechRate = 1.0;
+
+const speedLabels = { 0.75: '0.75x (بطيء)', 1.0: '1x (عادي)', 1.25: '1.25x (سريع)' };
+document.getElementById('speedBtn').textContent = '🗣️ سرعة: ' + speedLabels[speechRate].split(' ')[0];
+speak(currentLang==='ar' ? `السرعة ${speedLabels[speechRate]}` : `Speed ${speechRate}x`);
+}
+
+function adjustFontSize(delta){
+fontSizeLevel = Math.max(14, Math.min(24, fontSizeLevel + (delta * 2)));
+document.documentElement.style.setProperty('--font-scale', fontSizeLevel + 'px');
+announce('تم تغيير حجم الخط');
+}
+
+function toggleHighContrast(){
+document.body.classList.toggle('high-contrast');
+announce('تم تبديل وضع التباين');
+}
+
+function openLesson(id){
+currentLesson = id;
+const d = contentData[currentLang].lessons[id];
+let html = `<div class="lesson">
+<h2>${d.title}</h2>
+<div class="braille-box">${d.brailleLabel}</div>
+<div class="audio-bar">
+<button onclick="playFullLesson('${id}')">${currentLang==='ar'?'🔊 تشغيل الدرس كاملًا':'🔊 Play Full Lesson'}</button>
+<button class="secondary" onclick="stopSpeech()">${currentLang==='ar'?'⏹ إيقاف الصوت':'⏹ Stop Audio'}</button>
+<button onclick="startQuiz('${id}')">${currentLang==='ar'?'❓ اختبار الدرس':'❓ Lesson Quiz'}</button>
+</div>
+<div class="lesson-section">
+<p>${d.intro}</p>
+</div>`;
+
+d.sections.forEach(sec => {
+html += `<div class="lesson-section">
+<h3>${sec[0]}</h3>
+<p>${sec[1]}</p>
+<button class="btn" onclick="speak(${JSON.stringify(sec[0]+'. '+sec[1])})">${currentLang==='ar'?'🔊 استمع لهذا الجزء':'🔊 Listen'}</button>
+</div>`;
+});
+
+// قسم الأسئلة المقترحة المتاحة والمشكلة
+if(d.suggestedQuestions && d.suggestedQuestions.length > 0) {
+html += `<div class="lesson-section">
+<h3>💡 ${currentLang==='ar' ? 'الأسئلة المقترحة المتاحة لهذا الدرس (اضغط ليسألها المؤرخ):' : 'Suggested Questions for this lesson:'}</h3>`;
+d.suggestedQuestions.forEach(q => {
+html += `<button class="suggested-q-btn" onclick="askThisQuestion('${q.replace(/'/g, "\\'")}')">💬 ${q}</button>`;
+});
+html += `</div>`;
+}
+
+html += `</div>`;
+document.getElementById('lessonContent').innerHTML = html;
+show('lesson', {silent:true});
+const lessonIntroMsg = (currentLang === 'ar' ? 'أنت الآن تستمع إلى درس: ' : 'You are now in the lesson: ') + d.title;
+speak(lessonIntroMsg);
+announce(lessonIntroMsg);
+}
+
+function askThisQuestion(qText){
+show('ask', {silent:true});
+document.getElementById('question').value = qText;
+askQuestion();
+}
+
+function playFullLesson(id){
+const d = contentData[currentLang].lessons[id];
+document.getElementById('nowPlaying').textContent = '▶ ' + d.title;
+const text = d.intro + ' ' + d.sections.map(x => x[0] + '. ' + x[1]).join(' ');
+speak(text);
+announce('تشغيل الدرس كاملًا');
+}
+
+// ===== دعم فهم الأسئلة بأي صيغة (فصحى أو عامية) عبر تطبيع النص =====
+
+// إزالة التشكيل والتطويل وتوحيد أشكال الحروف المتشابهة (أ إ آ ا) وغيرها
+function normalizeArabic(text){
+if(!text) return '';
+return text
+.toString()
+.toLowerCase()
+.replace(/[\u064B-\u0652\u0670\u0640]/g, '') // تشكيل + تطويل
+.replace(/[أإآا]/g, 'ا')
+.replace(/ى/g, 'ي')
+.replace(/ة/g, 'ه')
+.replace(/ؤ/g, 'و')
+.replace(/ئ/g, 'ي')
+.replace(/[^\u0600-\u06FF\u0750-\u077Fa-z0-9\s]/g, ' ') // إزالة علامات الترقيم والرموز
+.replace(/\s+/g, ' ')
+.trim();
+}
+
+// كلمات شائعة لا تفيد في البحث (أدوات استفهام وربط) يتم تجاهلها عند المقارنة
+const STOPWORDS_AR = new Set(['في','من','ما','هل','كيف','لماذا','متي','متى','اين','فين','هو','هي','الي','الى','على','عن','ان','او','ال','و','ف','ب','ك','يا','دي','ده','امتى','بتاع','كام','مين','ليه','ازاي','عايز','عاوز','ممكن','لو','سمحت','بقى','يعني']);
+const STOPWORDS_EN = new Set(['the','a','an','is','are','was','were','in','on','at','of','to','for','and','or','what','when','where','who','how','why','did','does','do']);
+
+function tokenize(text, lang){
+const norm = lang === 'en' ? text.toLowerCase().replace(/[^a-z0-9\s]/g,' ') : normalizeArabic(text);
+const stop = lang === 'en' ? STOPWORDS_EN : STOPWORDS_AR;
+return norm.split(/\s+/).filter(w => w.length > 1 && !stop.has(w));
+}
+
+// فهرس بحث مبني من كل محتوى الدروس (العناوين + المقدمات + الفقرات) حتى يمكن
+// الإجابة على أي سؤال متعلق بالدروس مهما اختلفت صياغته
+function buildLessonIndex(lang){
+const idx = [];
+const lessons = contentData[lang].lessons;
+Object.keys(lessons).forEach(key => {
+const lesson = lessons[key];
+lesson.sections.forEach(sec => {
+idx.push({
+words: new Set(tokenize(sec[0] + ' ' + sec[1] + ' ' + lesson.title, lang)),
+text: sec[1]
+});
+});
+});
+return idx;
+}
+
+function findBestAnswer(question, lang){
+const qaList = contentData[lang].qa;
+const normQ = lang === 'en' ? question.toLowerCase() : normalizeArabic(question);
+
+// 1) مطابقة مباشرة على الكلمات المفتاحية الأساسية (مع تطبيع النص)
+for(let item of qaList){
+const hit = item.keywords.some(kw => {
+const normKw = lang === 'en' ? kw.toLowerCase() : normalizeArabic(kw);
+return normQ.includes(normKw);
+});
+if(hit) return item.answer;
+}
+
+// 2) بحث ذكي داخل محتوى كل الدروس عبر أكبر عدد من الكلمات المشتركة
+const qWords = tokenize(question, lang);
+if(qWords.length === 0) return null;
+
+const index = buildLessonIndex(lang);
+let best = null;
+let bestScore = 0;
+index.forEach(entry => {
+let score = 0;
+qWords.forEach(w => { if(entry.words.has(w)) score++; });
+if(score > bestScore){
+bestScore = score;
+best = entry;
+}
+});
+
+return bestScore > 0 ? best.text : null;
+}
+
+function askQuestion(){
+const input = document.getElementById('question');
+const q = input.value.trim();
+if(!q) return;
+const box = document.getElementById('messages');
+const userMsg = document.createElement('div');
+userMsg.className = 'msg user';
+userMsg.textContent = q;
+box.appendChild(userMsg);
+
+let ans = findBestAnswer(q, currentLang);
+
+if(!ans){
+ans = (currentLang === 'ar') ? 
+'أَنَا مُسْتَعِدٌّ لِإِجَابَتِكَ عَنْ تَفَاصِيلِ قُبَّةِ الصَّخْرَةِ، حَرْبِ أُكْتُوبِرَ، وَمِصْرَ، وَالسِّيرَةِ النَّبَوِيَّةِ. جَرِّبِ صِيَاغَةً أُخْرَى لِلسُّؤَالِ، أَوِ اسْتَخْدِمْ إِحْدَى الْأَسْئِلَةِ الْمَقْتَرَحَةِ دَاخِلَ الدُّرُوسِ!' :
+'I am ready to answer about the Dome of the Rock, October War, Egypt, and the Prophet biography. Try rephrasing your question or use the suggested questions inside the lessons!';
+}
+
+const botMsg = document.createElement('div');
+botMsg.className = 'msg bot';
+botMsg.textContent = ans;
+box.appendChild(botMsg);
+box.scrollTop = box.scrollHeight;
+speak(ans);
+input.value = '';
+announce(ans);
+}
+
+// ===== الميكروفون: تسجيل صوتي مع معالجة كاملة للأخطاء وحالة بصرية واضحة =====
+
+let recognitionInstance = null;
+let isListening = false;
+
+function setMicStatus(msg){
+const el = document.getElementById('micStatus');
+if(el) el.textContent = msg || '';
+announce(msg || '');
+if(msg) speak(msg);
+}
+
+function setMicListeningState(listening){
+isListening = listening;
+const btn = document.getElementById('micBtn');
+if(btn){
+btn.classList.toggle('listening', listening);
+btn.textContent = listening ? '⏺️' : '🎙️';
+}
+}
+
+function listenToVoice(){
+// إذا كان التسجيل شغالًا بالفعل، اضغط الزر لإيقافه
+if(isListening && recognitionInstance){
+recognitionInstance.stop();
+return;
+}
+
+// التحقق من دعم المتصفح لخاصية التعرف على الصوت
+const R = window.SpeechRecognition || window.webkitSpeechRecognition;
+if(!R){
+const msg = currentLang==='ar' ? 'التَّعَرُّفُ الصَّوْتِيُّ غَيْرُ مَدْعُومٍ فِي هَذَا الْمُتَصَفِّحِ. جَرِّبْ مُتَصَفِّحَ جُوجِل كْرُومَ.' : 'Speech recognition is not supported in this browser. Try Google Chrome.';
+setMicStatus(msg);
+return;
+}
+
+// خاصية التعرف على الصوت تتطلب اتصالًا آمنًا (HTTPS) أو تشغيل محلي
+const isSecure = window.isSecureContext || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+if(!isSecure){
+const msg = currentLang==='ar' ? 'الميكروفون يحتاج فتح الموقع عبر HTTPS أو محليًا حتى يعمل. تأكد من رابط الموقع.' : 'Microphone requires HTTPS or localhost to work. Check your site link.';
+setMicStatus(msg);
+return;
+}
+
+const r = new R();
+recognitionInstance = r;
+r.lang = (currentLang === 'en') ? 'en-US' : 'ar-EG';
+r.interimResults = false;
+r.maxAlternatives = 1;
+
+r.onstart = () => {
+setMicListeningState(true);
+const msg = currentLang==='ar' ? '🎙️ أَنَا أَسْتَمِعُ إِلَيْكَ الْآنَ... تَحَدَّثْ بِوُضُوحٍ' : '🎙️ Listening now... speak clearly';
+setMicStatus(msg);
+};
+
+r.onresult = e => {
+const transcript = e.results[0][0].transcript;
+document.getElementById('question').value = transcript;
+askQuestion();
+};
+
+r.onerror = e => {
+let msg;
+if(currentLang === 'ar'){
+if(e.error === 'not-allowed' || e.error === 'permission-denied'){
+msg = 'تم رفض إذن الميكروفون. من فضلك اسمح باستخدام الميكروفون من إعدادات المتصفح.';
+} else if(e.error === 'no-speech'){
+msg = 'لم أسمع أي صوت. حاول مرة أخرى وتحدث بوضوح بعد الضغط على الزر.';
+} else if(e.error === 'audio-capture'){
+msg = 'لم يتم العثور على ميكروفون متصل بالجهاز.';
+} else {
+msg = 'حدث خطأ في التعرف الصوتي: ' + e.error;
+}
+} else {
+if(e.error === 'not-allowed' || e.error === 'permission-denied'){
+msg = 'Microphone permission denied. Please allow microphone access in your browser settings.';
+} else if(e.error === 'no-speech'){
+msg = 'No speech detected. Please try again and speak clearly after pressing the button.';
+} else if(e.error === 'audio-capture'){
+msg = 'No microphone was found on this device.';
+} else {
+msg = 'Speech recognition error: ' + e.error;
+}
+}
+setMicStatus(msg);
+setMicListeningState(false);
+};
+
+r.onend = () => {
+setMicListeningState(false);
+};
+
+try{
+r.start();
+}catch(err){
+setMicStatus(currentLang==='ar' ? 'تعذر تشغيل الميكروفون. حاول مرة أخرى.' : 'Could not start the microphone. Please try again.');
+setMicListeningState(false);
+}
+}
+
+// كلمات ترتيبية لقراءة الخيارات بصوت واضح (الخيار الأول، الثاني، الثالث...)
+const ORDINALS_AR = ['الأول','الثاني','الثالث','الرابع','الخامس','السادس'];
+const ORDINALS_EN = ['first','second','third','fourth','fifth','sixth'];
+
+function startQuiz(id){
+currentQuiz = id;
+quizIndex = 0;
+score = 0;
+show('quiz', {silent:true});
+const d = contentData[currentLang].lessons[id];
+const quizIntroMsg = (currentLang === 'ar' ? 'أنت الآن في اختبار درس: ' : 'You are now in the quiz for lesson: ') + d.title;
+speak(quizIntroMsg);
+announce(quizIntroMsg);
+// ننتظر قليلًا حتى تنتهي مقدمة الاختبار المنطوقة قبل قراءة السؤال الأول
+setTimeout(renderQuestion, 2400);
+}
+
+function renderQuestion(){
+const qList = contentData[currentLang].quizzes[currentQuiz];
+const q = qList[quizIndex];
+let html = `<div class="quiz-card">
+<p><span class="pill">${currentLang==='ar' ? `السُّؤَالُ ${quizIndex+1} مِنْ ${qList.length}` : `Question ${quizIndex+1} of ${qList.length}`}</span></p>
+<h3>${q[0]}</h3>`;
+q[1].forEach((opt, i) => {
+html += `<button class="option" onclick="chooseAnswer(${i})">${(i+1)}. ${opt}</button>`;
+});
+html += `<div id="feedback" class="feedback"></div></div>`;
+document.getElementById('quizArea').innerHTML = html;
+
+// نطق كامل: رقم السؤال، نص السؤال، ثم كل خيار من الخيارات بالترقيم، وطريقة الاختيار
+const ordinals = currentLang === 'ar' ? ORDINALS_AR : ORDINALS_EN;
+let spoken = (currentLang === 'ar' ? `السؤال ${quizIndex+1} من ${qList.length}: ` : `Question ${quizIndex+1} of ${qList.length}: `) + q[0];
+q[1].forEach((opt, i) => {
+spoken += currentLang === 'ar' ? ` الخيار ${ordinals[i]}: ${opt}.` : ` Option ${ordinals[i]}: ${opt}.`;
+});
+spoken += currentLang === 'ar'
+? ' اضغط على الإجابة التي تريدها، أو اضغط الرقم المناسب على لوحة المفاتيح.'
+: ' Press the answer you want, or press the matching number key on your keyboard.';
+speak(spoken);
+
+// نطق اسم أي خيار فور الوصول إليه بلوحة المفاتيح (Tab) لمن لا يستخدم قارئ شاشة
+document.querySelectorAll('#quizArea .option').forEach((btn, i) => {
+btn.addEventListener('focus', () => {
+const label = currentLang === 'ar' ? `الخيار ${ordinals[i]}: ${q[1][i]}` : `Option ${ordinals[i]}: ${q[1][i]}`;
+speak(label);
+});
+});
+}
+
+// اختصار لوحة المفاتيح: الضغط على رقم 1 أو 2 أو 3... يختار نفس الإجابة المقابلة مباشرة
+document.addEventListener('keydown', function(e){
+const quizScreen = document.getElementById('quiz');
+if(!quizScreen || !quizScreen.classList.contains('active')) return;
+const num = parseInt(e.key, 10);
+if(isNaN(num) || num < 1) return;
+const options = document.querySelectorAll('#quizArea .option');
+const idx = num - 1;
+if(idx >= options.length || options[idx].disabled) return;
+options[idx].click();
+});
+
+function chooseAnswer(i){
+const qList = contentData[currentLang].quizzes[currentQuiz];
+const q = qList[quizIndex];
+const f = document.getElementById('feedback');
+document.querySelectorAll('.option').forEach(b => b.disabled = true);
+
+if(i === q[2]){
+score++;
+f.className = 'feedback correct';
+f.textContent = currentLang==='ar' ? '✅ إِجَابَةٌ صَحِيحَةٌ!' : '✅ Correct!';
+speak(currentLang==='ar' ? 'إجابة صحيحة!' : 'Correct!');
+announce('إجابة صحيحة');
+} else {
+f.className = 'feedback wrong';
+f.textContent = currentLang==='ar' ? '❌ خَطَأٌ. الْإِجَابَةُ الصَّحِيحَةُ: ' + q[1][q[2]] : '❌ Incorrect. Answer: ' + q[1][q[2]];
+const wrongMsg = currentLang==='ar' ? `إجابة خاطئة. الإجابة الصحيحة هي: ${q[1][q[2]]}` : `Incorrect. The correct answer is: ${q[1][q[2]]}`;
+speak(wrongMsg);
+announce(wrongMsg);
+}
+
+setTimeout(()=>{
+quizIndex++;
+if(quizIndex < qList.length){
+renderQuestion();
+} else {
+document.getElementById('quizArea').innerHTML = `<div class="lesson">
+<h2>🏆 ${currentLang==='ar'?'انْتَهَى الِاخْتِبَارُ بِنَجَاحٍ!':'Quiz Finished Successfully!'}</h2>
+<p>${currentLang==='ar'?'نَتِيجَتُكَ النِّهَائِيَّةُ: ':'Your final score: '}<strong>${score} / ${qList.length}</strong></p>
+<button class="btn" onclick="startQuiz('${currentQuiz}')">${currentLang==='ar'?'إِعَادَةُ الِاخْتِبَارِ':'Retake Quiz'}</button>
+</div>`;
+const finMsg = currentLang==='ar' ? `انْتَهَى الِاخْتِبَارُ. نَتِيجَتُكَ ${score} مِنْ ${qList.length}` : `Quiz finished. Your score ${score} out of ${qList.length}`;
+speak(finMsg);
+announce(finMsg);
+}
+}, 2000);
+}
+
+async function startCamera(){
+try{
+cameraStream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}, audio:false});
+const v = document.getElementById('cameraVideo');
+v.srcObject = cameraStream;
+v.play();
+document.getElementById('cameraStatus').textContent = currentLang==='ar'?'الْكَمِيرَا تَعْمَلُ بِكَفَاءَةٍ... وَجِّهْ الْكَمِيرَا نَحْوَ الْبَارْكُودِ':'Camera active... Point at QR code';
+scanningInterval = setInterval(scanQR, 500);
+announce('تَمَّ تَشْغِيلُ الْكَمِيرَا بِنَجَاحٍ');
+}catch(e){
+const errMsg = currentLang==='ar'?'تَعَذَّرَ تَشْغِيلُ الْكَمِيرَا. تَأَكَّدْ مِنْ إِعْطَاءِ الصَّلَاحِيَّاتِ اللَّازِمَةِ.':'Camera error. Check permissions.';
+document.getElementById('cameraStatus').textContent = errMsg;
+announce(errMsg);
+}
+}
+
+function scanQR(){
+const v = document.getElementById('cameraVideo');
+const c = document.getElementById('canvasElement');
+if(v.readyState === v.HAVE_ENOUGH_DATA){
+c.height = v.videoHeight;
+c.width = v.videoWidth;
+const ctx = c.getContext('2d');
+ctx.drawImage(v, 0, 0, c.width, c.height);
+const img = ctx.getImageData(0, 0, c.width, c.height);
+const code = jsQR(img.data, img.width, img.height);
+if(code){
+let text = code.data.trim().toLowerCase();
+let target = '';
+if(text.includes('dome') || text.includes('قبة')) target = 'dome';
+else if(text.includes('prophet') || text.includes('نبي')) target = 'prophet';
+else if(text.includes('egypt') || text.includes('مصر')) target = 'egypt';
+else if(text.includes('october') || text.includes('اكتوبر')) target = 'october';
+
+if(target){
+stopCamera();
+const foundMsg = currentLang==='ar' ? 'تَمَّ التَّعَرُّفُ عَلَى الْمُجَسَّمِ بِنَجَاحٍ!' : 'Model recognized successfully!';
+speak(foundMsg);
+announce(foundMsg);
+openLesson(target);
+}
+}
+}
+}
+
+function stopCamera(){
+if(scanningInterval) clearInterval(scanningInterval);
+if(cameraStream) cameraStream.getTracks().forEach(t => t.stop());
+cameraStream = null;
+const v = document.getElementById('cameraVideo');
+if(v) v.srcObject = null;
+const stat = document.getElementById('cameraStatus');
+if(stat) stat.textContent = currentLang==='ar'?'الْكَمِيرَا مُتَوَقِّفَةٌ.':'Camera stopped.';
+}
 </script>
 
 </body>
-
 </html>
