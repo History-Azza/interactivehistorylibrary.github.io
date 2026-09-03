@@ -14,5 +14,8 @@
   "display_override": [
     "standalone",
     "window-controls-overlay"
+  ],
+  "categories": [
+    "education"
   ]
 }
