@@ -7,6 +7,11 @@
 <title>مؤرخ برايل الذكي | Smart Braille Historian</title>
 <!-- مكتبة قراءة الـ QR Code -->
 <script src="https://cdn.jsdelivr.net/npm/jsQR@1.4.0/dist/jsQR.js"></script>
+  <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
+  }
+</script>
 <!-- خطوط احترافية تدعم العربية والإنجليزية بوضوح عالٍ لضعاف البصر -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
