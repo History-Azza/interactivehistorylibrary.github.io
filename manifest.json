@@ -4,10 +4,15 @@
   "display": "standalone",
   "name": "Smart Braille Historian",
   "orientation": "any",
-  "scope": "/",
+  "scope": "/https://history-azza.github.io/interactivehistorylibrary.github.io/",
   "short_name": "Braille Historian",
-  "start_url": "/",
+  "start_url": "/ https://history-azza.github.io/interactivehistorylibrary.github.io/Smart_Braille_Historian_Prototype.html",
   "theme_color": "#ffffff",
   "id": "/smart-braille-historian",
-  "description": "An interactive educational application that uses 3D tactile models, Braille, audio guidance and artificial intelligence to make history accessible to visually impaired students."
+  "description": "An interactive educational application that uses 3D tactile models, Braille, audio guidance and artificial intelligence to make history accessible to visually impaired students.",
+  "lang": "ar",
+  "display_override": [
+    "standalone",
+    "window-controls-overlay"
+  ]
 }
